@@ -109,7 +109,7 @@ export default function HeroSection() {
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url(/images/hero.jpg)" }}
+        style={{ backgroundImage: "url(/images/portfolio_1.webp)" }}
       />
 
       {/* Dark Overlay */}

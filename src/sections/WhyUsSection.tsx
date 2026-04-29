@@ -127,7 +127,7 @@ export default function WhyUsSection() {
           >
             <div className="relative rounded-2xl overflow-hidden">
               <img
-                src="/images/team.jpg"
+                src="/images/team_1.webp"
                 alt="فريق جودة الانطلاقة"
                 className="w-full h-auto object-cover"
               />

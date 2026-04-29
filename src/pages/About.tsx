@@ -47,7 +47,7 @@ export default function About() {
               >
                 <div className="relative rounded-2xl overflow-hidden">
                   <img
-                    src="/images/team.jpg"
+                    src="/images/team_2.webp"
                     alt="فريق جودة الانطلاقة"
                     className="w-full h-auto object-cover"
                   />
