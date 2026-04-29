@@ -1,42 +1,75 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+@layer base {
+  :root {
+    --background: 0 0% 7%;
+    --foreground: 40 10% 96%;
+    --card: 0 0% 10%;
+    --card-foreground: 40 10% 96%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 40 10% 96%;
+    --primary: 40 50% 57%;
+    --primary-foreground: 0 0% 7%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 40 10% 96%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 40 10% 60%;
+    --accent: 40 50% 57%;
+    --accent-foreground: 0 0% 7%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 40 10% 96%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 40 50% 57%;
+    --radius: 0.75rem;
   }
-  to {
-    transform: rotate(360deg);
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-surface text-cream font-arabic antialiased selection:bg-gold/30 selection:text-gold;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@layer components {
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-3 bg-gold text-surface font-bold rounded-xl transition-all duration-300 hover:bg-gold-light hover:shadow-gold hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-3 bg-transparent border-2 border-gold/30 text-gold font-bold rounded-xl transition-all duration-300 hover:bg-gold/10 hover:border-gold hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-gold via-gold-light to-gold-dark bg-clip-text text-transparent;
+  }
+
+  .text-shimmer {
+    @apply bg-gradient-to-r from-gold-dark via-gold-light to-gold-dark bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer;
+  }
+
+  .glass-card {
+    @apply bg-surface-light/80 backdrop-blur-md border border-gold/10 rounded-2xl;
+  }
+
+  .nav-link {
+    @apply text-cream-muted hover:text-gold transition-colors duration-300 font-medium relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-gold after:transition-all hover:after:w-full;
   }
 }
 
-.card {
-  padding: 2em;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-.read-the-docs {
-  color: #888;
+::-webkit-scrollbar-track {
+  @apply bg-surface;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gold/20 rounded-full hover:bg-gold/40 transition-colors;
 }

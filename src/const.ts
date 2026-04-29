@@ -12,20 +12,42 @@ export const SERVICES = [
   {
     id: "wedding",
     title: "ضيافة الزفاف",
-    description: "خدمات ضيافة متكاملة للأعراس والمناسبات السعيدة.",
-    image: "/images/service-wedding.jpg",
+    description: "خدمات ضيافة متكاملة للأعراس والمناسبات السعيدة، تشمل القهوة العربية، العصائر، والحلويات الفاخرة.",
+    image: "/images/portfolio_1.webp",
+    icon: "Heart",
+    price: "150",
   },
   {
     id: "corporate",
     title: "ضيافة الشركات",
-    description: "حلول احترافية لفعاليات الشركات والمؤتمرات.",
-    image: "/images/service-corporate.jpg",
+    description: "حلول احترافية لفعاليات الشركات والمؤتمرات والاجتماعات الرسمية مع طاقم خدمة بزي رسمي.",
+    image: "/images/portfolio_2.webp",
+    icon: "Building2",
+    price: "100",
   },
   {
     id: "coffee",
-    title: "القهوة العربية",
-    description: "تقديم القهوة العربية الأصيلة مع التمور الفاخرة.",
-    image: "/images/service-coffee.jpg",
+    title: "القهوة العربية الأصيلة",
+    description: "تقديم القهوة العربية المجهزة بأجود أنواع البن مع التمور العمانية الفاخرة واللقيمات.",
+    image: "/images/portfolio_1.webp",
+    icon: "Coffee",
+    price: "50",
+  },
+  {
+    id: "private",
+    title: "المناسبات الخاصة",
+    description: "خدمة ضيافة للمنازل واللقاءات العائلية الخاصة بخصوصية تامة واحترافية عالية.",
+    image: "/images/team_2.webp",
+    icon: "Users",
+    price: "80",
+  },
+  {
+    id: "events",
+    title: "تنسيق الفعاليات",
+    description: "خدمات تنسيق وإدارة ركن الضيافة بالكامل لضمان راحة ضيوفكم وتميز مناسبتكم.",
+    image: "/images/team_1.webp",
+    icon: "Calendar",
+    price: "120",
   },
 ];
 
@@ -67,6 +89,10 @@ export const FAQS = [
   {
     question: "ما هي المناطق التي تغطونها؟",
     answer: "نغطي جميع ولايات سلطنة عمان، ونصل إليكم أينما كنتم.",
+  },
+  {
+    question: "هل تقدمون خدمات الضيافة للرجال والنساء؟",
+    answer: "نعم، نوفر طواقم عمل متخصصة للرجال وطواقم متخصصة للنساء حسب الطلب.",
   },
   {
     question: "كيف يمكنني الحجز؟",
