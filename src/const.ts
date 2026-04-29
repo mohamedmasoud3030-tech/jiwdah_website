@@ -75,3 +75,20 @@ export const FAQS = [
 ];
 
 export const LOGIN_PATH = "/login";
+
+export const TESTIMONIALS = [
+  {
+    id: 1,
+    name: "أحمد البوسعيدي",
+    role: "عميل",
+    content: "خدمة استثنائية وطاقم محترف جداً. القهوة العربية كانت متميزة.",
+    avatar: "/images/avatar-1.jpg",
+  },
+  {
+    id: 2,
+    name: "سارة البلوشي",
+    role: "عروس",
+    content: "جودة الانطلاقة جعلت ليلة زفافي أجمل بضيافتهم الراقية.",
+    avatar: "/images/avatar-2.jpg",
+  },
+];
