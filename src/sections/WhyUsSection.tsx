@@ -162,7 +162,7 @@ export default function WhyUsSection() {
               </span>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-cream mt-2 sm:mt-3 mb-3 sm:mb-4">
                 لماذا تختار{" "}
-                <span className="text-gradient-gold">جودة الانطلاقة</span>؟
+                <span className="text-gradient-gold">مشاريع جودة الإنطلاقة</span>؟
               </h2>
               <p className="text-sm sm:text-base text-cream-muted mb-6 sm:mb-10 leading-relaxed">
                 نفتخر بتقديم خدمات ضيافة استثنائية تلبي أعلى المعايير. فريقنا

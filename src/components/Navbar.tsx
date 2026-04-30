@@ -39,7 +39,7 @@ export default function Navbar() {
           <Link to="/" className="flex items-center gap-3 group">
             <img src="/images/jiwdah_logo.webp" alt="جودة الانطلاقة" className="w-12 h-12 rounded-full border border-gold/30 object-cover transition-transform duration-300 group-hover:scale-110" />
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-cream">جودة الانطلاقة</span>
+              <span className="text-xl font-bold text-cream">مشاريع جودة الإنطلاقة</span>
               <span className="text-xs text-cream-muted -mt-1">خدمات الضيافة</span>
             </div>
           </Link>

@@ -11,7 +11,7 @@ export default function Footer() {
             <Link to="/" className="flex items-center gap-3 group">
               <Crown className="w-8 h-8 text-gold" />
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-cream">جودة الانطلاقة</span>
+                <span className="text-xl font-bold text-cream">مشاريع جودة الإنطلاقة</span>
                 <span className="text-xs text-cream-muted -mt-1">خدمات الضيافة المتنقلة</span>
               </div>
             </Link>
@@ -79,7 +79,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-gold/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-cream-muted text-sm">
-            &copy; {new Date().getFullYear()} جودة الانطلاقة. جميع الحقوق محفوظة.
+            &copy; {new Date().getFullYear()} مشاريع جودة الإنطلاقة. جميع الحقوق محفوظة.
           </p>
           <p className="text-cream-muted/60 text-xs">
             صُنع بإتقان في سلطنة عمان
