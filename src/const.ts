@@ -121,3 +121,5 @@ export const TESTIMONIALS = [
     avatar: "/images/team_2.webp",
   },
 ];
+
+export const LOGIN_PATH = "/login";
