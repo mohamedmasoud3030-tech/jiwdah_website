@@ -10,70 +10,75 @@ export const NAV_LINKS = [
 
 export const SERVICES = [
   {
+    id: "vip",
+    title: "ضيافة VIP",
+    description: "خدمات ضيافة ملكية للشخصيات الهامة والمناسبات الرسمية بأعلى معايير الرقي والفخامة.",
+    image: "/images/portfolio_1.webp",
+    icon: "Crown",
+  },
+  {
     id: "wedding",
-    title: "ضيافة الزفاف",
-    description: "خدمات ضيافة متكاملة للأعراس والمناسبات السعيدة، تشمل القهوة العربية، العصائر، والحلويات الفاخرة.",
-    image: "/images/portfolio_1.webp",
-    icon: "Heart",
-    price: "150",
-  },
-  {
-    id: "corporate",
-    title: "ضيافة الشركات",
-    description: "حلول احترافية لفعاليات الشركات والمؤتمرات والاجتماعات الرسمية مع طاقم خدمة بزي رسمي.",
+    title: "خدمات الأفراح",
+    description: "تنظيم ضيافة متكاملة لحفلات الزفاف، تضمن ليلة العمر بكل تفاصيلها الجمالية والتقليدية.",
     image: "/images/portfolio_2.webp",
-    icon: "Building2",
-    price: "100",
-  },
-  {
-    id: "coffee",
-    title: "القهوة العربية الأصيلة",
-    description: "تقديم القهوة العربية المجهزة بأجود أنواع البن مع التمور العمانية الفاخرة واللقيمات.",
-    image: "/images/portfolio_1.webp",
-    icon: "Coffee",
-    price: "50",
-  },
-  {
-    id: "private",
-    title: "المناسبات الخاصة",
-    description: "خدمة ضيافة للمنازل واللقاءات العائلية الخاصة بخصوصية تامة واحترافية عالية.",
-    image: "/images/team_2.webp",
-    icon: "Users",
-    price: "80",
+    icon: "Heart",
   },
   {
     id: "events",
-    title: "تنسيق الفعاليات",
-    description: "خدمات تنسيق وإدارة ركن الضيافة بالكامل لضمان راحة ضيوفكم وتميز مناسبتكم.",
+    title: "ضيافة الفعاليات",
+    description: "تغطية شاملة للمؤتمرات والفعاليات الثقافية والاجتماعية في جميع أنحاء السلطنة.",
     image: "/images/team_1.webp",
     icon: "Calendar",
-    price: "120",
   },
 ];
 
 export const PORTFOLIO_ITEMS = [
   {
     id: 1,
-    title: "ضيافة مناسبة خاصة",
-    category: "private",
-    image: "/images/portfolio_1.webp",
+    title: "خدمات VIP فاخرة",
+    category: "vip",
+    video: "/videos/vip_service.mp4",
   },
   {
     id: 2,
-    title: "فريق العمل في الميدان",
+    title: "تنظيم أفراح ومناسبات",
     category: "wedding",
-    image: "/images/team_1.webp",
+    video: "/videos/events.mp4",
   },
   {
     id: 3,
-    title: "تقديم القهوة العربية",
-    category: "coffee",
-    image: "/images/portfolio_2.webp",
+    title: "فريق عمل محترف",
+    category: "team",
+    video: "/videos/team_work.mp4",
   },
   {
     id: 4,
-    title: "طاقم جودة الانطلاقة",
-    category: "private",
+    title: "ضيافة فعاليات كبرى",
+    category: "events",
+    video: "/videos/hero_video.mp4",
+  },
+  {
+    id: 5,
+    title: "ضيافة القهوة العربية",
+    category: "vip",
+    image: "/images/portfolio_1.webp",
+  },
+  {
+    id: 6,
+    title: "تنسيق طاولات الضيافة",
+    category: "wedding",
+    image: "/images/portfolio_2.webp",
+  },
+  {
+    id: 7,
+    title: "طاقم الضيافة العماني",
+    category: "team",
+    image: "/images/team_1.webp",
+  },
+  {
+    id: 8,
+    title: "خدمة الفعاليات الخارجية",
+    category: "events",
     image: "/images/team_2.webp",
   },
 ];
@@ -100,21 +105,19 @@ export const FAQS = [
   },
 ];
 
-export const LOGIN_PATH = "/login";
-
 export const TESTIMONIALS = [
   {
     id: 1,
-    name: "أحمد البوسعيدي",
+    name: "سالم العلوي",
     role: "عميل",
-    content: "خدمة استثنائية وطاقم محترف جداً. القهوة العربية كانت متميزة.",
-    avatar: "/images/avatar-1.jpg",
+    content: "خدمة استثنائية وطاقم عمل محترف جداً. شرفونا أمام ضيوفنا في حفل الزفاف.",
+    avatar: "/images/team_1.webp",
   },
   {
     id: 2,
-    name: "سارة البلوشي",
-    role: "عروس",
-    content: "جودة الانطلاقة جعلت ليلة زفافي أجمل بضيافتهم الراقية.",
-    avatar: "/images/avatar-2.jpg",
+    name: "فاطمة البلوشي",
+    role: "منظمة فعاليات",
+    content: "أفضل شركة ضيافة تعاملت معها في سلطنة عمان. التزام بالمواعيد وجودة لا تضاهى.",
+    avatar: "/images/team_2.webp",
   },
 ];

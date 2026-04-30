@@ -6,10 +6,10 @@ import { PORTFOLIO_ITEMS } from "@/const";
 
 const categories = [
   { key: "all", label: "الكل" },
+  { key: "vip", label: "VIP" },
   { key: "wedding", label: "أفراح" },
-  { key: "conference", label: "مؤتمرات" },
-  { key: "private", label: "فعاليات خاصة" },
-  { key: "corporate", label: "شركات" },
+  { key: "events", label: "فعاليات" },
+  { key: "team", label: "فريق العمل" },
 ];
 
 export default function PortfolioSection() {
@@ -77,11 +77,23 @@ export default function PortfolioSection() {
                 transition={{ duration: 0.3 }}
                 className="group relative rounded-xl overflow-hidden aspect-[3/2] cursor-pointer"
               >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
+                {item.video ? (
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  >
+                    <source src={item.video} type="video/mp4" />
+                  </video>
+                ) : (
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-surface/90 via-surface/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 right-0 left-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                   <h4 className="text-cream font-bold text-sm">{item.title}</h4>
