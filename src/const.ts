@@ -1,4 +1,4 @@
-export const WHATSAPP_NUMBER = "96892200218";
+export const WHATSAPP_NUMBER = "96892770091";
 
 export const NAV_LINKS = [
   { label: "الرئيسية", href: "/" },
