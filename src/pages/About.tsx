@@ -29,7 +29,7 @@ export default function About() {
                 من نحن
               </span>
               <h1 className="text-3xl md:text-5xl font-bold text-cream mt-3 mb-6">
-                قصة <span className="text-gradient-gold">جودة الانطلاقة</span>
+                قصة <span className="text-gradient-gold">مشاريع جودة الإنطلاقة</span>
               </h1>
             </motion.div>
           </div>
@@ -48,7 +48,7 @@ export default function About() {
                 <div className="relative rounded-2xl overflow-hidden">
                   <img
                     src="/images/team_2.webp"
-                    alt="فريق جودة الانطلاقة"
+                    alt="فريق مشاريع جودة الإنطلاقة"
                     className="w-full h-auto object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-surface/60 to-transparent" />
@@ -66,7 +66,7 @@ export default function About() {
                 </h2>
                 <div className="space-y-4 text-cream-muted leading-relaxed">
                   <p>
-                    تأسست جودة الانطلاقة في نزوى، سلطنة عمان، بهدف تقديم خدمات ضيافة
+                    تأسست مشاريع جودة الإنطلاقة في نزوى، سلطنة عمان، بهدف تقديم خدمات ضيافة
                     استثنائية تليق بأرقى المناسبات. بدأنا رحلتنا بفريق صغير وطموح كبير،
                     واليوم نفخر بكوننا من رواد خدمات الضيافة المتنقلة في سلطنة عمان.
                   </p>

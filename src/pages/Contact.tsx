@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { Phone, Mail, MapPin, Clock, MessageSquare, Send, AlertCircle } from "lucide-react";
+import { Phone, Instagram, MapPin, Clock, MessageSquare, Send, AlertCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -58,7 +58,7 @@ export default function Contact() {
 
   const openWhatsApp = () => {
     const message = encodeURIComponent(
-      `مرحباً جودة الانطلاقة،\nالاسم: ${formData.name || "[اسمك]"}\nالخدمة: ${formData.service || "[نوع الخدمة]"}\nالتاريخ: ${formData.eventDate || "[التاريخ]"}\nأرغب في الاستفسار عن الخدمة.`
+      `مرحباً مشاريع جودة الإنطلاقة،\nالاسم: ${formData.name || "[اسمك]"}\nالخدمة: ${formData.service || "[نوع الخدمة]"}\nالتاريخ: ${formData.eventDate || "[التاريخ]"}\nأرغب في الاستفسار عن الخدمة.`
     );
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank", "noopener,noreferrer");
   };
@@ -101,46 +101,46 @@ export default function Contact() {
                 <div>
                   <h3 className="text-xl font-bold text-cream mb-6">معلومات التواصل</h3>
                   <div className="space-y-5">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center shrink-0">
-                        <Phone className="w-5 h-5 text-gold" />
+<div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center shrink-0">
+                          <Phone className="w-5 h-5 text-gold" />
+                        </div>
+                        <div>
+                          <p className="text-cream-muted text-sm">الهاتف</p>
+                          <p className="text-cream font-semibold" dir="ltr">+968 9277 0091</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-cream-muted text-sm">الهاتف</p>
-                        <p className="text-cream font-semibold" dir="ltr">+968 XXXX XXXX</p>
-                      </div>
-                    </div>
 
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center shrink-0">
-                        <MessageSquare className="w-5 h-5 text-gold" />
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center shrink-0">
+                          <MessageSquare className="w-5 h-5 text-gold" />
+                        </div>
+                        <div>
+                          <p className="text-cream-muted text-sm">واتساب</p>
+                          <p className="text-cream font-semibold" dir="ltr">+968 9277 0091</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-cream-muted text-sm">واتساب</p>
-                        <p className="text-cream font-semibold" dir="ltr">+968 XXXX XXXX</p>
-                      </div>
-                    </div>
 
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center shrink-0">
-                        <Mail className="w-5 h-5 text-gold" />
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center shrink-0">
+                          <Instagram className="w-5 h-5 text-gold" />
+                        </div>
+                        <div>
+                          <p className="text-cream-muted text-sm">إنستقرام</p>
+                          <a href="https://www.instagram.com/jawdat_alantlaqa_nizwa" target="_blank" rel="noopener noreferrer" className="text-cream font-semibold hover:text-gold transition-colors">jawdat_alantlaqa_nizwa</a>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-cream-muted text-sm">البريد الإلكتروني</p>
-                        <p className="text-cream font-semibold">info@jawlat-al-intilaqa.com</p>
-                      </div>
-                    </div>
 
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center shrink-0">
-                        <MapPin className="w-5 h-5 text-gold" />
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center shrink-0">
+                          <MapPin className="w-5 h-5 text-gold" />
+                        </div>
+                        <div>
+                          <p className="text-cream-muted text-sm">الموقع</p>
+                          <a href="https://maps.app.goo.gl/i4VJX9VKgRsPTsbY7" target="_blank" rel="noopener noreferrer" className="text-cream font-semibold hover:text-gold transition-colors">نزوى، سلطنة عمان</a>
+                          <p className="text-cream-muted text-xs">نخدم جميع مناطق سلطنة عمان</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-cream-muted text-sm">الموقع</p>
-                        <p className="text-cream font-semibold">نزوى، سلطنة عمان</p>
-                        <p className="text-cream-muted text-xs">نخدم جميع مناطق سلطنة عمان</p>
-                      </div>
-                    </div>
 
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center shrink-0">

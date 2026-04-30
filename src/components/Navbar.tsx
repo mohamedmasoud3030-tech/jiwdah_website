@@ -36,11 +36,11 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <img src="/images/jiwdah_logo.webp" alt="جودة الانطلاقة" className="w-12 h-12 rounded-full border border-gold/30 object-cover transition-transform duration-300 group-hover:scale-110" />
-            <div className="flex flex-col">
-              <span className="text-xl font-bold text-cream">مشاريع جودة الإنطلاقة</span>
-              <span className="text-xs text-cream-muted -mt-1">خدمات الضيافة</span>
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 group max-w-[70%] sm:max-w-none">
+            <img src="/images/jiwdah_logo.webp" alt="جودة الانطلاقة" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-gold/30 object-cover transition-transform duration-300 group-hover:scale-110 shrink-0" />
+            <div className="flex flex-col overflow-hidden">
+              <span className="text-base sm:text-xl font-bold text-cream truncate">مشاريع جودة الإنطلاقة</span>
+              <span className="text-[10px] sm:text-xs text-cream-muted -mt-1">خدمات الضيافة</span>
             </div>
           </Link>
 
