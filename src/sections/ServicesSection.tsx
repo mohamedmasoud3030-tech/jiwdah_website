@@ -124,15 +124,15 @@ export default function ServicesSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-12 sm:mb-16 px-4"
         >
-          <span className="text-gold text-sm font-semibold tracking-wider uppercase">
+          <span className="text-gold text-xs sm:text-sm font-semibold tracking-wider uppercase">
             خدماتنا
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-cream mt-3 mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-cream mt-2 sm:mt-3 mb-3 sm:mb-4">
             حلول ضيافة <span className="text-gradient-gold">شاملة</span>
           </h2>
-          <p className="text-cream-muted max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-cream-muted max-w-2xl mx-auto">
             نقدم مجموعة واسعة من خدمات الضيافة لتلبية جميع احتياجات مناسبتك
           </p>
         </motion.div>
@@ -143,7 +143,7 @@ export default function ServicesSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-0"
         >
           {displayedServices.map((service) => {
             const IconComponent = iconMap[service.icon] || Crown;

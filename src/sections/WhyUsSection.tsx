@@ -115,8 +115,8 @@ export default function WhyUsSection() {
         className="absolute inset-0 pointer-events-none"
       />
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div className="max-w-7xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
           {/* Image */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
@@ -140,11 +140,11 @@ export default function WhyUsSection() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="absolute -bottom-6 -left-6 bg-surface-light border border-gold/30 rounded-xl p-4 shadow-gold"
+              className="absolute -bottom-4 sm:-bottom-6 -left-4 sm:-left-6 bg-surface-light border border-gold/30 rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-gold"
             >
               <div className="text-center">
-                <div className="text-3xl font-bold text-gold font-arabic">٥٠٠+</div>
-                <div className="text-cream-muted text-sm">مناسبة ناجحة</div>
+                <div className="text-2xl sm:text-3xl font-bold text-gold font-arabic">٥٠٠+</div>
+                <div className="text-cream-muted text-xs sm:text-sm">مناسبة ناجحة</div>
               </div>
             </motion.div>
           </motion.div>
@@ -157,20 +157,20 @@ export default function WhyUsSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <span className="text-gold text-sm font-semibold tracking-wider uppercase">
+              <span className="text-gold text-xs sm:text-sm font-semibold tracking-wider uppercase">
                 لماذا نحن
               </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-cream mt-3 mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-cream mt-2 sm:mt-3 mb-3 sm:mb-4">
                 لماذا تختار{" "}
                 <span className="text-gradient-gold">جودة الانطلاقة</span>؟
               </h2>
-              <p className="text-cream-muted mb-10 leading-relaxed">
+              <p className="text-sm sm:text-base text-cream-muted mb-6 sm:mb-10 leading-relaxed">
                 نفتخر بتقديم خدمات ضيافة استثنائية تلبي أعلى المعايير. فريقنا
                 المحترف ملتزم بجعل مناسبتك مميزة ولا تُنسى.
               </p>
             </motion.div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {features.map((feature, index) => (
                 <motion.div
                   key={feature.title}

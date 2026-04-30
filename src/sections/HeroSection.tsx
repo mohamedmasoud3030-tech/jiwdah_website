@@ -128,7 +128,7 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <span className="inline-block px-4 py-2 bg-gold/10 border border-gold/30 rounded-full text-gold text-sm font-semibold mb-6">
+          <span className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 bg-gold/10 border border-gold/30 rounded-full text-gold text-xs sm:text-sm font-semibold mb-4 sm:mb-6">
             خدمات الضيافة المتنقلة في سلطنة عمان
           </span>
         </motion.div>
@@ -137,7 +137,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-cream leading-tight mb-6"
+          className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-cream leading-tight mb-4 sm:mb-6"
         >
           خدمات ضيافة احترافية{" "}
           <span className="text-shimmer">تليق بمناسبتك</span>
@@ -147,7 +147,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-          className="text-lg md:text-xl text-cream-muted mb-10 max-w-2xl mx-auto"
+          className="text-base sm:text-lg md:text-xl text-cream-muted mb-6 sm:mb-10 max-w-2xl mx-auto px-2 sm:px-0"
         >
           نذهب إليك أينما كنت في سلطنة عمان. ضيافة فاخرة، طاقم محترف، وخدمة لا تُنسى.
         </motion.p>
@@ -156,7 +156,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-          className="flex flex-col sm:flex-row gap-4 justify-center"
+          className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-2 sm:px-0"
         >
           <Link to="/contact" className="btn-gold">
             اطلب عرض سعر

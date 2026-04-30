@@ -37,11 +37,11 @@
 
 @layer components {
   .btn-gold {
-    @apply inline-flex items-center justify-center gap-2 px-8 py-3 bg-gold text-surface font-bold rounded-xl transition-all duration-300 hover:bg-gold-light hover:shadow-gold hover:-translate-y-0.5 active:translate-y-0;
+    @apply inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-gold text-surface font-bold rounded-lg sm:rounded-xl text-sm sm:text-base transition-all duration-300 hover:bg-gold-light hover:shadow-gold hover:-translate-y-0.5 active:translate-y-0;
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 px-8 py-3 bg-transparent border-2 border-gold/30 text-gold font-bold rounded-xl transition-all duration-300 hover:bg-gold/10 hover:border-gold hover:-translate-y-0.5 active:translate-y-0;
+    @apply inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-transparent border-2 border-gold/30 text-gold font-bold rounded-lg sm:rounded-xl text-sm sm:text-base transition-all duration-300 hover:bg-gold/10 hover:border-gold hover:-translate-y-0.5 active:translate-y-0;
   }
 
   .text-gradient-gold {
