@@ -1,4 +1,4 @@
-import { Camera, ExternalLink } from "lucide-react";
+import { Camera, ExternalLink, LayoutDashboard } from "lucide-react";
 
 function isVideo(url: string) {
   return /\.(mp4|webm|ogg)(\?|$)/i.test(url);
@@ -31,6 +31,10 @@ export default function MediaCard({ thumbnailUrl, title, categoryLabel, classNam
           {categoryLabel && (
             <span className="text-gold/40 text-[10px] tracking-widest uppercase">{categoryLabel}</span>
           )}
+          <div className="flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded border border-gold/10 bg-gold/4">
+            <LayoutDashboard className="w-3 h-3 text-gold/35 shrink-0" />
+            <span className="text-cream/25 text-[9px] leading-tight">أضف صورة من لوحة التحكم</span>
+          </div>
         </div>
       </div>
     );

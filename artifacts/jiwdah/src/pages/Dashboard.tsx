@@ -641,7 +641,7 @@ function extractInstagramId(input: string): string {
   return trimmed.replace(/\/$/, "");
 }
 
-function ThumbnailUploadButton({ postId, currentUrl, onDone }: { postId: number; currentUrl?: string | null; onDone: () => void }) {
+function ThumbnailUploadButton({ postId, currentUrl, onDone, prominent = false }: { postId: number; currentUrl?: string | null; onDone: () => void; prominent?: boolean }) {
   const [uploading, setUploading] = useState(false);
   const [err, setErr] = useState("");
   const updatePost = trpc.instagramPosts.update.useMutation({ onSuccess: onDone });
@@ -667,6 +667,25 @@ function ThumbnailUploadButton({ postId, currentUrl, onDone }: { postId: number;
       setUploading(false);
     }
   };
+
+  if (prominent) {
+    return (
+      <div className="flex flex-col gap-1 w-full">
+        <label className="flex items-center gap-2 cursor-pointer w-full bg-gold/8 border border-gold/25 border-dashed rounded-lg px-3 py-2 hover:bg-gold/14 hover:border-gold/45 transition-all duration-200 group">
+          {uploading ? (
+            <Loader2 className="w-4 h-4 text-gold animate-spin shrink-0" />
+          ) : (
+            <ImageIcon className="w-4 h-4 text-gold/60 group-hover:text-gold shrink-0 transition-colors" />
+          )}
+          <span className="text-gold/70 group-hover:text-gold text-xs font-medium transition-colors">
+            {uploading ? "جاري الرفع..." : "رفع صورة مصغرة"}
+          </span>
+          <input type="file" accept="image/*,video/mp4,video/webm" onChange={handleChange} className="sr-only" disabled={uploading} />
+        </label>
+        {err && <p className="text-red-400 text-[10px]">{err}</p>}
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center gap-1">
@@ -882,10 +901,29 @@ function InstagramManager() {
       {/* Posts list */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-cream font-semibold text-sm">
-            منشورات {INSTAGRAM_SECTION_LABELS[activeSection]}
-            <span className="text-cream-muted text-xs font-normal mr-2">({sectionPosts.length})</span>
-          </h3>
+          <div className="flex items-center gap-3">
+            <h3 className="text-cream font-semibold text-sm">
+              منشورات {INSTAGRAM_SECTION_LABELS[activeSection]}
+              <span className="text-cream-muted text-xs font-normal mr-2">({sectionPosts.length})</span>
+            </h3>
+            {sectionPosts.length > 0 && (() => {
+              const withThumb = sectionPosts.filter((p) => p.thumbnailUrl).length;
+              const total = sectionPosts.length;
+              const allDone = withThumb === total;
+              return (
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] border ${
+                  allDone
+                    ? "bg-green-500/10 text-green-400 border-green-500/20"
+                    : withThumb === 0
+                    ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                    : "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                }`}>
+                  <ImageIcon className="w-2.5 h-2.5" />
+                  {withThumb} / {total} صورة مصغرة
+                </span>
+              );
+            })()}
+          </div>
           <button onClick={() => refetch()} className="flex items-center gap-2 text-cream-muted hover:text-gold transition-colors text-xs">
             <RefreshCw className="w-3.5 h-3.5" />
             تحديث
@@ -906,7 +944,11 @@ function InstagramManager() {
             {sectionPosts.map((post, idx) => (
               <div
                 key={post.id}
-                className="flex items-center gap-3 bg-surface-light border border-gold/10 rounded-xl px-4 py-3 hover:border-gold/20 transition-all duration-200"
+                className={`flex items-center gap-3 bg-surface-light rounded-xl px-4 py-3 transition-all duration-200 ${
+                  !post.thumbnailUrl
+                    ? "border border-amber-500/20 hover:border-amber-500/35"
+                    : "border border-gold/10 hover:border-gold/20"
+                }`}
               >
                 <div className="flex flex-col gap-1 shrink-0">
                   <button
@@ -928,20 +970,35 @@ function InstagramManager() {
                 {post.thumbnailUrl ? (
                   <img src={post.thumbnailUrl} alt={post.title} className="w-10 h-10 rounded-lg object-cover border border-gold/20 shrink-0" />
                 ) : (
-                  <div className="w-10 h-10 bg-gold/8 border border-gold/12 rounded-lg flex items-center justify-center shrink-0">
-                    <Instagram className="w-4 h-4 text-gold/60" />
+                  <div className="w-10 h-10 bg-amber-500/8 border border-amber-500/20 rounded-lg flex items-center justify-center shrink-0">
+                    <Instagram className="w-4 h-4 text-amber-500/60" />
                   </div>
                 )}
 
                 <div className="flex-1 min-w-0">
                   <p className="text-cream text-sm font-medium">{post.title}</p>
                   <p className="text-cream-muted text-xs font-mono mt-0.5 truncate">{post.instagramId}</p>
-                  {post.thumbnailUrl && (
-                    <p className="text-green-400/60 text-[10px] mt-0.5">✓ صورة مصغرة مرفوعة</p>
+                  {post.thumbnailUrl ? (
+                    <p className="text-green-400/70 text-[10px] mt-0.5 flex items-center gap-1">
+                      <CheckCircle className="w-2.5 h-2.5" />
+                      صورة مصغرة مرفوعة
+                    </p>
+                  ) : (
+                    <p className="text-amber-400/60 text-[10px] mt-0.5 flex items-center gap-1">
+                      <AlertCircle className="w-2.5 h-2.5" />
+                      لا توجد صورة — خذ لقطة شاشة من إنستغرام وارفعها
+                    </p>
+                  )}
+                  {!post.thumbnailUrl && (
+                    <div className="mt-2">
+                      <ThumbnailUploadButton postId={post.id} currentUrl={post.thumbnailUrl} onDone={() => refetch()} prominent />
+                    </div>
                   )}
                 </div>
 
-                <ThumbnailUploadButton postId={post.id} currentUrl={post.thumbnailUrl} onDone={() => refetch()} />
+                {post.thumbnailUrl && (
+                  <ThumbnailUploadButton postId={post.id} currentUrl={post.thumbnailUrl} onDone={() => refetch()} />
+                )}
 
                 <a
                   href={`https://www.instagram.com/p/${post.instagramId}/`}
