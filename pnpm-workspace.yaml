@@ -43,6 +43,14 @@ onlyBuiltDependencies:
   - unrs-resolver
 
 overrides:
+  # Security: force patched versions of vulnerable transitive dependencies
+  'brace-expansion@^1': ^1.1.12  # GHSA-f886-m6hf-6m8v (>=1.1.12 is safe for v1)
+  'brace-expansion@^2': ^2.0.3   # GHSA-f886-m6hf-6m8v (patched >=2.0.3)
+  'lodash': ^4.18.1              # GHSA-r5fr-rjxr-66jc, GHSA-f23m-r3pf-42rh, GHSA-xxjr-mmjv-4gpg
+  'picomatch@^2': ^2.3.2         # GHSA-c2c7-rcm5-vvqj, GHSA-3v7f-55p6-f55p (patched >=2.3.2)
+  'picomatch@^4': ^4.0.4         # GHSA-c2c7-rcm5-vvqj, GHSA-3v7f-55p6-f55p (patched >=4.0.4)
+  'postcss': ^8.5.10             # GHSA-qx2v-qp2m-jg93 (patched >=8.5.10)
+  'yaml': ^2.8.3                 # GHSA-48c2-rrv3-qjmp (patched >=2.8.3)
   '@esbuild-kit/esm-loader': npm:tsx@^4.21.0
   '@expo/ngrok-bin>@expo/ngrok-bin-darwin-arm64': '-'
   '@expo/ngrok-bin>@expo/ngrok-bin-darwin-x64': '-'
