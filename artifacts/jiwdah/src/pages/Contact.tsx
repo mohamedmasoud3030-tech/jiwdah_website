@@ -8,25 +8,25 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { trpc } from "@/providers/trpc";
 import { SERVICES, WHATSAPP_NUMBER } from "@/const";
 
-const STEPS = ["معلوماتك", "تفاصيل المناسبة"];
+const STEPS = ["تفاصيل المناسبة", "بياناتك"];
 
 export default function Contact() {
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
     service: "",
     eventDate: "",
-    location: "",
     guests: "",
+    location: "",
     notes: "",
+    name: "",
+    phone: "",
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const createLead = trpc.leads.create.useMutation({
     onSuccess: () => {
       setIsSubmitted(true);
-      setFormData({ name: "", phone: "", service: "", eventDate: "", location: "", guests: "", notes: "" });
+      setFormData({ service: "", eventDate: "", guests: "", location: "", notes: "", name: "", phone: "" });
       setStep(0);
     },
   });
@@ -37,13 +37,13 @@ export default function Contact() {
 
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.phone) return;
+    if (!formData.service) return;
     setStep(1);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.service) return;
+    if (!formData.name || !formData.phone) return;
     createLead.mutate({
       name: formData.name,
       phone: formData.phone,
@@ -62,8 +62,8 @@ export default function Contact() {
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank", "noopener,noreferrer");
   };
 
-  const inputClass = "w-full bg-transparent border-b text-cream text-sm placeholder:text-cream/20 focus:outline-none transition-all duration-300 py-3 pb-2.5"
-    + " border-gold/12 focus:border-gold/40";
+  const inputClass =
+    "w-full bg-transparent border-b text-cream text-sm placeholder:text-cream/20 focus:outline-none transition-all duration-300 py-3 pb-2.5 border-gold/12 focus:border-gold/40";
 
   return (
     <div className="min-h-screen bg-surface">
@@ -145,7 +145,7 @@ export default function Contact() {
                   </div>
                 </div>
 
-                {/* WhatsApp CTA */}
+                {/* WhatsApp quick CTA */}
                 <div className="border border-gold/10 rounded p-6" style={{ backgroundColor: "#161616" }}>
                   <p className="text-cream/40 text-xs tracking-wider uppercase mb-2">تواصل سريع</p>
                   <h4 className="text-cream text-sm mb-3 font-medium">للاستفسارات السريعة</h4>
@@ -174,7 +174,10 @@ export default function Contact() {
                     <div className="w-12 h-12 bg-gold/10 border border-gold/20 rounded-full flex items-center justify-center mx-auto mb-6">
                       <Check className="w-5 h-5 text-gold" />
                     </div>
-                    <h3 className="text-2xl text-cream mb-3" style={{ fontFamily: "'Noto Serif Arabic', serif", fontWeight: 500 }}>
+                    <h3
+                      className="text-2xl text-cream mb-3"
+                      style={{ fontFamily: "'Noto Serif Arabic', serif", fontWeight: 500 }}
+                    >
                       تم استلام طلبك
                     </h3>
                     <p className="text-cream/45 text-sm mb-8 font-light">
@@ -192,17 +195,19 @@ export default function Contact() {
                   </motion.div>
                 ) : (
                   <div className="border border-gold/8 rounded overflow-hidden" style={{ backgroundColor: "#161616" }}>
-                    {/* Step progress bar */}
+                    {/* Step progress */}
                     <div className="px-8 pt-8 pb-6 border-b border-gold/6">
-                      <div className="flex items-center gap-3 mb-6">
+                      <div className="flex items-center gap-3">
                         {STEPS.map((label, i) => (
                           <div key={label} className="flex items-center gap-3">
                             <div className="flex items-center gap-2">
                               <div
                                 className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-400 ${
-                                  i < step ? "bg-gold/20 border border-gold/40 text-gold" :
-                                  i === step ? "bg-gold text-surface" :
-                                  "bg-surface-lighter border border-gold/10 text-cream/30"
+                                  i < step
+                                    ? "bg-gold/20 border border-gold/40 text-gold"
+                                    : i === step
+                                    ? "bg-gold text-surface"
+                                    : "bg-surface-lighter border border-gold/10 text-cream/30"
                                 }`}
                               >
                                 {i < step ? <Check className="w-3 h-3" /> : i + 1}
@@ -212,7 +217,10 @@ export default function Contact() {
                               </span>
                             </div>
                             {i < STEPS.length - 1 && (
-                              <div className="flex-1 h-px w-8" style={{ backgroundColor: i < step ? "rgba(200,164,92,0.3)" : "rgba(200,164,92,0.08)" }} />
+                              <div
+                                className="flex-1 h-px w-8"
+                                style={{ backgroundColor: i < step ? "rgba(200,164,92,0.3)" : "rgba(200,164,92,0.08)" }}
+                              />
                             )}
                           </div>
                         ))}
@@ -221,6 +229,7 @@ export default function Contact() {
 
                     <div className="px-8 py-8">
                       <AnimatePresence mode="wait">
+                        {/* STEP 0 — Event details first */}
                         {step === 0 ? (
                           <motion.form
                             key="step-0"
@@ -232,59 +241,7 @@ export default function Contact() {
                             className="space-y-8"
                           >
                             <div>
-                              <p className="text-cream/30 text-xs tracking-widest uppercase mb-6">الخطوة الأولى — معلوماتك</p>
-                              <div className="space-y-6">
-                                <div>
-                                  <label className="block text-cream/40 text-xs mb-2 tracking-wide">
-                                    الاسم الكامل <span className="text-gold/60">*</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="اسمك الكامل"
-                                    className={inputClass}
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block text-cream/40 text-xs mb-2 tracking-wide">
-                                    رقم الهاتف <span className="text-gold/60">*</span>
-                                  </label>
-                                  <input
-                                    type="tel"
-                                    name="phone"
-                                    value={formData.phone}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="+968 XXXX XXXX"
-                                    className={inputClass}
-                                    dir="ltr"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="flex justify-end">
-                              <button type="submit" className="btn-gold flex items-center gap-2">
-                                التالي
-                                <ArrowLeft className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </motion.form>
-                        ) : (
-                          <motion.form
-                            key="step-1"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                            onSubmit={handleSubmit}
-                            className="space-y-8"
-                          >
-                            <div>
-                              <p className="text-cream/30 text-xs tracking-widest uppercase mb-6">الخطوة الثانية — تفاصيل المناسبة</p>
+                              <p className="text-cream/30 text-xs tracking-widest uppercase mb-6">الخطوة الأولى — تفاصيل المناسبة</p>
                               <div className="space-y-6">
                                 <div>
                                   <label className="block text-cream/40 text-xs mb-2 tracking-wide">
@@ -297,9 +254,11 @@ export default function Contact() {
                                     required
                                     className={inputClass + " appearance-none cursor-pointer"}
                                   >
-                                    <option value="" disabled className="bg-surface text-cream/50">اختر الخدمة</option>
+                                    <option value="" disabled className="bg-surface text-cream/50">اختر نوع الخدمة</option>
                                     {SERVICES.map((s) => (
-                                      <option key={s.id} value={s.title} className="bg-surface text-cream">{s.title}</option>
+                                      <option key={s.id} value={s.title} className="bg-surface text-cream">
+                                        {s.title}
+                                      </option>
                                     ))}
                                   </select>
                                 </div>
@@ -333,19 +292,72 @@ export default function Contact() {
                                     name="location"
                                     value={formData.location}
                                     onChange={handleChange}
-                                    placeholder="مدينة / ولاية"
+                                    placeholder="المدينة أو الولاية"
                                     className={inputClass}
                                   />
                                 </div>
                                 <div>
-                                  <label className="block text-cream/40 text-xs mb-2 tracking-wide">ملاحظات</label>
+                                  <label className="block text-cream/40 text-xs mb-2 tracking-wide">ملاحظات إضافية</label>
                                   <textarea
                                     name="notes"
                                     value={formData.notes}
                                     onChange={handleChange}
                                     rows={3}
-                                    placeholder="أي تفاصيل إضافية..."
+                                    placeholder="أي تفاصيل تودّ إضافتها..."
                                     className={inputClass + " resize-none"}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex justify-end">
+                              <button type="submit" className="btn-gold flex items-center gap-2">
+                                التالي
+                                <ArrowLeft className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </motion.form>
+                        ) : (
+                        /* STEP 1 — Personal info second */
+                          <motion.form
+                            key="step-1"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                            onSubmit={handleSubmit}
+                            className="space-y-8"
+                          >
+                            <div>
+                              <p className="text-cream/30 text-xs tracking-widest uppercase mb-6">الخطوة الثانية — بياناتك</p>
+                              <div className="space-y-6">
+                                <div>
+                                  <label className="block text-cream/40 text-xs mb-2 tracking-wide">
+                                    الاسم الكامل <span className="text-gold/60">*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="اسمك الكامل"
+                                    className={inputClass}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-cream/40 text-xs mb-2 tracking-wide">
+                                    رقم الهاتف <span className="text-gold/60">*</span>
+                                  </label>
+                                  <input
+                                    type="tel"
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="+968 XXXX XXXX"
+                                    className={inputClass}
+                                    dir="ltr"
                                   />
                                 </div>
                               </div>
@@ -368,7 +380,7 @@ export default function Contact() {
                                 disabled={createLead.isPending}
                                 className="btn-gold disabled:opacity-50"
                               >
-                                {createLead.isPending ? "جاري الإرسال..." : "إرسال الطلب"}
+                                {createLead.isPending ? "جاري الإرسال..." : "طلب استشارة خاصة"}
                               </button>
                             </div>
                           </motion.form>

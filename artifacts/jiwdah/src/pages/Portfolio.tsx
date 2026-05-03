@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { X, Award } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -14,12 +14,15 @@ const categories = [
   { key: "team", label: "فريق العمل" },
 ];
 
+const FEATURED_IDS = [1, 2, 3];
+
 type PortfolioItem = { id: number; title: string; category: string; video?: string; image?: string };
 
 export default function Portfolio() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
 
+  const featuredItems = PORTFOLIO_ITEMS.filter((item) => FEATURED_IDS.includes(item.id));
   const filteredItems =
     activeCategory === "all"
       ? PORTFOLIO_ITEMS
@@ -29,7 +32,8 @@ export default function Portfolio() {
     <div className="min-h-screen bg-surface">
       <Navbar />
       <main className="pt-20">
-        {/* Header */}
+
+        {/* Editorial header */}
         <section className="py-20 px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <motion.div
@@ -53,29 +57,91 @@ export default function Portfolio() {
 
         <div className="divider-gold mx-6 lg:mx-8 max-w-7xl xl:mx-auto" />
 
+        {/* Featured Work editorial header */}
         <section className="py-16 px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            {/* Filter */}
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-wrap gap-2 mb-10"
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="flex items-center gap-3 mb-8"
             >
-              {categories.map((cat) => (
-                <button
-                  key={cat.key}
-                  onClick={() => setActiveCategory(cat.key)}
-                  className={`px-4 py-1.5 rounded text-xs font-medium tracking-wide transition-all duration-300 ${
-                    activeCategory === cat.key
-                      ? "bg-gold text-surface"
-                      : "bg-surface-light text-cream/45 hover:text-cream/70 border border-gold/10 hover:border-gold/20"
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
+              <div className="w-7 h-7 bg-gold/8 border border-gold/15 rounded flex items-center justify-center">
+                <Award className="w-3.5 h-3.5 text-gold/70" />
+              </div>
+              <h2
+                className="text-xl text-cream"
+                style={{ fontFamily: "'Noto Serif Arabic', serif", fontWeight: 500 }}
+              >
+                أبرز الأعمال
+              </h2>
             </motion.div>
+
+            {/* Featured 3-item editorial grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-14">
+              {featuredItems.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.65, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                  className={`group relative rounded overflow-hidden cursor-pointer ${index === 0 ? "md:col-span-2 lg:col-span-1 aspect-[4/3] lg:aspect-[3/4]" : "aspect-[4/3]"}`}
+                  onClick={() => setSelectedItem(item as PortfolioItem)}
+                >
+                  {(item as PortfolioItem).video ? (
+                    <video autoPlay loop muted playsInline className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                      <source src={(item as PortfolioItem).video} type="video/mp4" />
+                    </video>
+                  ) : (
+                    <img src={(item as PortfolioItem).image} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-surface/90 via-surface/20 to-transparent opacity-70 group-hover:opacity-100 transition-opacity duration-400" />
+                  <div className="absolute bottom-0 right-0 left-0 p-5">
+                    <span className="inline-block text-gold/60 text-xs tracking-widest uppercase mb-1.5">
+                      {categories.find((c) => c.key === item.category)?.label}
+                    </span>
+                    <h3 className="text-cream text-base font-medium" style={{ fontFamily: "'Noto Serif Arabic', serif" }}>
+                      {item.title}
+                    </h3>
+                  </div>
+                  {index === 0 && (
+                    <div className="absolute top-4 right-4 bg-gold/90 text-surface text-xs font-bold px-2.5 py-1 rounded">
+                      مميز
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="divider-gold mb-14" />
+
+            {/* Complete gallery */}
+            <div className="flex items-center justify-between mb-8">
+              <h2
+                className="text-lg text-cream"
+                style={{ fontFamily: "'Noto Serif Arabic', serif", fontWeight: 500 }}
+              >
+                جميع الأعمال
+              </h2>
+              {/* Filter tabs */}
+              <div className="flex flex-wrap gap-2">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.key}
+                    onClick={() => setActiveCategory(cat.key)}
+                    className={`px-3.5 py-1.5 rounded text-xs font-medium tracking-wide transition-all duration-300 ${
+                      activeCategory === cat.key
+                        ? "bg-gold text-surface"
+                        : "bg-surface-light text-cream/45 hover:text-cream/70 border border-gold/10 hover:border-gold/20"
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {/* Masonry Grid */}
             <motion.div layout className="columns-2 md:columns-3 gap-3 space-y-3">
@@ -94,21 +160,11 @@ export default function Portfolio() {
                     onClick={() => setSelectedItem(item as PortfolioItem)}
                   >
                     {(item as PortfolioItem).video ? (
-                      <video
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      >
+                      <video autoPlay loop muted playsInline className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                         <source src={(item as PortfolioItem).video} type="video/mp4" />
                       </video>
                     ) : (
-                      <img
-                        src={(item as PortfolioItem).image}
-                        alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
+                      <img src={(item as PortfolioItem).image} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-surface/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
                     <div className="absolute bottom-0 right-0 left-0 p-3 translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400">

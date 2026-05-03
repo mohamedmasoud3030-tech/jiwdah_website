@@ -8,7 +8,6 @@ import StatsSection from "@/sections/StatsSection";
 import PortfolioSection from "@/sections/PortfolioSection";
 import TestimonialsSection from "@/sections/TestimonialsSection";
 import BookingSection from "@/sections/BookingSection";
-import FAQSection from "@/sections/FAQSection";
 import CTASection from "@/sections/CTASection";
 
 export default function Home() {
@@ -23,7 +22,6 @@ export default function Home() {
         <PortfolioSection />
         <TestimonialsSection />
         <BookingSection />
-        <FAQSection />
         <CTASection />
       </main>
       <Footer />
