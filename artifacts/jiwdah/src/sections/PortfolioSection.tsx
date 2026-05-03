@@ -12,6 +12,7 @@ const categories = [
   { key: "conference", label: "مؤتمرات" },
   { key: "corporate", label: "شركات" },
   { key: "coffee", label: "قهوة عربية" },
+  { key: "private", label: "خاصة" },
 ];
 
 function isVideo(url: string) {

@@ -1,4 +1,4 @@
-import { Router, type IRouter, type Request, type Response } from "express";
+import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -8,6 +8,15 @@ import { createAuthContext } from "../middleware/auth";
 const UPLOADS_DIR = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+
+async function requireAuth(req: Request, res: Response, next: NextFunction) {
+  const { user } = await createAuthContext(req);
+  if (!user) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  next();
 }
 
 const storage = multer.diskStorage({
@@ -37,19 +46,11 @@ const upload = multer({
 
 const router: IRouter = Router();
 
-router.post("/upload", upload.single("file"), async (req: Request, res: Response) => {
-  const { user } = await createAuthContext(req);
-  if (!user) {
-    if (req.file) fs.unlinkSync(req.file.path);
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-
+router.post("/upload", requireAuth, upload.single("file"), (req: Request, res: Response) => {
   if (!req.file) {
     res.status(400).json({ error: "No file uploaded" });
     return;
   }
-
   const objectPath = `/api/uploads/${req.file.filename}`;
   res.json({ objectPath, filename: req.file.filename });
 });
