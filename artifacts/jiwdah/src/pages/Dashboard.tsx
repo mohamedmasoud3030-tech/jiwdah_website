@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -219,13 +219,18 @@ function PortfolioManager() {
   const { data: items = [], isLoading, refetch } = trpc.portfolio.list.useQuery();
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<string>(CATEGORY_VALUES[0]);
-  const [mediaUrl, setMediaUrl] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
   const [formError, setFormError] = useState("");
 
   const createItem = trpc.portfolio.create.useMutation({
     onSuccess: () => {
       setTitle("");
-      setMediaUrl("");
+      setSelectedFile(null);
+      setPreviewUrl("");
+      setUploadProgress(0);
       setFormError("");
       refetch();
     },
@@ -236,16 +241,56 @@ function PortfolioManager() {
     onSuccess: () => refetch(),
   });
 
-  const handleAdd = (e: React.FormEvent) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    setFormError("");
+  };
+
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) { setFormError("أدخل عنوان العمل"); return; }
-    if (!mediaUrl.trim()) { setFormError("أدخل رابط الصورة أو الفيديو"); return; }
+    if (!selectedFile) { setFormError("اختر ملف صورة أو فيديو"); return; }
+
     setFormError("");
-    createItem.mutate({
-      title: title.trim(),
-      category: category as typeof CATEGORY_VALUES[number],
-      imageUrl: mediaUrl.trim(),
-    });
+    setIsUploading(true);
+    setUploadProgress(10);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      setUploadProgress(30);
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+
+      setUploadProgress(70);
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "فشل الرفع" }));
+        throw new Error(err.error || "فشل رفع الملف");
+      }
+
+      const { objectPath } = await res.json();
+      setUploadProgress(90);
+
+      await createItem.mutateAsync({
+        title: title.trim(),
+        category: category as typeof CATEGORY_VALUES[number],
+        imageUrl: objectPath,
+      });
+
+      setUploadProgress(100);
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : "حدث خطأ");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -283,35 +328,59 @@ function PortfolioManager() {
           </div>
 
           <div>
-            <label className="text-cream-muted text-xs mb-1.5 flex items-center gap-1">
-              <LinkIcon className="w-3 h-3" />
-              رابط الوسائط (صورة أو فيديو)
+            <label className="text-cream-muted text-xs mb-1.5 block">الملف (صورة أو فيديو)</label>
+            <label className="flex items-center gap-3 cursor-pointer w-full bg-surface border border-gold/20 border-dashed rounded-lg px-4 py-3 hover:border-gold/40 transition-colors group">
+              <ImageIcon className="w-4 h-4 text-gold/50 group-hover:text-gold/70 shrink-0 transition-colors" />
+              <span className="text-cream-muted text-sm truncate">
+                {selectedFile ? selectedFile.name : "اختر صورة أو فيديو..."}
+              </span>
+              <input
+                type="file"
+                accept="image/*,video/mp4,video/webm"
+                onChange={handleFileChange}
+                className="sr-only"
+              />
             </label>
-            <input
-              type="text"
-              value={mediaUrl}
-              onChange={(e) => setMediaUrl(e.target.value)}
-              placeholder="https://... أو /images/photo.webp"
-              dir="ltr"
-              className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-2.5 text-cream text-sm placeholder:text-cream-muted focus:outline-none focus:border-gold/50 transition-colors"
-            />
           </div>
+
+          {previewUrl && (
+            <div className="sm:col-span-2">
+              <p className="text-cream-muted text-xs mb-1.5">معاينة</p>
+              {selectedFile?.type.startsWith("video/") ? (
+                <video src={previewUrl} className="h-28 rounded-lg object-cover" muted playsInline />
+              ) : (
+                <img src={previewUrl} alt="preview" className="h-28 rounded-lg object-cover" />
+              )}
+            </div>
+          )}
+
+          {isUploading && (
+            <div className="sm:col-span-2">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-cream-muted text-xs">جاري الرفع...</span>
+                <span className="text-gold text-xs">{uploadProgress}%</span>
+              </div>
+              <div className="w-full h-1.5 bg-surface rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gold transition-all duration-300 rounded-full"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
 
           {formError && (
             <p className="sm:col-span-2 text-red-400 text-xs">{formError}</p>
           )}
 
-          <div className="sm:col-span-2 flex items-center gap-3">
+          <div className="sm:col-span-2">
             <button
               type="submit"
-              disabled={createItem.isPending}
+              disabled={isUploading || createItem.isPending}
               className="px-5 py-2.5 bg-gold text-surface rounded-lg text-sm font-medium hover:bg-gold/90 transition-colors disabled:opacity-50"
             >
-              {createItem.isPending ? "جاري الإضافة..." : "إضافة"}
+              {isUploading || createItem.isPending ? "جاري الرفع والإضافة..." : "رفع وإضافة"}
             </button>
-            <p className="text-cream/25 text-xs">
-              روابط الملفات المحلية: <span dir="ltr">/images/... أو /videos/...</span>
-            </p>
           </div>
         </form>
       </div>
@@ -427,17 +496,18 @@ export default function Dashboard() {
     onSuccess: () => refetch(),
   });
 
-  if (authLoading) {
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate("/login");
+    }
+  }, [authLoading, user, navigate]);
+
+  if (authLoading || !user) {
     return (
       <div className="min-h-screen bg-surface flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
       </div>
     );
-  }
-
-  if (!user) {
-    navigate("/login");
-    return null;
   }
 
   const filtered = (leads ?? [])
