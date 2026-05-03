@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createRouter, publicQuery, adminQuery } from "../middleware";
 import { leads, SERVICE_VALUES } from "@workspace/db";
 import { eq, desc, isNotNull, count } from "drizzle-orm";
+import { sendNewLeadNotification } from "../../lib/mailer";
 
 const serviceEnum = z.enum(SERVICE_VALUES);
 
@@ -71,7 +72,15 @@ export const leadsRouter = createRouter({
         source: input.source,
         status: "new",
       }).returning();
-      return result[0];
+
+      const lead = result[0];
+      if (lead) {
+        sendNewLeadNotification(lead).catch((err) =>
+          console.error("[leads] notification error:", err)
+        );
+      }
+
+      return lead;
     }),
 
   updateStatus: adminQuery
