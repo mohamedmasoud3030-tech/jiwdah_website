@@ -732,6 +732,12 @@ function InstagramManager() {
     onSuccess: () => refetch(),
   });
 
+  const backfillThumbnails = trpc.instagramPosts.backfillThumbnails.useMutation({
+    onSuccess: () => refetch(),
+  });
+
+  const postsNeedingThumbnails = posts.filter((p) => !p.thumbnailUrl).length;
+
   const sectionPosts = posts
     .filter((p) => p.section === activeSection)
     .sort((a, b) => a.sortOrder - b.sortOrder);
@@ -1027,9 +1033,37 @@ function InstagramManager() {
         )}
       </div>
 
-      {/* Seed button shown at bottom when data exists */}
+      {/* Seed / backfill buttons shown at bottom when data exists */}
       {!isLoading && posts.length > 0 && (
-        <div className="border-t border-gold/8 pt-4">
+        <div className="border-t border-gold/8 pt-4 space-y-3">
+          {postsNeedingThumbnails > 0 && (
+            <div className="bg-amber-500/8 border border-amber-500/20 rounded-xl p-4 flex items-start gap-3">
+              <ImageIcon className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="text-amber-300 text-sm font-medium">
+                  {postsNeedingThumbnails} منشور بحاجة لصور مصغرة
+                </p>
+                <p className="text-amber-400/70 text-xs mt-0.5">
+                  يمكنك ملء الصور المصغرة المؤقتة تلقائياً ثم استبدالها بلقطات حقيقية من إنستغرام لاحقاً
+                </p>
+                <button
+                  onClick={() => {
+                    if (confirm(`ملء صور مصغرة مؤقتة لـ ${postsNeedingThumbnails} منشور؟ يمكنك استبدالها لاحقاً بصور حقيقية.`)) {
+                      backfillThumbnails.mutate();
+                    }
+                  }}
+                  disabled={backfillThumbnails.isPending}
+                  className="mt-2 flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+                >
+                  {backfillThumbnails.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ImageIcon className="w-3.5 h-3.5" />}
+                  {backfillThumbnails.isPending ? "جاري التحديث..." : "ملء الصور المصغرة المؤقتة"}
+                </button>
+                {backfillThumbnails.data && (
+                  <p className="text-amber-300/80 text-xs mt-2">{(backfillThumbnails.data as { message?: string }).message}</p>
+                )}
+              </div>
+            </div>
+          )}
           <button
             onClick={() => {
               if (confirm("إعادة تحميل البيانات الافتراضية؟ هذا سيعمل فقط إذا كانت قاعدة البيانات فارغة.")) {
@@ -1043,7 +1077,7 @@ function InstagramManager() {
             تحميل البيانات الافتراضية (للقواعد الفارغة فقط)
           </button>
           {seedPosts.data && (
-            <p className="text-cream-muted text-xs mt-2">{(seedPosts.data as { message?: string }).message}</p>
+            <p className="text-cream-muted text-xs">{(seedPosts.data as { message?: string }).message}</p>
           )}
         </div>
       )}
@@ -1086,6 +1120,10 @@ export default function Dashboard() {
   const { data: leads, isLoading, refetch } = trpc.leads.list.useQuery(undefined, {
     enabled: isAdmin,
     refetchInterval: 30000,
+  });
+
+  const { data: allInstagramPosts = [] } = trpc.instagramPosts.list.useQuery(undefined, {
+    enabled: isAdmin,
   });
 
   const updateStatus = trpc.leads.updateStatus.useMutation({
@@ -1145,6 +1183,7 @@ export default function Dashboard() {
     new: leads?.filter((l) => l.status === "new").length || 0,
     confirmed: leads?.filter((l) => l.status === "confirmed").length || 0,
     completed: leads?.filter((l) => l.status === "completed").length || 0,
+    needsThumbnail: allInstagramPosts.filter((p) => !p.thumbnailUrl).length,
   };
 
   const confirmStatusChange = () => {
@@ -1248,7 +1287,7 @@ export default function Dashboard() {
 
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
           {[
             { label: "إجمالي الطلبات", value: stats.total, color: "text-cream" },
             { label: "طلبات جديدة", value: stats.new, color: "text-blue-400" },
@@ -1267,6 +1306,27 @@ export default function Dashboard() {
               </p>
             </motion.div>
           ))}
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            onClick={() => setActiveTab("instagram")}
+            className={`bg-surface-light rounded-xl p-5 text-right transition-colors ${
+              stats.needsThumbnail > 0
+                ? "border border-amber-500/30 hover:border-amber-500/50"
+                : "border border-green-500/20 hover:border-green-500/35"
+            }`}
+          >
+            <p className="text-cream-muted text-sm flex items-center gap-1.5">
+              <ImageIcon className={`w-3.5 h-3.5 shrink-0 ${stats.needsThumbnail > 0 ? "text-amber-400" : "text-green-400"}`} />
+              بحاجة لصورة مصغرة
+            </p>
+            <p className={`text-3xl font-bold font-mono mt-1 ${stats.needsThumbnail > 0 ? "text-amber-400" : "text-green-400"}`}>
+              {stats.needsThumbnail}
+            </p>
+            {stats.needsThumbnail > 0 && (
+              <p className="text-amber-400/60 text-[10px] mt-1">انقر للإدارة</p>
+            )}
+          </motion.button>
         </div>
 
         {/* Main tabs */}
