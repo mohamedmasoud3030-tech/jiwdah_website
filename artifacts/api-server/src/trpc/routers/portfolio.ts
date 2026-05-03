@@ -41,6 +41,25 @@ export const portfolioRouter = createRouter({
       return result[0];
     }),
 
+  update: authedQuery
+    .input(
+      z.object({
+        id: z.number(),
+        title: z.string().min(1).optional(),
+        imageUrl: z.string().min(1).optional(),
+        category: categoryEnum.optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, ...fields } = input;
+      const result = await ctx.db
+        .update(portfolio)
+        .set(fields)
+        .where(eq(portfolio.id, id))
+        .returning();
+      return result[0];
+    }),
+
   delete: authedQuery
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {

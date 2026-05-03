@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Users, Calendar, Phone, MapPin,
   ChevronDown, LogOut, RefreshCw, Filter,
   CheckCircle, Clock, XCircle, AlertCircle, List, ChevronLeft, ChevronRight,
-  Search, ArrowUpDown, ImageIcon, Trash2, Plus, Link as LinkIcon, Download,
+  Search, ArrowUpDown, ImageIcon, Trash2, Plus, Link as LinkIcon, Download, Pencil, X,
 } from "lucide-react";
 import {
   Dialog,
@@ -215,6 +215,14 @@ function MiniCalendar({ leads }: { leads: Lead[] }) {
   );
 }
 
+type PortfolioItemRow = {
+  id: number;
+  title: string;
+  imageUrl: string;
+  category: string;
+  createdAt: Date;
+};
+
 function PortfolioManager() {
   const { data: items = [], isLoading, refetch } = trpc.portfolio.list.useQuery();
   const [title, setTitle] = useState("");
@@ -224,6 +232,14 @@ function PortfolioManager() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [formError, setFormError] = useState("");
+
+  const [editItem, setEditItem] = useState<PortfolioItemRow | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editCategory, setEditCategory] = useState<string>(CATEGORY_VALUES[0]);
+  const [editFile, setEditFile] = useState<File | null>(null);
+  const [editPreviewUrl, setEditPreviewUrl] = useState<string>("");
+  const [editUploading, setEditUploading] = useState(false);
+  const [editError, setEditError] = useState("");
 
   const createItem = trpc.portfolio.create.useMutation({
     onSuccess: () => {
@@ -237,9 +253,69 @@ function PortfolioManager() {
     onError: (err) => setFormError(err.message),
   });
 
+  const updateItem = trpc.portfolio.update.useMutation({
+    onSuccess: () => {
+      setEditItem(null);
+      refetch();
+    },
+    onError: (err) => setEditError(err.message),
+  });
+
   const deleteItem = trpc.portfolio.delete.useMutation({
     onSuccess: () => refetch(),
   });
+
+  const openEdit = (item: PortfolioItemRow) => {
+    setEditItem(item);
+    setEditTitle(item.title);
+    setEditCategory(item.category);
+    setEditFile(null);
+    setEditPreviewUrl(item.imageUrl);
+    setEditError("");
+  };
+
+  const handleEditFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setEditFile(file);
+    setEditPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const handleEditSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editItem) return;
+    if (!editTitle.trim()) { setEditError("أدخل عنوان العمل"); return; }
+
+    setEditError("");
+    setEditUploading(true);
+
+    try {
+      let imageUrl: string | undefined;
+
+      if (editFile) {
+        const formData = new FormData();
+        formData.append("file", editFile);
+        const res = await fetch("/api/upload", { method: "POST", body: formData, credentials: "include" });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: "فشل الرفع" }));
+          throw new Error(err.error || "فشل رفع الملف");
+        }
+        const data = await res.json();
+        imageUrl = data.objectPath;
+      }
+
+      await updateItem.mutateAsync({
+        id: editItem.id,
+        title: editTitle.trim(),
+        category: editCategory as typeof CATEGORY_VALUES[number],
+        ...(imageUrl ? { imageUrl } : {}),
+      });
+    } catch (err) {
+      setEditError(err instanceof Error ? err.message : "حدث خطأ");
+    } finally {
+      setEditUploading(false);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -295,6 +371,84 @@ function PortfolioManager() {
 
   return (
     <div className="space-y-6">
+      {/* Edit modal */}
+      {editItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.75)" }}>
+          <div className="bg-surface-light border border-gold/20 rounded-xl p-6 w-full max-w-md" dir="rtl">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-cream font-semibold flex items-center gap-2">
+                <Pencil className="w-4 h-4 text-gold" />
+                تعديل العمل
+              </h3>
+              <button onClick={() => setEditItem(null)} className="w-7 h-7 flex items-center justify-center text-cream-muted hover:text-gold transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form onSubmit={handleEditSave} className="space-y-4">
+              <div>
+                <label className="text-cream-muted text-xs mb-1.5 block">عنوان العمل</label>
+                <input
+                  type="text"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  dir="rtl"
+                  className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-2.5 text-cream text-sm placeholder:text-cream-muted focus:outline-none focus:border-gold/50 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-cream-muted text-xs mb-1.5 block">الفئة</label>
+                <select
+                  value={editCategory}
+                  onChange={(e) => setEditCategory(e.target.value)}
+                  className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-2.5 text-cream text-sm focus:outline-none focus:border-gold/50 appearance-none transition-colors"
+                >
+                  {CATEGORY_VALUES.map((val) => (
+                    <option key={val} value={val}>{CATEGORY_LABELS[val] ?? val}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-cream-muted text-xs mb-1.5 block">تغيير الصورة (اختياري)</label>
+                <label className="flex items-center gap-3 cursor-pointer w-full bg-surface border border-gold/20 border-dashed rounded-lg px-4 py-3 hover:border-gold/40 transition-colors group">
+                  <ImageIcon className="w-4 h-4 text-gold/50 group-hover:text-gold/70 shrink-0 transition-colors" />
+                  <span className="text-cream-muted text-sm truncate">
+                    {editFile ? editFile.name : "اختر ملفاً جديداً (اختياري)"}
+                  </span>
+                  <input type="file" accept="image/*,video/mp4,video/webm" onChange={handleEditFileChange} className="sr-only" />
+                </label>
+              </div>
+              {editPreviewUrl && (
+                <div>
+                  <p className="text-cream-muted text-xs mb-1.5">معاينة</p>
+                  {isVideo(editPreviewUrl) ? (
+                    <video src={editPreviewUrl} className="h-24 rounded-lg object-cover" muted playsInline />
+                  ) : (
+                    <img src={editPreviewUrl} alt="preview" className="h-24 rounded-lg object-cover" />
+                  )}
+                </div>
+              )}
+              {editError && <p className="text-red-400 text-xs">{editError}</p>}
+              <div className="flex gap-3 pt-1">
+                <button
+                  type="submit"
+                  disabled={editUploading || updateItem.isPending}
+                  className="flex-1 py-2.5 bg-gold text-surface rounded-lg text-sm font-medium hover:bg-gold/90 transition-colors disabled:opacity-50"
+                >
+                  {editUploading || updateItem.isPending ? "جاري الحفظ..." : "حفظ التعديلات"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditItem(null)}
+                  className="px-4 py-2.5 bg-surface border border-gold/20 text-cream-muted rounded-lg text-sm hover:text-cream transition-colors"
+                >
+                  إلغاء
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Add form */}
       <div className="bg-surface-light border border-gold/10 rounded-xl p-6">
         <h3 className="text-cream font-semibold mb-5 flex items-center gap-2">
@@ -437,6 +591,12 @@ function PortfolioManager() {
                   <p className="text-cream text-xs font-medium line-clamp-1">{item.title}</p>
                   <p className="text-gold/60 text-[10px] mt-0.5">{CATEGORY_LABELS[item.category] ?? item.category}</p>
                 </div>
+                <button
+                  onClick={() => openEdit(item)}
+                  className="absolute top-2 left-10 w-7 h-7 bg-gold/80 hover:bg-gold rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
+                >
+                  <Pencil className="w-3.5 h-3.5 text-surface" />
+                </button>
                 <button
                   onClick={() => {
                     if (confirm(`حذف "${item.title}"؟`)) {
