@@ -1,41 +1,46 @@
 import { Link } from "react-router";
-import { Crown, Phone, Instagram, MapPin } from "lucide-react";
+import { Phone, Instagram, MapPin } from "lucide-react";
+import { NAV_LINKS } from "@/const";
 
 export default function Footer() {
   return (
-    <footer className="bg-surface border-t border-gold/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+    <footer className="border-t border-gold/8" style={{ backgroundColor: "#0a0a0a" }}>
+      {/* Gold top line */}
+      <div className="h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+
           {/* Brand */}
-          <div className="lg:col-span-1">
-            <Link to="/" className="flex items-center gap-3 group">
-              <Crown className="w-8 h-8 text-gold" />
+          <div className="lg:col-span-2">
+            <Link to="/" className="flex items-center gap-3 group mb-5">
+              <img
+                src="/images/jiwdah_logo.webp"
+                alt="جودة الانطلاقة"
+                className="w-10 h-10 rounded-full border border-gold/20 object-cover"
+              />
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-cream">مشاريع جودة الإنطلاقة</span>
-                <span className="text-xs text-cream-muted -mt-1">خدمات الضيافة المتنقلة</span>
+                <span className="text-base text-cream font-medium" style={{ fontFamily: "'Noto Serif Arabic', serif" }}>
+                  مشاريع جودة الإنطلاقة
+                </span>
+                <span className="text-[10px] text-cream/35 tracking-wider">خدمات الضيافة المتنقلة</span>
               </div>
             </Link>
-            <p className="mt-4 text-cream-muted text-sm leading-relaxed">
+            <p className="text-cream/40 text-sm leading-relaxed max-w-xs font-light">
               نقدم خدمات ضيافة احترافية متنقلة لجميع المناسبات في سلطنة عمان.
               نصلك أينما كنت بأعلى معايير الجودة.
             </p>
           </div>
 
-          {/* Quick Links */}
+          {/* Links */}
           <div>
-            <h4 className="text-gold font-bold text-lg mb-6">روابط سريعة</h4>
+            <h4 className="text-gold/60 text-xs tracking-widest uppercase mb-5">روابط سريعة</h4>
             <ul className="space-y-3">
-              {[
-                { label: "الرئيسية", href: "/" },
-                { label: "الخدمات", href: "/services" },
-                { label: "الأعمال", href: "/portfolio" },
-                { label: "من نحن", href: "/about" },
-                { label: "تواصل معنا", href: "/contact" },
-              ].map((link) => (
+              {NAV_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link
                     to={link.href}
-                    className="text-cream-muted hover:text-gold transition-colors duration-300 text-sm"
+                    className="text-cream/40 hover:text-cream/70 transition-colors duration-300 text-sm"
                   >
                     {link.label}
                   </Link>
@@ -44,46 +49,51 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Services */}
-          <div>
-            <h4 className="text-gold font-bold text-lg mb-6">خدماتنا</h4>
-            <ul className="space-y-3 text-sm">
-              <li className="text-cream-muted hover:text-gold transition-colors cursor-pointer">ضيافة الزفاف</li>
-              <li className="text-cream-muted hover:text-gold transition-colors cursor-pointer">ضيافة الشركات</li>
-              <li className="text-cream-muted hover:text-gold transition-colors cursor-pointer">البوفيه المفتوح</li>
-              <li className="text-cream-muted hover:text-gold transition-colors cursor-pointer">القهوة العربية</li>
-              <li className="text-cream-muted hover:text-gold transition-colors cursor-pointer">ضيافة VIP</li>
-            </ul>
-          </div>
-
           {/* Contact */}
           <div>
-            <h4 className="text-gold font-bold text-lg mb-6">تواصل معنا</h4>
+            <h4 className="text-gold/60 text-xs tracking-widest uppercase mb-5">تواصل معنا</h4>
             <ul className="space-y-4">
-              <li className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-gold shrink-0" />
-                <a href="https://maps.app.goo.gl/i4VJX9VKgRsPTsbY7" target="_blank" rel="noopener noreferrer" className="text-cream-muted text-sm hover:text-gold transition-colors">نزوى، سلطنة عمان</a>
+              <li>
+                <a
+                  href="https://maps.app.goo.gl/i4VJX9VKgRsPTsbY7"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 text-cream/40 hover:text-cream/65 transition-colors duration-300 group"
+                >
+                  <MapPin className="w-4 h-4 text-gold/40 group-hover:text-gold/60 transition-colors shrink-0" />
+                  <span className="text-sm">نزوى، سلطنة عمان</span>
+                </a>
               </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-gold shrink-0" />
-                <span className="text-cream-muted text-sm" dir="ltr">+968 9277 0091</span>
+              <li>
+                <a
+                  href="tel:+96892770091"
+                  className="flex items-center gap-2.5 text-cream/40 hover:text-cream/65 transition-colors duration-300 group"
+                >
+                  <Phone className="w-4 h-4 text-gold/40 group-hover:text-gold/60 transition-colors shrink-0" />
+                  <span className="text-sm" dir="ltr">+968 9277 0091</span>
+                </a>
               </li>
-              <li className="flex items-center gap-3">
-                <Instagram className="w-5 h-5 text-gold shrink-0" />
-                <a href="https://www.instagram.com/jawdat_alantlaqa_nizwa" target="_blank" rel="noopener noreferrer" className="text-cream-muted text-sm hover:text-gold transition-colors">jawdat_alantlaqa_nizwa</a>
+              <li>
+                <a
+                  href="https://www.instagram.com/jawdat_alantlaqa_nizwa"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 text-cream/40 hover:text-cream/65 transition-colors duration-300 group"
+                >
+                  <Instagram className="w-4 h-4 text-gold/40 group-hover:text-gold/60 transition-colors shrink-0" />
+                  <span className="text-sm">jawdat_alantlaqa_nizwa</span>
+                </a>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom */}
-        <div className="mt-12 pt-8 border-t border-gold/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-cream-muted text-sm">
+        {/* Bottom bar */}
+        <div className="mt-12 pt-6 border-t border-gold/6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-cream/25 text-xs">
             &copy; {new Date().getFullYear()} مشاريع جودة الإنطلاقة. جميع الحقوق محفوظة.
           </p>
-          <p className="text-cream-muted/60 text-xs">
-            صُنع بإتقان في سلطنة عمان
-          </p>
+          <p className="text-cream/20 text-xs">صُنع بإتقان في سلطنة عمان</p>
         </div>
       </div>
     </footer>

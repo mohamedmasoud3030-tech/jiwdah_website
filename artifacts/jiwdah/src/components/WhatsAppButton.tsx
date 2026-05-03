@@ -2,17 +2,16 @@ import { MessageCircle } from "lucide-react";
 import { WHATSAPP_NUMBER } from "@/const";
 
 export default function WhatsAppButton() {
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}`;
-
   return (
     <a
-      href={whatsappUrl}
+      href={`https://wa.me/${WHATSAPP_NUMBER}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:scale-110 transition-transform duration-300 flex items-center justify-center"
-      aria-label="Contact us on WhatsApp"
+      className="fixed bottom-7 left-7 z-50 flex items-center justify-center w-12 h-12 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.4)] transition-all duration-300 hover:scale-105 hover:shadow-[0_8px_30px_rgba(0,0,0,0.5)]"
+      style={{ backgroundColor: "#25D366" }}
+      aria-label="تواصل عبر واتساب"
     >
-      <MessageCircle className="w-6 h-6" />
+      <MessageCircle className="w-5 h-5 text-white" />
     </a>
   );
 }

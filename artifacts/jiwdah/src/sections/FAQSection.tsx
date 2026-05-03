@@ -1,35 +1,23 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
 import { FAQS } from "@/const";
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="border-b border-gold/10 last:border-b-0">
+    <div className="border-b border-gold/8 last:border-b-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between py-5 text-right group"
       >
-        <span
-          className={`text-base font-semibold transition-colors ${
-            isOpen ? "text-gold" : "text-cream group-hover:text-gold"
-          }`}
-        >
+        <span className={`text-sm font-medium transition-colors duration-300 leading-relaxed ${isOpen ? "text-gold" : "text-cream/75 group-hover:text-cream"}`}>
           {question}
         </span>
-        <motion.div
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.3 }}
-          className="shrink-0 ml-3"
-        >
-          <ChevronDown
-            className={`w-5 h-5 transition-colors ${
-              isOpen ? "text-gold" : "text-cream-muted"
-            }`}
-          />
-        </motion.div>
+        <span className={`shrink-0 mr-4 w-5 h-5 flex items-center justify-center transition-colors duration-300 ${isOpen ? "text-gold" : "text-cream/30"}`}>
+          {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+        </span>
       </button>
 
       <AnimatePresence initial={false}>
@@ -38,10 +26,10 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <p className="text-cream-muted text-sm leading-relaxed pb-5">
+            <p className="text-cream/45 text-sm leading-relaxed pb-5 font-light">
               {answer}
             </p>
           </motion.div>
@@ -53,38 +41,37 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 
 export default function FAQSection() {
   return (
-    <section id="faq" className="py-24 px-4 sm:px-6 lg:px-8">
+    <section id="faq" className="py-24 px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-12"
         >
-          <span className="text-gold text-sm font-semibold tracking-wider uppercase">
-            الأسئلة الشائعة
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-cream mt-3 mb-4">
+          <div className="section-eyebrow mb-4">الأسئلة الشائعة</div>
+          <h2
+            className="text-3xl md:text-4xl text-cream"
+            style={{ fontFamily: "'Noto Serif Arabic', serif", fontWeight: 500 }}
+          >
             كل ما تريد <span className="text-gradient-gold">معرفته</span>
           </h2>
-          <p className="text-cream-muted">
-            إليك إجابات على أكثر الأسئلة شيوعاً
-          </p>
         </motion.div>
 
-        {/* FAQ List */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="bg-surface-light border border-gold/10 rounded-2xl px-6"
+          transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          className="border border-gold/8 rounded divide-y-0"
+          style={{ backgroundColor: "#161616" }}
         >
-          {FAQS.map((faq) => (
-            <FAQItem key={faq.question} question={faq.question} answer={faq.answer} />
-          ))}
+          <div className="px-6">
+            {FAQS.map((faq) => (
+              <FAQItem key={faq.question} question={faq.question} answer={faq.answer} />
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>

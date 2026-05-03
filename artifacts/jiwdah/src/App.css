@@ -2,42 +2,43 @@
 
 @layer base {
   :root {
-    --background: 0 0% 7%;
+    --background: 0 0% 5.5%;
     --foreground: 40 10% 96%;
-    --card: 0 0% 10%;
+    --card: 0 0% 9%;
     --card-foreground: 40 10% 96%;
-    --card-border: 0 0% 20%;
-    --popover: 0 0% 10%;
+    --card-border: 0 0% 16%;
+    --popover: 0 0% 9%;
     --popover-foreground: 40 10% 96%;
-    --popover-border: 0 0% 20%;
-    --primary: 40 50% 57%;
+    --popover-border: 0 0% 16%;
+    --primary: 40 45% 57%;
     --primary-foreground: 0 0% 7%;
-    --secondary: 0 0% 15%;
+    --secondary: 0 0% 14%;
     --secondary-foreground: 40 10% 96%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 40 10% 60%;
-    --accent: 40 50% 57%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 40 8% 55%;
+    --accent: 40 45% 57%;
     --accent-foreground: 0 0% 7%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 40 10% 96%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 40 50% 57%;
-    --radius: 0.75rem;
-    --chart-1: 40 50% 57%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 40 45% 57%;
+    --radius: 0.5rem;
+    --chart-1: 40 45% 57%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --sidebar: 0 0% 10%;
+    --sidebar: 0 0% 9%;
     --sidebar-foreground: 40 10% 96%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-primary: 40 50% 57%;
+    --sidebar-border: 0 0% 16%;
+    --sidebar-primary: 40 45% 57%;
     --sidebar-primary-foreground: 0 0% 7%;
-    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent: 0 0% 14%;
     --sidebar-accent-foreground: 40 10% 96%;
-    --sidebar-ring: 40 50% 57%;
+    --sidebar-ring: 40 45% 57%;
     --app-font-sans: 'IBM Plex Sans Arabic', sans-serif;
+    --app-font-serif: 'Noto Serif Arabic', serif;
   }
 
   * {
@@ -46,113 +47,188 @@
 
   body {
     @apply antialiased;
-    background-color: #121212;
+    background-color: #0e0e0e;
     color: hsl(40 10% 96%);
     font-family: 'IBM Plex Sans Arabic', sans-serif;
   }
 
+  h1, h2, h3 {
+    font-family: 'Noto Serif Arabic', serif;
+  }
+
   ::selection {
-    background-color: rgba(200, 164, 92, 0.3);
-    color: #c8a45c;
+    background-color: rgba(200, 164, 92, 0.25);
+    color: #e0c88a;
   }
 }
 
 @layer components {
+  /* Buttons */
   .btn-gold {
-    @apply inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 font-bold rounded-lg sm:rounded-xl text-sm sm:text-base transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0;
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3 font-semibold rounded text-sm transition-all duration-500 hover:-translate-y-px active:translate-y-0;
     background-color: #c8a45c;
-    color: #121212;
+    color: #0e0e0e;
+    letter-spacing: 0.01em;
   }
-
   .btn-gold:hover {
-    background-color: #e0c88a;
-    box-shadow: 0 20px 40px rgba(200, 164, 92, 0.15);
+    background-color: #d4b06a;
+    box-shadow: 0 12px 40px rgba(200, 164, 92, 0.2);
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-transparent font-bold rounded-lg sm:rounded-xl text-sm sm:text-base transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0;
-    border: 2px solid rgba(200, 164, 92, 0.3);
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3 bg-transparent font-semibold rounded text-sm transition-all duration-500 hover:-translate-y-px active:translate-y-0;
+    border: 1px solid rgba(200, 164, 92, 0.35);
+    color: #c8a45c;
+    letter-spacing: 0.01em;
+  }
+  .btn-outline:hover {
+    background-color: rgba(200, 164, 92, 0.06);
+    border-color: rgba(200, 164, 92, 0.6);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-transparent font-medium rounded text-sm transition-all duration-300;
+    color: #8a8578;
+  }
+  .btn-ghost:hover {
     color: #c8a45c;
   }
 
-  .btn-outline:hover {
-    background-color: rgba(200, 164, 92, 0.1);
-    border-color: #c8a45c;
+  /* Editorial section label */
+  .section-eyebrow {
+    @apply inline-flex items-center gap-3 text-xs font-medium tracking-widest uppercase;
+    color: #c8a45c;
+  }
+  .section-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 2rem;
+    height: 1px;
+    background-color: rgba(200, 164, 92, 0.5);
   }
 
+  /* Gold text gradient */
   .text-gradient-gold {
-    background: linear-gradient(to right, #c8a45c, #e0c88a, #9a7b3d);
+    background: linear-gradient(135deg, #c8a45c 0%, #e0c88a 50%, #c8a45c 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
 
+  /* Shimmer text */
   .text-shimmer {
-    background: linear-gradient(to right, #9a7b3d, #e0c88a, #9a7b3d);
-    background-size: 200% auto;
+    background: linear-gradient(to right, #9a7b3d 0%, #e0c88a 40%, #c8a45c 60%, #9a7b3d 100%);
+    background-size: 300% auto;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    animation: shimmer 3s ease-in-out infinite;
+    animation: shimmer 4s ease-in-out infinite;
   }
 
+  /* Luxury form inputs */
+  .input-luxury {
+    @apply w-full bg-transparent border-b text-cream placeholder:text-cream-muted/40 focus:outline-none transition-all duration-300 py-3 text-sm;
+    border-color: rgba(200, 164, 92, 0.15);
+  }
+  .input-luxury:focus {
+    border-color: rgba(200, 164, 92, 0.5);
+  }
+
+  /* Bordered input variant */
+  .input-bordered {
+    @apply w-full bg-surface-light border text-cream placeholder:text-cream-muted/40 focus:outline-none transition-all duration-300 px-4 py-3 text-sm rounded;
+    border-color: rgba(200, 164, 92, 0.12);
+  }
+  .input-bordered:focus {
+    border-color: rgba(200, 164, 92, 0.4);
+    box-shadow: 0 0 0 1px rgba(200, 164, 92, 0.1);
+  }
+
+  /* Thin gold divider */
+  .divider-gold {
+    height: 1px;
+    background: linear-gradient(to left, transparent, rgba(200, 164, 92, 0.3), transparent);
+  }
+
+  /* Glass card */
   .glass-card {
-    @apply backdrop-blur-md rounded-2xl;
-    background-color: rgba(26, 26, 26, 0.8);
-    border: 1px solid rgba(200, 164, 92, 0.1);
+    @apply backdrop-blur-xl rounded;
+    background-color: rgba(24, 24, 24, 0.85);
+    border: 1px solid rgba(200, 164, 92, 0.08);
   }
 
+  /* Luxury card */
+  .luxury-card {
+    @apply rounded overflow-hidden transition-all duration-500;
+    background-color: #181818;
+    border: 1px solid rgba(200, 164, 92, 0.06);
+  }
+  .luxury-card:hover {
+    border-color: rgba(200, 164, 92, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(200, 164, 92, 0.08);
+  }
+
+  /* Drawer overlay */
+  .drawer-overlay {
+    @apply fixed inset-0 z-40;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+  }
+
+  /* Service drawer panel */
+  .drawer-panel {
+    @apply fixed top-0 left-0 h-full z-50 overflow-y-auto;
+    width: min(480px, 92vw);
+    background-color: #141414;
+    border-right: 1px solid rgba(200, 164, 92, 0.1);
+  }
+
+  /* Nav link */
   .nav-link {
-    @apply transition-colors duration-300 font-medium relative;
-    color: #8a8578;
+    @apply transition-colors duration-300 text-sm font-medium relative;
+    color: rgba(245, 240, 230, 0.6);
+    letter-spacing: 0.02em;
   }
-
   .nav-link:hover {
     color: #c8a45c;
   }
+  .nav-link.active {
+    color: #c8a45c;
+  }
 
-  .nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 2px;
+  /* Progress step */
+  .step-dot {
+    @apply w-2 h-2 rounded-full transition-all duration-300;
+    background-color: rgba(200, 164, 92, 0.25);
+  }
+  .step-dot.active {
     background-color: #c8a45c;
-    transition: width 0.3s;
+    width: 2rem;
+  }
+  .step-dot.done {
+    background-color: rgba(200, 164, 92, 0.6);
   }
 
-  .nav-link:hover::after {
-    width: 100%;
+  /* Card hover */
+  .card-hover {
+    @apply transition-all duration-500;
+  }
+  .card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
   }
 }
 
-/* Custom colors for Tailwind v4 */
-@theme {
-  --color-gold: #c8a45c;
-  --color-gold-light: #e0c88a;
-  --color-gold-dark: #9a7b3d;
-  --color-surface: #121212;
-  --color-surface-light: #1a1a1a;
-  --color-surface-lighter: #2a2a2a;
-  --color-cream: #f5f0e6;
-  --color-cream-muted: #8a8578;
-  --font-arabic: 'IBM Plex Sans Arabic', sans-serif;
-  --shadow-gold: 0 20px 40px rgba(200, 164, 92, 0.15);
-  --shadow-gold-sm: 0 4px 12px rgba(200, 164, 92, 0.1);
-  --animate-shimmer: shimmer 3s ease-in-out infinite;
-  --animate-float: float 3s ease-in-out infinite;
-  --animate-scroll-left: scroll-left 40s linear infinite;
-}
-
+/* Animations */
 @keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  0% { background-position: -300% center; }
+  100% { background-position: 300% center; }
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-8px); }
 }
 
 @keyframes scroll-left {
@@ -161,19 +237,12 @@
 }
 
 /* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background-color: #121212;
-}
-
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background-color: #0e0e0e; }
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(200, 164, 92, 0.2);
+  background-color: rgba(200, 164, 92, 0.15);
   border-radius: 9999px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(200, 164, 92, 0.4);
+  background-color: rgba(200, 164, 92, 0.3);
 }

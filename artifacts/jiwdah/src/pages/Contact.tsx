@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { motion } from "framer-motion";
-import { Phone, Instagram, MapPin, Clock, MessageSquare, Send, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Phone, Instagram, MapPin, Clock, MessageSquare, Check, ArrowLeft } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { trpc } from "@/providers/trpc";
 import { SERVICES, WHATSAPP_NUMBER } from "@/const";
 
+const STEPS = ["معلوماتك", "تفاصيل المناسبة"];
+
 export default function Contact() {
+  const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -23,22 +26,24 @@ export default function Contact() {
   const createLead = trpc.leads.create.useMutation({
     onSuccess: () => {
       setIsSubmitted(true);
-      setFormData({
-        name: "",
-        phone: "",
-        service: "",
-        eventDate: "",
-        location: "",
-        guests: "",
-        notes: "",
-      });
+      setFormData({ name: "", phone: "", service: "", eventDate: "", location: "", guests: "", notes: "" });
+      setStep(0);
     },
   });
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleNext = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.phone) return;
+    setStep(1);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.phone || !formData.service) return;
-
+    if (!formData.service) return;
     createLead.mutate({
       name: formData.name,
       phone: formData.phone,
@@ -50,290 +55,327 @@ export default function Contact() {
     });
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const openWhatsApp = () => {
+    const msg = encodeURIComponent(
+      `مرحباً مشاريع جودة الإنطلاقة،\nالاسم: ${formData.name || "[اسمك]"}\nالخدمة: ${formData.service || "[نوع الخدمة]"}\nأرغب في الاستفسار عن خدماتكم.`
+    );
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank", "noopener,noreferrer");
   };
 
-  const openWhatsApp = () => {
-    const message = encodeURIComponent(
-      `مرحباً مشاريع جودة الإنطلاقة،\nالاسم: ${formData.name || "[اسمك]"}\nالخدمة: ${formData.service || "[نوع الخدمة]"}\nالتاريخ: ${formData.eventDate || "[التاريخ]"}\nأرغب في الاستفسار عن الخدمة.`
-    );
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank", "noopener,noreferrer");
-  };
+  const inputClass = "w-full bg-transparent border-b text-cream text-sm placeholder:text-cream/20 focus:outline-none transition-all duration-300 py-3 pb-2.5"
+    + " border-gold/12 focus:border-gold/40";
 
   return (
     <div className="min-h-screen bg-surface">
       <Navbar />
       <main className="pt-20">
+
         {/* Header */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-5xl mx-auto text-center">
+        <section className="py-20 px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             >
-              <span className="text-gold text-sm font-semibold tracking-wider uppercase">
-                تواصل معنا
-              </span>
-              <h1 className="text-3xl md:text-5xl font-bold text-cream mt-3 mb-4">
+              <div className="section-eyebrow mb-5">تواصل معنا</div>
+              <h1
+                className="text-4xl md:text-6xl text-cream leading-tight mb-5 max-w-2xl"
+                style={{ fontFamily: "'Noto Serif Arabic', serif", fontWeight: 500 }}
+              >
                 نحن هنا <span className="text-gradient-gold">لمساعدتك</span>
               </h1>
-              <p className="text-cream-muted max-w-2xl mx-auto">
-                سواء كنت تخطط لمناسبة كبيرة أو صغيرة، فريقنا جاهز لمساعدتك
+              <p className="text-cream/45 text-base max-w-md font-light">
+                سواء كنت تخطط لمناسبة كبيرة أو صغيرة، فريقنا جاهز لمساعدتك.
               </p>
             </motion.div>
           </div>
         </section>
 
-        <section className="pb-24 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
-              {/* Contact Info */}
+        <div className="divider-gold mx-6 lg:mx-8 max-w-7xl xl:mx-auto" />
+
+        <section className="py-20 px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-16">
+
+              {/* Contact info sidebar */}
               <motion.div
-                initial={{ opacity: 0, x: 50 }}
+                initial={{ opacity: 0, x: 24 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                className="lg:col-span-2 space-y-8"
+                transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="lg:col-span-2 space-y-10"
               >
                 <div>
-                  <h3 className="text-xl font-bold text-cream mb-6">معلومات التواصل</h3>
-                  <div className="space-y-5">
-<div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center shrink-0">
-                          <Phone className="w-5 h-5 text-gold" />
+                  <h3 className="text-sm text-cream/40 tracking-widest uppercase mb-6">معلومات التواصل</h3>
+                  <div className="space-y-6">
+                    {[
+                      { icon: Phone, label: "الهاتف", value: "+968 9277 0091", href: "tel:+96892770091", ltr: true },
+                      { icon: MessageSquare, label: "واتساب", value: "+968 9277 0091", href: `https://wa.me/${WHATSAPP_NUMBER}`, ltr: true },
+                      { icon: Instagram, label: "إنستقرام", value: "jawdat_alantlaqa_nizwa", href: "https://www.instagram.com/jawdat_alantlaqa_nizwa", ltr: false },
+                      { icon: MapPin, label: "الموقع", value: "نزوى، سلطنة عمان", href: "https://maps.app.goo.gl/i4VJX9VKgRsPTsbY7", ltr: false },
+                    ].map(({ icon: Icon, label, value, href, ltr }) => (
+                      <div key={label} className="flex items-start gap-4 group">
+                        <div className="w-8 h-8 bg-gold/6 border border-gold/10 rounded flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-gold/10 transition-colors duration-300">
+                          <Icon className="w-3.5 h-3.5 text-gold/60" />
                         </div>
                         <div>
-                          <p className="text-cream-muted text-sm">الهاتف</p>
-                          <p className="text-cream font-semibold" dir="ltr">+968 9277 0091</p>
+                          <p className="text-cream/30 text-xs tracking-wider mb-1">{label}</p>
+                          <a
+                            href={href}
+                            target={href.startsWith("http") ? "_blank" : undefined}
+                            rel="noopener noreferrer"
+                            className="text-cream/65 text-sm hover:text-gold transition-colors duration-300"
+                            dir={ltr ? "ltr" : undefined}
+                          >
+                            {value}
+                          </a>
                         </div>
                       </div>
-
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center shrink-0">
-                          <MessageSquare className="w-5 h-5 text-gold" />
-                        </div>
-                        <div>
-                          <p className="text-cream-muted text-sm">واتساب</p>
-                          <p className="text-cream font-semibold" dir="ltr">+968 9277 0091</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center shrink-0">
-                          <Instagram className="w-5 h-5 text-gold" />
-                        </div>
-                        <div>
-                          <p className="text-cream-muted text-sm">إنستقرام</p>
-                          <a href="https://www.instagram.com/jawdat_alantlaqa_nizwa" target="_blank" rel="noopener noreferrer" className="text-cream font-semibold hover:text-gold transition-colors">jawdat_alantlaqa_nizwa</a>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center shrink-0">
-                          <MapPin className="w-5 h-5 text-gold" />
-                        </div>
-                        <div>
-                          <p className="text-cream-muted text-sm">الموقع</p>
-                          <a href="https://maps.app.goo.gl/i4VJX9VKgRsPTsbY7" target="_blank" rel="noopener noreferrer" className="text-cream font-semibold hover:text-gold transition-colors">نزوى، سلطنة عمان</a>
-                          <p className="text-cream-muted text-xs">نخدم جميع مناطق سلطنة عمان</p>
-                        </div>
-                      </div>
-
+                    ))}
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center shrink-0">
-                        <Clock className="w-5 h-5 text-gold" />
+                      <div className="w-8 h-8 bg-gold/6 border border-gold/10 rounded flex items-center justify-center shrink-0 mt-0.5">
+                        <Clock className="w-3.5 h-3.5 text-gold/60" />
                       </div>
                       <div>
-                        <p className="text-cream-muted text-sm">ساعات العمل</p>
-                        <p className="text-cream font-semibold">السبت - الخميس: 8 ص - 10 م</p>
-                        <p className="text-cream font-semibold">الجمعة: 2 م - 10 م</p>
+                        <p className="text-cream/30 text-xs tracking-wider mb-1">ساعات العمل</p>
+                        <p className="text-cream/65 text-sm">السبت – الخميس: ٨ص – ١٠م</p>
+                        <p className="text-cream/65 text-sm">الجمعة: ٢م – ١٠م</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Quick WhatsApp */}
-                <div className="bg-gold/5 border border-gold/20 rounded-xl p-6">
-                  <h4 className="text-gold font-bold mb-2">تواصل سريع عبر واتساب</h4>
-                  <p className="text-cream-muted text-sm mb-4">
-                    للاستفسارات السريعة والحجز الفوري
-                  </p>
-                  <button onClick={openWhatsApp} className="btn-gold w-full">
-                    <MessageSquare className="w-5 h-5" />
-                    تواصل عبر واتساب
+                {/* WhatsApp CTA */}
+                <div className="border border-gold/10 rounded p-6" style={{ backgroundColor: "#161616" }}>
+                  <p className="text-cream/40 text-xs tracking-wider uppercase mb-2">تواصل سريع</p>
+                  <h4 className="text-cream text-sm mb-3 font-medium">للاستفسارات السريعة</h4>
+                  <button onClick={openWhatsApp} className="btn-outline w-full justify-center text-xs py-2.5">
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    واتساب
                   </button>
                 </div>
               </motion.div>
 
-              {/* Form */}
+              {/* Multi-step form */}
               <motion.div
-                initial={{ opacity: 0, x: -50 }}
+                initial={{ opacity: 0, x: -24 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
                 className="lg:col-span-3"
               >
                 {isSubmitted ? (
-                  <div className="bg-surface-light border border-gold/20 rounded-2xl p-10 text-center">
-                    <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <Send className="w-8 h-8 text-green-500" />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    className="border border-gold/12 rounded p-12 text-center"
+                    style={{ backgroundColor: "#161616" }}
+                  >
+                    <div className="w-12 h-12 bg-gold/10 border border-gold/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Check className="w-5 h-5 text-gold" />
                     </div>
-                    <h3 className="text-2xl font-bold text-cream mb-4">
-                      تم استلام طلبك بنجاح!
+                    <h3 className="text-2xl text-cream mb-3" style={{ fontFamily: "'Noto Serif Arabic', serif", fontWeight: 500 }}>
+                      تم استلام طلبك
                     </h3>
-                    <p className="text-cream-muted mb-6">
-                      سنتواصل معك خلال 24 ساعة لتأكيد التفاصيل.
+                    <p className="text-cream/45 text-sm mb-8 font-light">
+                      سنتواصل معك خلال 24 ساعة لتأكيد تفاصيل مناسبتك.
                     </p>
-                    <div className="flex gap-4 justify-center">
-                      <button onClick={() => setIsSubmitted(false)} className="btn-outline">
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      <button onClick={() => setIsSubmitted(false)} className="btn-outline text-sm py-2.5">
                         طلب جديد
                       </button>
-                      <button onClick={openWhatsApp} className="btn-gold">
-                        تواصل عبر واتساب
+                      <button onClick={openWhatsApp} className="btn-ghost text-sm">
+                        <MessageSquare className="w-4 h-4" />
+                        واتساب
                       </button>
                     </div>
-                  </div>
+                  </motion.div>
                 ) : (
-                  <form
-                    onSubmit={handleSubmit}
-                    className="bg-surface-light border border-gold/10 rounded-2xl p-6 md:p-8 space-y-6"
-                  >
-                    <h3 className="text-xl font-bold text-cream mb-2">نموذج الطلب</h3>
-
-                    {createLead.isError && (
-                      <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 flex items-center gap-3">
-                        <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
-                        <p className="text-red-400 text-sm">
-                          حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى.
-                        </p>
-                      </div>
-                    )}
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-cream text-sm font-semibold mb-2">
-                          الاسم <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleChange}
-                          required
-                          placeholder="اسمك الكامل"
-                          className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-3 text-cream placeholder:text-cream-muted/50 focus:outline-none focus:border-gold transition-colors"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-cream text-sm font-semibold mb-2">
-                          رقم الهاتف <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          required
-                          placeholder="+968 XXXX XXXX"
-                          className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-3 text-cream placeholder:text-cream-muted/50 focus:outline-none focus:border-gold transition-colors"
-                          dir="ltr"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-cream text-sm font-semibold mb-2">
-                          نوع الخدمة <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                          name="service"
-                          value={formData.service}
-                          onChange={handleChange}
-                          required
-                          className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-3 text-cream focus:outline-none focus:border-gold transition-colors appearance-none"
-                        >
-                          <option value="" disabled>اختر الخدمة</option>
-                          {SERVICES.map((s) => (
-                            <option key={s.id} value={s.title}>{s.title}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-cream text-sm font-semibold mb-2">
-                          تاريخ المناسبة
-                        </label>
-                        <input
-                          type="date"
-                          name="eventDate"
-                          value={formData.eventDate}
-                          onChange={handleChange}
-                          className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-3 text-cream focus:outline-none focus:border-gold transition-colors"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-cream text-sm font-semibold mb-2">
-                          الموقع
-                        </label>
-                        <input
-                          type="text"
-                          name="location"
-                          value={formData.location}
-                          onChange={handleChange}
-                          placeholder="مدينة / ولاية"
-                          className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-3 text-cream placeholder:text-cream-muted/50 focus:outline-none focus:border-gold transition-colors"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-cream text-sm font-semibold mb-2">
-                          عدد الضيوف
-                        </label>
-                        <input
-                          type="number"
-                          name="guests"
-                          value={formData.guests}
-                          onChange={handleChange}
-                          placeholder="عدد الضيوف المتوقع"
-                          className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-3 text-cream placeholder:text-cream-muted/50 focus:outline-none focus:border-gold transition-colors"
-                        />
+                  <div className="border border-gold/8 rounded overflow-hidden" style={{ backgroundColor: "#161616" }}>
+                    {/* Step progress bar */}
+                    <div className="px-8 pt-8 pb-6 border-b border-gold/6">
+                      <div className="flex items-center gap-3 mb-6">
+                        {STEPS.map((label, i) => (
+                          <div key={label} className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
+                              <div
+                                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-400 ${
+                                  i < step ? "bg-gold/20 border border-gold/40 text-gold" :
+                                  i === step ? "bg-gold text-surface" :
+                                  "bg-surface-lighter border border-gold/10 text-cream/30"
+                                }`}
+                              >
+                                {i < step ? <Check className="w-3 h-3" /> : i + 1}
+                              </div>
+                              <span className={`text-xs transition-colors duration-300 ${i === step ? "text-cream/70" : "text-cream/30"}`}>
+                                {label}
+                              </span>
+                            </div>
+                            {i < STEPS.length - 1 && (
+                              <div className="flex-1 h-px w-8" style={{ backgroundColor: i < step ? "rgba(200,164,92,0.3)" : "rgba(200,164,92,0.08)" }} />
+                            )}
+                          </div>
+                        ))}
                       </div>
                     </div>
 
-                    <div>
-                      <label className="block text-cream text-sm font-semibold mb-2">
-                        ملاحظات إضافية
-                      </label>
-                      <textarea
-                        name="notes"
-                        value={formData.notes}
-                        onChange={handleChange}
-                        rows={4}
-                        placeholder="أي تفاصيل إضافية عن مناسبتك..."
-                        className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-3 text-cream placeholder:text-cream-muted/50 focus:outline-none focus:border-gold transition-colors resize-none"
-                      />
+                    <div className="px-8 py-8">
+                      <AnimatePresence mode="wait">
+                        {step === 0 ? (
+                          <motion.form
+                            key="step-0"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                            onSubmit={handleNext}
+                            className="space-y-8"
+                          >
+                            <div>
+                              <p className="text-cream/30 text-xs tracking-widest uppercase mb-6">الخطوة الأولى — معلوماتك</p>
+                              <div className="space-y-6">
+                                <div>
+                                  <label className="block text-cream/40 text-xs mb-2 tracking-wide">
+                                    الاسم الكامل <span className="text-gold/60">*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="اسمك الكامل"
+                                    className={inputClass}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-cream/40 text-xs mb-2 tracking-wide">
+                                    رقم الهاتف <span className="text-gold/60">*</span>
+                                  </label>
+                                  <input
+                                    type="tel"
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="+968 XXXX XXXX"
+                                    className={inputClass}
+                                    dir="ltr"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex justify-end">
+                              <button type="submit" className="btn-gold flex items-center gap-2">
+                                التالي
+                                <ArrowLeft className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </motion.form>
+                        ) : (
+                          <motion.form
+                            key="step-1"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                            onSubmit={handleSubmit}
+                            className="space-y-8"
+                          >
+                            <div>
+                              <p className="text-cream/30 text-xs tracking-widest uppercase mb-6">الخطوة الثانية — تفاصيل المناسبة</p>
+                              <div className="space-y-6">
+                                <div>
+                                  <label className="block text-cream/40 text-xs mb-2 tracking-wide">
+                                    نوع الخدمة <span className="text-gold/60">*</span>
+                                  </label>
+                                  <select
+                                    name="service"
+                                    value={formData.service}
+                                    onChange={handleChange}
+                                    required
+                                    className={inputClass + " appearance-none cursor-pointer"}
+                                  >
+                                    <option value="" disabled className="bg-surface text-cream/50">اختر الخدمة</option>
+                                    {SERVICES.map((s) => (
+                                      <option key={s.id} value={s.title} className="bg-surface text-cream">{s.title}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                  <div>
+                                    <label className="block text-cream/40 text-xs mb-2 tracking-wide">تاريخ المناسبة</label>
+                                    <input
+                                      type="date"
+                                      name="eventDate"
+                                      value={formData.eventDate}
+                                      onChange={handleChange}
+                                      className={inputClass}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-cream/40 text-xs mb-2 tracking-wide">عدد الضيوف</label>
+                                    <input
+                                      type="number"
+                                      name="guests"
+                                      value={formData.guests}
+                                      onChange={handleChange}
+                                      placeholder="تقريباً"
+                                      className={inputClass}
+                                    />
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="block text-cream/40 text-xs mb-2 tracking-wide">الموقع</label>
+                                  <input
+                                    type="text"
+                                    name="location"
+                                    value={formData.location}
+                                    onChange={handleChange}
+                                    placeholder="مدينة / ولاية"
+                                    className={inputClass}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-cream/40 text-xs mb-2 tracking-wide">ملاحظات</label>
+                                  <textarea
+                                    name="notes"
+                                    value={formData.notes}
+                                    onChange={handleChange}
+                                    rows={3}
+                                    placeholder="أي تفاصيل إضافية..."
+                                    className={inputClass + " resize-none"}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {createLead.isError && (
+                              <p className="text-red-400/70 text-xs">حدث خطأ. يرجى المحاولة مرة أخرى.</p>
+                            )}
+
+                            <div className="flex items-center justify-between gap-4">
+                              <button
+                                type="button"
+                                onClick={() => setStep(0)}
+                                className="text-cream/30 text-sm hover:text-cream/55 transition-colors duration-300"
+                              >
+                                رجوع
+                              </button>
+                              <button
+                                type="submit"
+                                disabled={createLead.isPending}
+                                className="btn-gold disabled:opacity-50"
+                              >
+                                {createLead.isPending ? "جاري الإرسال..." : "إرسال الطلب"}
+                              </button>
+                            </div>
+                          </motion.form>
+                        )}
+                      </AnimatePresence>
                     </div>
-
-                    <button
-                      type="submit"
-                      disabled={createLead.isPending}
-                      className="btn-gold w-full disabled:opacity-50"
-                    >
-                      {createLead.isPending ? "جاري الإرسال..." : "إرسال الطلب"}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={openWhatsApp}
-                      className="w-full py-3 text-gold text-sm font-semibold hover:underline flex items-center justify-center gap-2"
-                    >
-                      <MessageSquare className="w-4 h-4" />
-                      أو تواصل معنا عبر واتساب
-                    </button>
-                  </form>
+                  </div>
                 )}
               </motion.div>
             </div>

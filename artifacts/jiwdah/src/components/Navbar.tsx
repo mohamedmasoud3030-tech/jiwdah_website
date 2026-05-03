@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
-import { Menu, X, Crown } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { NAV_LINKS } from "@/const";
 
 export default function Navbar() {
@@ -9,10 +9,8 @@ export default function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
-    window.addEventListener("scroll", handleScroll);
+    const handleScroll = () => setIsScrolled(window.scrollY > 80);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -20,27 +18,41 @@ export default function Navbar() {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
-  const isActive = (href: string) => {
-    if (href === "/") return location.pathname === "/";
-    return location.pathname.startsWith(href);
-  };
+  const isActive = (href: string) =>
+    href === "/" ? location.pathname === "/" : location.pathname.startsWith(href);
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled
-          ? "bg-surface/95 backdrop-blur-md shadow-lg"
+          ? "backdrop-blur-xl shadow-[0_1px_0_rgba(200,164,92,0.08)]"
           : "bg-transparent"
       }`}
+      style={isScrolled ? { backgroundColor: "rgba(14,14,14,0.92)" } : {}}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+      {/* Top gold line */}
+      {isScrolled && (
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+      )}
+
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="flex items-center justify-between h-18" style={{ height: "72px" }}>
+
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 sm:gap-3 group max-w-[70%] sm:max-w-none">
-            <img src="/images/jiwdah_logo.webp" alt="جودة الانطلاقة" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-gold/30 object-cover transition-transform duration-300 group-hover:scale-110 shrink-0" />
-            <div className="flex flex-col overflow-hidden">
-              <span className="text-base sm:text-xl font-bold text-cream truncate">مشاريع جودة الإنطلاقة</span>
-              <span className="text-[10px] sm:text-xs text-cream-muted -mt-1">خدمات الضيافة</span>
+          <Link to="/" className="flex items-center gap-3 group">
+            <img
+              src="/images/jiwdah_logo.webp"
+              alt="جودة الانطلاقة"
+              className="w-10 h-10 rounded-full border border-gold/20 object-cover transition-all duration-500 group-hover:border-gold/40"
+            />
+            <div className="flex flex-col">
+              <span
+                className="text-base text-cream font-medium leading-tight"
+                style={{ fontFamily: "'Noto Serif Arabic', serif" }}
+              >
+                مشاريع جودة الإنطلاقة
+              </span>
+              <span className="text-[10px] text-cream/35 tracking-wider">خدمات الضيافة</span>
             </div>
           </Link>
 
@@ -50,59 +62,61 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 to={link.href}
-                className={`relative text-sm font-semibold transition-colors duration-300 ${
-                  isActive(link.href)
-                    ? "text-gold"
-                    : "text-cream/80 hover:text-gold"
+                className={`relative text-xs tracking-wider font-medium transition-colors duration-300 uppercase ${
+                  isActive(link.href) ? "text-gold" : "text-cream/50 hover:text-cream/80"
                 }`}
               >
                 {link.label}
                 {isActive(link.href) && (
-                  <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gold rounded-full" />
+                  <span className="absolute -bottom-1 left-0 right-0 h-px bg-gold/50 rounded-full" />
                 )}
               </Link>
             ))}
           </div>
 
-          {/* CTA Button */}
+          {/* CTA */}
           <div className="hidden md:block">
-            <Link to="/contact" className="btn-gold text-sm py-2 px-6">
+            <Link to="/contact" className="btn-gold text-xs py-2 px-5">
               احجز الآن
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile menu toggle */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden text-gold p-2"
+            className="md:hidden text-cream/60 hover:text-gold transition-colors duration-300 p-1"
             aria-label="Toggle menu"
           >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden transition-all duration-300 overflow-hidden ${
-          isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        className={`md:hidden transition-all duration-400 overflow-hidden ${
+          isMobileMenuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
         }`}
+        style={{ transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)" }}
       >
-        <div className="bg-surface/95 backdrop-blur-md border-t border-gold/20 px-4 py-4 space-y-3">
+        <div className="px-6 py-5 space-y-1 border-t border-gold/8"
+          style={{ backgroundColor: "rgba(14,14,14,0.97)" }}>
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               to={link.href}
-              className={`block py-2 text-base font-semibold transition-colors ${
-                isActive(link.href) ? "text-gold" : "text-cream/80 hover:text-gold"
+              className={`block py-2.5 text-sm font-medium transition-colors duration-300 ${
+                isActive(link.href) ? "text-gold" : "text-cream/55 hover:text-cream/80"
               }`}
             >
               {link.label}
             </Link>
           ))}
-          <Link to="/contact" className="btn-gold text-sm py-2 px-6 w-full text-center mt-3 block">
-            احجز الآن
-          </Link>
+          <div className="pt-3">
+            <Link to="/contact" className="btn-gold text-xs py-2 px-5 block text-center">
+              احجز الآن
+            </Link>
+          </div>
         </div>
       </div>
     </nav>
