@@ -1,0 +1,14 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "ZMGFleeMTXlt0rIzAd1vl"
+uri = "file://artifacts/jiwdah/public/images/team_2.png"
+type = "image"
+title = "omani hospitality team about hero"
+
+[[generated]]
+id = "rgqnLFhLOlq-zVJ-wUk7P"
+uri = "file://artifacts/jiwdah/public/images/team_1.png"
+type = "image"
+title = "omani hospitality waiter portrait"

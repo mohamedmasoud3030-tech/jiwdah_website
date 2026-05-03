@@ -36,7 +36,7 @@ export default function WhyUsSection() {
           >
             <div className="relative rounded overflow-hidden aspect-[4/5]">
               <img
-                src="/images/team_1.webp"
+                src="/images/team_1.png"
                 alt="فريق جودة الانطلاقة"
                 className="w-full h-full object-cover"
               />

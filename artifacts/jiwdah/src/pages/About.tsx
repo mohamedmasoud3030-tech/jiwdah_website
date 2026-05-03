@@ -57,7 +57,7 @@ export default function About() {
 
       <section className="relative min-h-screen flex items-end overflow-hidden">
         <motion.div className="absolute inset-0" variants={slowReveal} initial="hidden" animate="visible">
-          <img src="/images/team_2.webp" alt="مشاريع جودة الإنطلاقة" className="w-full h-full object-cover" />
+          <img src="/images/team_2.png" alt="مشاريع جودة الإنطلاقة" className="w-full h-full object-cover" />
           <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #0e0e0e 30%, rgba(14,14,14,0.55) 65%, rgba(14,14,14,0.2) 100%)" }} />
           <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(14,14,14,0.6) 0%, transparent 60%)" }} />
         </motion.div>
