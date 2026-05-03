@@ -89,9 +89,7 @@ export default function DatePicker({
             mode="single"
             selected={selected}
             onSelect={handleSelect}
-            disabled={[{ before: today }]}
-            modifiers={{ booked: bookedDateObjects }}
-            modifiersClassNames={{ booked: "rdp-day-booked" }}
+            disabled={[{ before: today }, ...bookedDateObjects]}
             locale={ar}
             dir="rtl"
             formatters={{
@@ -122,17 +120,17 @@ export default function DatePicker({
               today: "!text-gold !font-semibold",
               outside: "!text-cream/15 pointer-events-none",
               disabled:
-                "!text-cream/15 !cursor-not-allowed hover:!bg-transparent hover:!text-cream/15",
+                "!text-cream/30 !cursor-not-allowed hover:!bg-transparent hover:!text-cream/30 line-through opacity-50",
               hidden: "invisible",
             }}
           />
           {bookedDateObjects.length > 0 && (
             <div className="px-4 pb-3 pt-0 flex items-center gap-2 border-t border-gold/8">
               <span
-                className="w-2 h-2 rounded-full shrink-0"
-                style={{ background: "rgba(200,164,92,0.5)", border: "1px solid rgba(200,164,92,0.6)" }}
+                className="w-2 h-2 rounded-full shrink-0 line-through opacity-50 text-cream/30 text-[10px]"
+                style={{ background: "rgba(245,240,230,0.2)" }}
               />
-              <p className="text-cream/30 text-[10px]">الأيام المميزة بها حجوزات مسبقة</p>
+              <p className="text-cream/30 text-[10px]">الأيام المشطوبة محجوزة بالكامل</p>
             </div>
           )}
         </div>
