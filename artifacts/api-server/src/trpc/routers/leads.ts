@@ -37,6 +37,7 @@ export const leadsRouter = createRouter({
         budget: z.string().optional(),
         guests: z.number().int().min(1).optional(),
         notes: z.string().optional(),
+        source: z.enum(["home", "contact"]).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -49,6 +50,7 @@ export const leadsRouter = createRouter({
         budget: input.budget,
         guests: input.guests,
         notes: input.notes,
+        source: input.source,
         status: "new",
       }).returning();
       return result[0];

@@ -33,6 +33,7 @@ export const leads = pgTable("leads", {
   budget: varchar("budget", { length: 100 }),
   guests: integer("guests"),
   notes: text("notes"),
+  source: varchar("source", { length: 50 }),
   status: leadStatusEnum("status").default("new").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

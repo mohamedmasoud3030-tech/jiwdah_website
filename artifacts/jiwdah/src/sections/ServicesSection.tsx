@@ -155,7 +155,7 @@ export default function ServicesSection() {
                   <p className="text-cream/40 text-sm leading-relaxed mb-5 font-light line-clamp-2">{service.description}</p>
                   <div className="mt-auto flex items-center justify-between">
                     <div className="flex flex-wrap gap-1.5">
-                      {service.features.slice(0, 2).map((f) => (
+                      {service.features?.slice(0, 2).map((f) => (
                         <span key={f} className="text-[10px] text-cream/35 border border-gold/8 rounded px-2 py-0.5">{f}</span>
                       ))}
                     </div>

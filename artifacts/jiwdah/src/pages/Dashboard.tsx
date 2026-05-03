@@ -238,6 +238,14 @@ export default function Dashboard() {
                             <p className="text-cream">{lead.budget}</p>
                           </div>
                         )}
+                        {"source" in lead && lead.source && (
+                          <div>
+                            <span className="text-cream-muted text-xs">مصدر الطلب</span>
+                            <p className="text-cream text-sm">
+                              {lead.source === "home" ? "الصفحة الرئيسية" : lead.source === "contact" ? "صفحة التواصل" : String(lead.source)}
+                            </p>
+                          </div>
+                        )}
                       </div>
 
                       {lead.notes && (

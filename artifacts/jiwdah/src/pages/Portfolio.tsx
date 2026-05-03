@@ -19,7 +19,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const categories = [
   { key: "all", label: "الكل" },
-  ...CATEGORY_VALUES.map((key) => ({ key, label: CATEGORY_LABELS[key] ?? key })),
+  ...CATEGORY_VALUES.map((key: string) => ({ key, label: CATEGORY_LABELS[key as keyof typeof CATEGORY_LABELS] ?? key })),
 ];
 
 const FEATURED_IDS = [1, 2, 3];

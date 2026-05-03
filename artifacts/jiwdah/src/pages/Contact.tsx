@@ -22,6 +22,9 @@ export default function Contact() {
     location: "",
     notes: "",
   });
+  const [phoneError, setPhoneError] = useState("");
+
+  const OMANI_PHONE_RE = /^(\+9689\d{7}|09\d{7})$/;
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const createLead = trpc.leads.create.useMutation({
@@ -33,7 +36,12 @@ export default function Contact() {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "phone") {
+      const cleaned = value.replace(/\s/g, "");
+      setPhoneError(cleaned && !OMANI_PHONE_RE.test(cleaned) ? "رقم غير صحيح. مثال: +96891234567 أو 091234567" : "");
+    }
   };
 
   const handleNext = (e: React.FormEvent) => {
@@ -45,14 +53,20 @@ export default function Contact() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.phone) return;
+    const cleaned = formData.phone.replace(/\s/g, "");
+    if (!OMANI_PHONE_RE.test(cleaned)) {
+      setPhoneError("رقم غير صحيح. مثال: +96891234567 أو 091234567");
+      return;
+    }
     createLead.mutate({
       name: formData.name,
-      phone: formData.phone,
+      phone: cleaned,
       service: formData.service as ServiceValue,
       eventDate: formData.eventDate || undefined,
       location: formData.location || undefined,
       guests: formData.guests ? parseInt(formData.guests) : undefined,
       notes: formData.notes || undefined,
+      source: "contact",
     });
   };
 
@@ -267,13 +281,16 @@ export default function Contact() {
                                   </div>
                                   <div>
                                     <label className="block text-cream/40 text-xs mb-2 tracking-wide">رقم الهاتف <span className="text-gold/60">*</span></label>
-                                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required placeholder="+968 XXXX XXXX" className={inputClass} dir="ltr" />
+                                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required placeholder="+968 9XXX XXXX" className={inputClass} dir="ltr" />
+                                    {phoneError && (
+                                      <p className="text-red-400/70 text-xs mt-1">{phoneError}</p>
+                                    )}
                                   </div>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                   <div>
                                     <label className="block text-cream/40 text-xs mb-2 tracking-wide">عدد الضيوف</label>
-                                    <input type="number" name="guests" value={formData.guests} onChange={handleChange} placeholder="تقريباً" className={inputClass} />
+                                    <input type="number" name="guests" value={formData.guests} onChange={handleChange} min={1} placeholder="تقريباً" className={inputClass} />
                                   </div>
                                   <div>
                                     <label className="block text-cream/40 text-xs mb-2 tracking-wide">الموقع</label>
