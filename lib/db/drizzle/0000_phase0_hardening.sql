@@ -22,6 +22,8 @@ SET "service" = CASE
   WHEN "service" = 'ضيافة VIP'        THEN 'vip'
   WHEN "service" = 'خدمات الأفراح'   THEN 'wedding'
   WHEN "service" = 'ضيافة الفعاليات' THEN 'conference'
+  -- Old English enum slug 'events' (superseded by 'conference' in current schema)
+  WHEN "service" = 'events'           THEN 'conference'
   WHEN "service" = 'ضيافة المؤتمرات' THEN 'conference'
   WHEN "service" = 'قهوة عربية'      THEN 'coffee'
   WHEN "service" = 'فعاليات خاصة'   THEN 'private'
@@ -31,7 +33,7 @@ SET "service" = CASE
   WHEN "service" = 'Service'          THEN 'vip'
   ELSE "service"
 END
-WHERE "service" NOT IN ('vip', 'wedding', 'conference', 'private', 'corporate', 'coffee');--> statement-breakpoint
+WHERE "service" NOT IN ('vip', 'wedding', 'conference', 'private', 'corporate', 'coffee', 'events');--> statement-breakpoint
 
 -- Step 3: Guard — fail loudly if any value cannot be mapped, rather than silently corrupting data
 DO $$
