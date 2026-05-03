@@ -1,7 +1,9 @@
 import { z } from "zod";
 import { createRouter, publicQuery, authedQuery } from "../middleware";
-import { portfolio } from "@workspace/db";
+import { portfolio, CATEGORY_VALUES } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
+
+const categoryEnum = z.enum(CATEGORY_VALUES);
 
 export const portfolioRouter = createRouter({
   list: publicQuery.query(async ({ ctx }) => {
@@ -11,7 +13,7 @@ export const portfolioRouter = createRouter({
   getByCategory: publicQuery
     .input(
       z.object({
-        category: z.enum(["wedding", "conference", "private", "corporate", "coffee", "vip"]),
+        category: categoryEnum,
       })
     )
     .query(async ({ ctx, input }) => {
@@ -27,7 +29,7 @@ export const portfolioRouter = createRouter({
       z.object({
         title: z.string().min(1),
         imageUrl: z.string().min(1),
-        category: z.enum(["wedding", "conference", "private", "corporate", "coffee", "vip"]),
+        category: categoryEnum,
       })
     )
     .mutation(async ({ ctx, input }) => {

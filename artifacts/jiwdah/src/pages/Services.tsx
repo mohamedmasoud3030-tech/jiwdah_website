@@ -52,7 +52,7 @@ function ServiceDrawer({ service, onClose }: { service: (typeof SERVICES)[0] | n
               <div className="mb-6">
                 <p className="text-cream/35 text-xs tracking-widest uppercase mb-4">تشمل الخدمة</p>
                 <div className="space-y-3">
-                  {service.features.map((f) => (
+                  {service.features?.map((f) => (
                     <div key={f} className="flex items-center gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-gold/60 shrink-0" />
                       <span className="text-cream/60 text-sm">{f}</span>
@@ -156,7 +156,7 @@ export default function Services() {
                         </h2>
                         <p className="text-cream/50 text-sm leading-relaxed mb-6 font-light">{service.description}</p>
                         <div className="flex flex-wrap gap-2 mb-8">
-                          {service.features.map((f) => (
+                          {service.features?.map((f) => (
                             <span key={f} className="flex items-center gap-1.5 text-xs text-cream/45 border border-gold/12 rounded px-3 py-1.5">
                               <Check className="w-3 h-3 text-gold/50" />
                               {f}

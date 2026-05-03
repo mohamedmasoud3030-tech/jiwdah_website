@@ -46,7 +46,7 @@ function ServiceDrawer({ service, onClose }: { service: (typeof SERVICES)[0] | n
               <div className="mb-6">
                 <p className="text-cream/40 text-xs tracking-wider uppercase mb-3">ما يشمله</p>
                 <div className="space-y-2.5">
-                  {service.features.map((f) => (
+                  {service.features?.map((f) => (
                     <div key={f} className="flex items-center gap-3">
                       <Check className="w-3.5 h-3.5 text-gold/70 shrink-0" />
                       <span className="text-cream/65 text-sm">{f}</span>

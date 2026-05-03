@@ -5,14 +5,21 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { PORTFOLIO_ITEMS, type PortfolioItem } from "@/const";
+import { CATEGORY_VALUES } from "@workspace/api-client-react";
 import { fadeSlideUp } from "@/lib/motion";
+
+const CATEGORY_LABELS: Record<string, string> = {
+  wedding: "أفراح",
+  conference: "مؤتمرات",
+  private: "فعاليات خاصة",
+  corporate: "شركات",
+  coffee: "قهوة عربية",
+  vip: "ضيافة VIP",
+};
 
 const categories = [
   { key: "all", label: "الكل" },
-  { key: "vip", label: "VIP" },
-  { key: "wedding", label: "أفراح" },
-  { key: "events", label: "فعاليات" },
-  { key: "team", label: "فريق العمل" },
+  ...CATEGORY_VALUES.map((key) => ({ key, label: CATEGORY_LABELS[key] ?? key })),
 ];
 
 const FEATURED_IDS = [1, 2, 3];

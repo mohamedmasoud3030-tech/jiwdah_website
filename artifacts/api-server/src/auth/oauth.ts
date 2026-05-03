@@ -1,12 +1,11 @@
 import type { Request, Response } from "express";
-import * as jose from "jose";
 import cookie from "cookie";
 import { db } from "@workspace/db";
 import { users } from "@workspace/db";
 import { eq } from "drizzle-orm";
-
-const SESSION_COOKIE = "kimi_sid";
-const SESSION_MAX_AGE_MS = 365 * 24 * 60 * 60 * 1000;
+import * as jose from "jose";
+import { SESSION_COOKIE, SESSION_MAX_AGE_SECONDS, signSessionToken, createAuthContext } from "../middleware/auth";
+import { logger } from "../lib/logger";
 
 function getEnv(key: string): string {
   return process.env[key] ?? "";
@@ -45,7 +44,7 @@ function getJwks() {
   return jwksCache.get(url)!;
 }
 
-async function verifyAccessToken(accessToken: string): Promise<{ userId: string }> {
+async function verifyProviderToken(accessToken: string): Promise<{ userId: string }> {
   const { payload } = await jose.jwtVerify(accessToken, getJwks());
   const userId = payload.user_id as string;
   if (!userId) throw new Error("user_id missing from access token");
@@ -60,21 +59,16 @@ async function getUserProfile(accessToken: string) {
   return resp.json() as Promise<{ user_id: string; name: string; avatar_url: string }>;
 }
 
-async function signSessionToken(payload: { unionId: string; clientId: string }): Promise<string> {
-  const secret = new TextEncoder().encode(getEnv("APP_SECRET"));
-  return new jose.SignJWT(payload as unknown as jose.JWTPayload)
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("1 year")
-    .sign(secret);
-}
-
 function isLocalhost(host: string): boolean {
   return host.startsWith("localhost:") || host.startsWith("127.0.0.1:");
 }
 
 export function createOAuthCallbackHandler() {
   return async (req: Request, res: Response) => {
+    // If the user already has a valid session, skip the OAuth flow
+    const existing = await createAuthContext(req);
+    if (existing.user) return res.redirect("/");
+
     const { code, state, error } = req.query as Record<string, string>;
 
     if (error) {
@@ -89,7 +83,7 @@ export function createOAuthCallbackHandler() {
     try {
       const redirectUri = Buffer.from(state, "base64").toString();
       const tokenResp = await exchangeAuthCode(code, redirectUri);
-      const { userId } = await verifyAccessToken(tokenResp.access_token);
+      const { userId } = await verifyProviderToken(tokenResp.access_token);
       const profile = await getUserProfile(tokenResp.access_token);
 
       const ownerUnionId = getEnv("OWNER_UNION_ID");
@@ -123,7 +117,7 @@ export function createOAuthCallbackHandler() {
           path: "/",
           sameSite: localhost ? "lax" : "none",
           secure: !localhost,
-          maxAge: SESSION_MAX_AGE_MS / 1000,
+          maxAge: SESSION_MAX_AGE_SECONDS,
         }),
       );
 
@@ -134,5 +128,3 @@ export function createOAuthCallbackHandler() {
     }
   };
 }
-
-import { logger } from "../lib/logger";

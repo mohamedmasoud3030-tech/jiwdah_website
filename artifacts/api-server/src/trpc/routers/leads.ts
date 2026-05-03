@@ -1,7 +1,25 @@
 import { z } from "zod";
 import { createRouter, publicQuery, authedQuery } from "../middleware";
-import { leads } from "@workspace/db";
+import { leads, SERVICE_VALUES } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
+
+const serviceEnum = z.enum(SERVICE_VALUES);
+
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+function isValidISODate(val: string): boolean {
+  if (!ISO_DATE_RE.test(val)) return false;
+  const d = new Date(val);
+  return !isNaN(d.getTime()) && d.toISOString().startsWith(val);
+}
+
+const eventDateSchema = z
+  .string()
+  .optional()
+  .refine(
+    (val) => val === undefined || val === "" || isValidISODate(val),
+    { message: "eventDate must be a valid date in YYYY-MM-DD format" }
+  );
 
 export const leadsRouter = createRouter({
   list: authedQuery.query(async ({ ctx }) => {
@@ -13,11 +31,11 @@ export const leadsRouter = createRouter({
       z.object({
         name: z.string().min(1),
         phone: z.string().min(1),
-        service: z.string().min(1),
-        eventDate: z.string().optional(),
+        service: serviceEnum,
+        eventDate: eventDateSchema,
         location: z.string().optional(),
         budget: z.string().optional(),
-        guests: z.number().optional(),
+        guests: z.number().int().min(1).optional(),
         notes: z.string().optional(),
       })
     )
@@ -26,7 +44,7 @@ export const leadsRouter = createRouter({
         name: input.name,
         phone: input.phone,
         service: input.service,
-        eventDate: input.eventDate,
+        eventDate: input.eventDate || undefined,
         location: input.location,
         budget: input.budget,
         guests: input.guests,

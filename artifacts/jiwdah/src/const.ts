@@ -1,3 +1,5 @@
+import type { ServiceValue } from "@workspace/api-client-react";
+
 export const WHATSAPP_NUMBER = "96892770091";
 
 export const NAV_LINKS = [
@@ -8,7 +10,15 @@ export const NAV_LINKS = [
   { label: "تواصل معنا", href: "/contact" },
 ];
 
-export const SERVICES = [
+export const SERVICES: Array<{
+  id: ServiceValue;
+  title: string;
+  description: string;
+  image: string;
+  icon: string;
+  price?: string;
+  features?: string[];
+}> = [
   {
     id: "vip",
     title: "ضيافة VIP",
@@ -49,12 +59,12 @@ export type PortfolioItem = {
 export const PORTFOLIO_ITEMS: PortfolioItem[] = [
   { id: 1, title: "خدمات VIP فاخرة", category: "vip", video: "/videos/vip_service.mp4" },
   { id: 2, title: "تنظيم أفراح ومناسبات", category: "wedding", video: "/videos/events.mp4" },
-  { id: 3, title: "فريق عمل محترف", category: "team", video: "/videos/team_work.mp4" },
-  { id: 4, title: "ضيافة فعاليات كبرى", category: "events", video: "/videos/hero_video.mp4" },
+  { id: 3, title: "فريق عمل محترف", category: "corporate", video: "/videos/team_work.mp4" },
+  { id: 4, title: "ضيافة فعاليات كبرى", category: "conference", video: "/videos/hero_video.mp4" },
   { id: 5, title: "ضيافة القهوة العربية", category: "vip", image: "/images/portfolio_1.webp" },
   { id: 6, title: "تنسيق طاولات الضيافة", category: "wedding", image: "/images/portfolio_2.webp" },
-  { id: 7, title: "طاقم الضيافة العماني", category: "team", image: "/images/team_1.webp" },
-  { id: 8, title: "خدمة الفعاليات الخارجية", category: "events", image: "/images/team_2.webp" },
+  { id: 7, title: "طاقم الضيافة العماني", category: "corporate", image: "/images/team_1.webp" },
+  { id: 8, title: "خدمة الفعاليات الخارجية", category: "conference", image: "/images/team_2.webp" },
 ];
 
 export const STATS = [
@@ -95,33 +105,41 @@ export const TESTIMONIALS = [
   {
     id: 1,
     name: "سالم العلوي",
+    role: "عميل",
     service: "ضيافة أفراح",
     rating: 5,
     text: "خدمة استثنائية وطاقم عمل محترف جداً. شرفونا أمام ضيوفنا في حفل الزفاف وكانت الضيافة على أعلى مستوى.",
+    content: "خدمة استثنائية وطاقم عمل محترف جداً. شرفونا أمام ضيوفنا في حفل الزفاف وكانت الضيافة على أعلى مستوى.",
     avatar: "/images/team_1.webp",
   },
   {
     id: 2,
     name: "فاطمة البلوشي",
+    role: "منظمة فعاليات",
     service: "تنظيم فعاليات",
     rating: 5,
     text: "أفضل شركة ضيافة تعاملت معها في سلطنة عمان. التزام بالمواعيد وجودة لا تضاهى في كل تفصيلة.",
+    content: "أفضل شركة ضيافة تعاملت معها في سلطنة عمان. التزام بالمواعيد وجودة لا تضاهى في كل تفصيلة.",
     avatar: "/images/team_2.webp",
   },
   {
     id: 3,
     name: "أحمد الحارثي",
+    role: "عميل",
     service: "ضيافة VIP",
     rating: 5,
     text: "وفّروا لنا تجربة ضيافة فاخرة تليق بضيوفنا الكرام. الاحترافية والتميز في كل شيء.",
+    content: "وفّروا لنا تجربة ضيافة فاخرة تليق بضيوفنا الكرام. الاحترافية والتميز في كل شيء.",
     avatar: "/images/team_1.webp",
   },
   {
     id: 4,
     name: "نورة الرواحي",
+    role: "عميل",
     service: "ضيافة مؤتمرات",
     rating: 5,
     text: "تعاملنا معهم في مؤتمر شركتنا وكانوا على مستوى رفيع جداً. سنتعامل معهم دائماً.",
+    content: "تعاملنا معهم في مؤتمر شركتنا وكانوا على مستوى رفيع جداً. سنتعامل معهم دائماً.",
     avatar: "/images/team_2.webp",
   },
 ];

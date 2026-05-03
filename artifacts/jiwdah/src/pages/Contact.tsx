@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { trpc } from "@/providers/trpc";
+import type { ServiceValue } from "@workspace/api-client-react";
 import { SERVICES, WHATSAPP_NUMBER } from "@/const";
 import { fadeSlideUp } from "@/lib/motion";
 
@@ -47,7 +48,7 @@ export default function Contact() {
     createLead.mutate({
       name: formData.name,
       phone: formData.phone,
-      service: formData.service,
+      service: formData.service as ServiceValue,
       eventDate: formData.eventDate || undefined,
       location: formData.location || undefined,
       guests: formData.guests ? parseInt(formData.guests) : undefined,
@@ -230,7 +231,7 @@ export default function Contact() {
                                   >
                                     <option value="" disabled className="bg-surface text-cream/50">اختر نوع الخدمة</option>
                                     {SERVICES.map((s) => (
-                                      <option key={s.id} value={s.title} className="bg-surface text-cream">{s.title}</option>
+                                      <option key={s.id} value={s.id} className="bg-surface text-cream">{s.title}</option>
                                     ))}
                                   </select>
                                 </div>
