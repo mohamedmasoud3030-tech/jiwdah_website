@@ -55,23 +55,12 @@ export default function About() {
     <div className="min-h-screen bg-surface">
       <Navbar />
 
-      {/* ── CINEMATIC FULL-VIEWPORT HEADER ── */}
       <section className="relative min-h-screen flex items-end overflow-hidden">
-        <motion.div
-          className="absolute inset-0"
-          variants={slowReveal}
-          initial="hidden"
-          animate="visible"
-        >
-          <img
-            src="/images/team_2.webp"
-            alt="مشاريع جودة الإنطلاقة"
-            className="w-full h-full object-cover"
-          />
+        <motion.div className="absolute inset-0" variants={slowReveal} initial="hidden" animate="visible">
+          <img src="/images/team_2.webp" alt="مشاريع جودة الإنطلاقة" className="w-full h-full object-cover" />
           <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #0e0e0e 30%, rgba(14,14,14,0.55) 65%, rgba(14,14,14,0.2) 100%)" }} />
           <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(14,14,14,0.6) 0%, transparent 60%)" }} />
         </motion.div>
-
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pb-20 pt-40 w-full">
           <motion.div variants={fadeSlideUp} initial="hidden" animate="visible">
             <div className="section-eyebrow mb-5">من نحن</div>
@@ -89,7 +78,6 @@ export default function About() {
       </section>
 
       <main>
-        {/* ── STORY ── */}
         <section className="py-24 px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -109,13 +97,12 @@ export default function About() {
                 </div>
               </motion.div>
 
-              {/* Vision / Mission side-by-side */}
               <motion.div
                 variants={staggerChildren}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
-                className="grid grid-cols-1 gap-px"
+                className="grid grid-cols-2 gap-px"
                 style={{ background: "rgba(200,164,92,0.06)" }}
               >
                 <motion.div variants={fadeSlideUp} className="p-8" style={{ backgroundColor: "#161616" }}>
@@ -137,7 +124,6 @@ export default function About() {
           </div>
         </section>
 
-        {/* ── HORIZONTAL VALUES ICON STRIP ── */}
         <section className="py-16 px-6 lg:px-8 border-y border-gold/6">
           <div className="max-w-7xl mx-auto">
             <motion.div
@@ -148,11 +134,7 @@ export default function About() {
               className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-x-reverse divide-gold/8"
             >
               {values.map((value) => (
-                <motion.div
-                  key={value.title}
-                  variants={fadeSlideUp}
-                  className="flex flex-col items-center text-center px-8 py-8 group"
-                >
+                <motion.div key={value.title} variants={fadeSlideUp} className="flex flex-col items-center text-center px-8 py-8 group">
                   <div className="w-10 h-10 bg-gold/6 border border-gold/12 rounded-full flex items-center justify-center mb-4 group-hover:bg-gold/12 group-hover:border-gold/25 transition-all duration-400">
                     <value.icon className="w-4 h-4 text-gold/65" />
                   </div>
@@ -164,7 +146,6 @@ export default function About() {
           </div>
         </section>
 
-        {/* ── MEET THE TEAM ── */}
         <section className="py-24 px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-12">
@@ -173,7 +154,6 @@ export default function About() {
                 تعرّف على <span className="text-gradient-gold">فريقنا</span>
               </h2>
             </motion.div>
-
             <motion.div
               variants={staggerChildren}
               initial="hidden"
@@ -184,11 +164,7 @@ export default function About() {
               {team.map((member) => (
                 <motion.div key={member.name} variants={fadeSlideUp} className="group relative overflow-hidden rounded border border-gold/6 hover:border-gold/20 transition-all duration-500">
                   <div className="aspect-[3/4] overflow-hidden">
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
+                    <img src={member.image} alt={member.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-gradient-to-t from-surface/90 via-surface/10 to-transparent" />
                   </div>
                   <div className="absolute bottom-0 right-0 left-0 p-5">
@@ -201,7 +177,6 @@ export default function About() {
           </div>
         </section>
 
-        {/* ── WHY US ── */}
         <section className="py-16 px-6 lg:px-8 border-t border-gold/6">
           <div className="max-w-7xl mx-auto">
             <motion.div
@@ -233,7 +208,6 @@ export default function About() {
           </div>
         </section>
 
-        {/* ── FAQ ── */}
         <section className="py-20 px-6 lg:px-8 border-t border-gold/6">
           <div className="max-w-3xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-10">

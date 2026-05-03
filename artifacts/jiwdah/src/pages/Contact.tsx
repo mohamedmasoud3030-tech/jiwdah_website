@@ -56,18 +56,19 @@ export default function Contact() {
   };
 
   const openWhatsApp = () => {
-    const msg = encodeURIComponent(`مرحباً مشاريع جودة الإنطلاقة،\nالاسم: ${formData.name || "[اسمك]"}\nالخدمة: ${formData.service || "[نوع الخدمة]"}\nأرغب في الاستفسار عن خدماتكم.`);
+    const msg = encodeURIComponent(
+      `مرحباً مشاريع جودة الإنطلاقة،\nالاسم: ${formData.name || "[اسمك]"}\nالخدمة: ${formData.service || "[نوع الخدمة]"}\nأرغب في الاستفسار عن خدماتكم.`
+    );
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank", "noopener,noreferrer");
   };
 
-  const inputClass = "w-full bg-transparent border-b text-cream text-sm placeholder:text-cream/20 focus:outline-none transition-all duration-300 py-3 pb-2.5 border-gold/12 focus:border-gold/40";
+  const inputClass =
+    "w-full bg-transparent border-b text-cream text-sm placeholder:text-cream/20 focus:outline-none transition-all duration-300 py-3 pb-2.5 border-gold/12 focus:border-gold/40";
 
   return (
     <div className="min-h-screen bg-surface">
       <Navbar />
       <main className="pt-20">
-
-        {/* Header */}
         <section className="py-20 px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" animate="visible">
@@ -90,14 +91,7 @@ export default function Contact() {
         <section className="py-20 px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-16">
-
-              {/* Sidebar */}
-              <motion.div
-                variants={fadeSlideUp}
-                initial="hidden"
-                animate="visible"
-                className="lg:col-span-2 space-y-10"
-              >
+              <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" className="lg:col-span-2 space-y-10">
                 <div>
                   <h3 className="text-xs text-cream/35 tracking-widest uppercase mb-6">معلومات التواصل</h3>
                   <div className="space-y-6">
@@ -113,7 +107,13 @@ export default function Contact() {
                         </div>
                         <div>
                           <p className="text-cream/30 text-xs tracking-wider mb-1">{label}</p>
-                          <a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="text-cream/65 text-sm hover:text-gold transition-colors duration-300" dir={ltr ? "ltr" : undefined}>
+                          <a
+                            href={href}
+                            target={href.startsWith("http") ? "_blank" : undefined}
+                            rel="noopener noreferrer"
+                            className="text-cream/65 text-sm hover:text-gold transition-colors duration-300"
+                            dir={ltr ? "ltr" : undefined}
+                          >
                             {value}
                           </a>
                         </div>
@@ -133,7 +133,10 @@ export default function Contact() {
                 </div>
 
                 <div className="border border-gold/10 rounded p-6" style={{ backgroundColor: "#161616" }}>
-                  <p className="text-cream/35 text-xs tracking-widest uppercase mb-2">تواصل سريع</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-cream/35 text-xs tracking-widest uppercase">تواصل سريع</p>
+                    <span className="text-[10px] text-gold/50 border border-gold/15 rounded px-2 py-0.5">متاح ٢٤/٧</span>
+                  </div>
                   <h4 className="text-cream text-sm mb-3 font-medium">للاستفسارات الفورية</h4>
                   <button onClick={openWhatsApp} className="btn-outline w-full justify-center text-xs py-2.5">
                     <MessageSquare className="w-3.5 h-3.5" />
@@ -142,13 +145,7 @@ export default function Contact() {
                 </div>
               </motion.div>
 
-              {/* Form */}
-              <motion.div
-                variants={fadeSlideUp}
-                initial="hidden"
-                animate="visible"
-                className="lg:col-span-3"
-              >
+              <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" className="lg:col-span-3">
                 {isSubmitted ? (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.97 }}
@@ -174,19 +171,31 @@ export default function Contact() {
                   </motion.div>
                 ) : (
                   <div className="border border-gold/8 rounded overflow-hidden" style={{ backgroundColor: "#161616" }}>
-                    {/* Step progress */}
                     <div className="px-8 pt-8 pb-6 border-b border-gold/6">
                       <div className="flex items-center gap-3">
                         {STEPS.map((label, i) => (
                           <div key={label} className="flex items-center gap-3">
                             <div className="flex items-center gap-2">
-                              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-400 ${i < step ? "bg-gold/20 border border-gold/40 text-gold" : i === step ? "bg-gold text-surface" : "bg-surface-lighter border border-gold/10 text-cream/30"}`}>
+                              <div
+                                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-400 ${
+                                  i < step
+                                    ? "bg-gold/20 border border-gold/40 text-gold"
+                                    : i === step
+                                    ? "bg-gold text-surface"
+                                    : "bg-surface-lighter border border-gold/10 text-cream/30"
+                                }`}
+                              >
                                 {i < step ? <Check className="w-3 h-3" /> : i + 1}
                               </div>
-                              <span className={`text-xs transition-colors duration-300 ${i === step ? "text-cream/70" : "text-cream/30"}`}>{label}</span>
+                              <span className={`text-xs transition-colors duration-300 ${i === step ? "text-cream/70" : "text-cream/30"}`}>
+                                {label}
+                              </span>
                             </div>
                             {i < STEPS.length - 1 && (
-                              <div className="flex-1 h-px w-8" style={{ backgroundColor: i < step ? "rgba(200,164,92,0.3)" : "rgba(200,164,92,0.08)" }} />
+                              <div
+                                className="flex-1 h-px w-8"
+                                style={{ backgroundColor: i < step ? "rgba(200,164,92,0.3)" : "rgba(200,164,92,0.08)" }}
+                              />
                             )}
                           </div>
                         ))}
@@ -195,7 +204,6 @@ export default function Contact() {
 
                     <div className="px-8 py-8">
                       <AnimatePresence mode="wait">
-                        {/* STEP 0 — Service type + date only (minimal friction) */}
                         {step === 0 ? (
                           <motion.form
                             key="step-0"
@@ -213,7 +221,13 @@ export default function Contact() {
                                   <label className="block text-cream/40 text-xs mb-2 tracking-wide">
                                     نوع الخدمة <span className="text-gold/60">*</span>
                                   </label>
-                                  <select name="service" value={formData.service} onChange={handleChange} required className={inputClass + " appearance-none cursor-pointer"}>
+                                  <select
+                                    name="service"
+                                    value={formData.service}
+                                    onChange={handleChange}
+                                    required
+                                    className={inputClass + " appearance-none cursor-pointer"}
+                                  >
                                     <option value="" disabled className="bg-surface text-cream/50">اختر نوع الخدمة</option>
                                     {SERVICES.map((s) => (
                                       <option key={s.id} value={s.title} className="bg-surface text-cream">{s.title}</option>
@@ -233,7 +247,6 @@ export default function Contact() {
                             </div>
                           </motion.form>
                         ) : (
-                          /* STEP 1 — Full details + personal info */
                           <motion.form
                             key="step-1"
                             initial={{ opacity: 0, x: 16 }}
