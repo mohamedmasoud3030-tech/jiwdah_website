@@ -9,9 +9,24 @@ import { FAQS, ABOUT_INSTAGRAM_POST, TEAM_INSTAGRAM_POSTS } from "@/const";
 import { fadeSlideUp, staggerChildren, slowReveal } from "@/lib/motion";
 
 const team = [
-  { name: "أحمد الرحبي", role: "المدير التنفيذي", image: "/images/team_1.webp" },
-  { name: "سالم الحارثي", role: "مدير العمليات", image: "/images/team_2.webp" },
-  { name: "خالد البلوشي", role: "رئيس فريق الضيافة", image: "/images/team_1.webp" },
+  {
+    name: "أحمد الرحبي",
+    role: "المدير التنفيذي والمؤسس",
+    image: "/images/team_1.webp",
+    bio: "أكثر من عشر سنوات من الخبرة في قطاع الضيافة العُمانية. أسّس جودة الإنطلاقة من نزوى برؤية واضحة لرفع مستوى الضيافة المتنقلة في السلطنة، وقاد الشركة لتصبح اسماً موثوقاً في أرقى المناسبات.",
+  },
+  {
+    name: "سالم الحارثي",
+    role: "مدير العمليات",
+    image: "/images/team_2.webp",
+    bio: "خبير في إدارة الفرق الميدانية وتنسيق الفعاليات الكبرى. يضمن سالم أن تسير كل مناسبة بسلاسة تامة، من التجهيز الأول حتى آخر لحظة في الحفل.",
+  },
+  {
+    name: "خالد البلوشي",
+    role: "رئيس فريق الضيافة",
+    image: "/images/team.jpg",
+    bio: "متخصص في فنون الضيافة العربية الأصيلة والتقديم الاحترافي. يتولى خالد تدريب الطواقم وضمان الالتزام بأعلى معايير الجودة في كل تفصيلة.",
+  },
 ];
 
 const values = [
@@ -205,11 +220,12 @@ export default function About() {
                 <motion.div key={member.name} variants={fadeSlideUp} className="group relative overflow-hidden rounded border border-gold/6 hover:border-gold/20 transition-all duration-500">
                   <div className="aspect-[3/4] overflow-hidden">
                     <img src={member.image} alt={member.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-surface/90 via-surface/10 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/60 to-transparent" />
                   </div>
                   <div className="absolute bottom-0 right-0 left-0 p-5">
                     <h4 className="text-cream text-base font-medium mb-0.5" style={{ fontFamily: "'Noto Serif Arabic', serif" }}>{member.name}</h4>
-                    <p className="text-gold/60 text-xs">{member.role}</p>
+                    <p className="text-gold/70 text-xs mb-3">{member.role}</p>
+                    <p className="text-cream/45 text-xs leading-relaxed font-light opacity-0 group-hover:opacity-100 transition-opacity duration-500 max-h-0 group-hover:max-h-24 overflow-hidden transition-all">{member.bio}</p>
                   </div>
                 </motion.div>
               ))}
