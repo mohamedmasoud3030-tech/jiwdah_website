@@ -1,0 +1,122 @@
+Act as a senior product designer, UX architect, and front-end design strategist.
+
+You are tasked with transforming an existing website into a luxury, modern, VIP-level web application.
+
+Your mission is NOT just redesigning UI, but:
+- restructuring the experience
+- organizing content (images, videos, media)
+- improving usability
+- and upgrading the visual system to a premium SaaS standard
+
+---
+
+PHASE 1: FULL SYSTEM REVIEW
+
+Analyze the current website and identify:
+
+1. Structure issues:
+   - messy layout
+   - unclear hierarchy
+   - poor navigation
+
+2. Content issues:
+   - poorly placed images/videos
+   - unorganized media sections
+   - weak storytelling
+
+3. UX issues:
+   - complicated flows
+   - too many clicks
+   - unclear actions
+
+4. Visual issues:
+   - outdated UI style
+   - inconsistent design system
+
+---
+
+PHASE 2: CONTENT & MEDIA ORGANIZATION
+
+Rebuild how content is structured:
+
+- Organize images into logical sections (not random placement)
+- Organize videos into:
+  - hero sections
+  - feature explanations
+  - support/tutorial areas
+- Ensure every media item has a purpose:
+  - storytelling
+  - trust building
+  - conversion support
+
+Remove clutter and redundancy.
+
+---
+
+PHASE 3: VIP MODERN UX REDESIGN
+
+Redesign the entire user experience:
+
+Focus on:
+- minimal steps
+- smooth navigation
+- premium feel
+- clarity of actions
+
+Apply:
+- clean SaaS-style layout
+- spacing optimization (air / breathing space)
+- strong visual hierarchy
+- modern dashboard patterns
+
+---
+
+PHASE 4: PAGE STRUCTURE REDESIGN
+
+For each page:
+
+Define:
+- layout structure (header / hero / sections / footer)
+- component structure (cards, grids, sliders, modals)
+- placement of images and videos
+- CTA placement strategy
+
+Make every page feel like a high-end product landing page.
+
+---
+
+PHASE 5: PREMIUM UX FEATURES
+
+Add modern UX enhancements:
+
+- sticky navigation
+- smooth transitions
+- quick actions
+- smart sections
+- visual storytelling flow
+- progressive disclosure of information
+
+---
+
+PHASE 6: VISUAL DIRECTION (VIP STYLE)
+
+Define design direction:
+
+- modern SaaS aesthetic
+- luxury spacing
+- clean typography hierarchy
+- minimal but powerful UI
+- high-end product feel (like Stripe / Apple-level UX)
+
+No clutter. No outdated design patterns.
+
+---
+
+OUTPUT FORMAT:
+
+1. Current problems summary
+2. Content (images/videos) restructuring plan
+3. New UX flow
+4. Page-by-page redesign structure
+5. VIP UX improvements list
+6. Final design direction summary
