@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Users, Calendar, Phone, MapPin,
   ChevronDown, LogOut, RefreshCw, Filter,
   CheckCircle, Clock, XCircle, AlertCircle, List, ChevronLeft, ChevronRight,
-  Search, ArrowUpDown, ImageIcon, Trash2, Plus, Link as LinkIcon,
+  Search, ArrowUpDown, ImageIcon, Trash2, Plus, Link as LinkIcon, Download,
 } from "lucide-react";
 import {
   Dialog,
@@ -545,6 +545,41 @@ export default function Dashboard() {
     updateStatus.mutate({ id: pendingStatus.leadId, status: pendingStatus.status });
   };
 
+  const exportLeadsToCSV = () => {
+    const headers = ["الاسم", "الهاتف", "الخدمة", "تاريخ المناسبة", "الميزانية", "عدد الضيوف", "الموقع", "الحالة", "ملاحظات", "تاريخ الإضافة"];
+
+    const escape = (val: string | number | null | undefined) => {
+      if (val == null) return "";
+      const str = String(val);
+      if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
+
+    const rows = filtered.map((lead) => [
+      escape(lead.name),
+      escape(lead.phone),
+      escape(lead.service),
+      escape(lead.eventDate),
+      escape(lead.budget),
+      escape(lead.guests),
+      escape(lead.location),
+      escape(statusConfig[lead.status as keyof typeof statusConfig]?.label ?? lead.status),
+      escape(lead.notes),
+      escape(new Date(lead.createdAt).toLocaleDateString("ar-OM")),
+    ].join(","));
+
+    const csv = "\uFEFF" + [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `leads-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="min-h-screen bg-surface" dir="rtl">
       {/* Confirmation Dialog */}
@@ -684,6 +719,16 @@ export default function Dashboard() {
                   >
                     <RefreshCw className="w-4 h-4" />
                     تحديث
+                  </button>
+
+                  <button
+                    onClick={exportLeadsToCSV}
+                    disabled={!filtered.length}
+                    title={`تصدير ${filtered.length} طلب`}
+                    className="flex items-center gap-2 px-4 py-2 bg-surface-light border border-gold/20 rounded-lg text-cream-muted hover:text-gold transition-colors text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <Download className="w-4 h-4" />
+                    تصدير
                   </button>
 
                   {view === "list" && (
