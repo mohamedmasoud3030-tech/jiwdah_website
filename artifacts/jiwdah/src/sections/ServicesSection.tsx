@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Crown, Calendar, X, Check, ArrowLeft } from "lucide-react";
 import { SERVICES } from "@/const";
-import { staggerChildren, fadeSlideUp, drawerSlide, overlayFade } from "@/lib/motion";
+import { staggerChildren, staggerCards, cardReveal, fadeSlideUp, drawerSlide, overlayFade } from "@/lib/motion";
 
 const iconMap: Record<string, React.ElementType> = { Heart, Crown, Calendar };
 
@@ -105,10 +105,10 @@ export default function ServicesSection() {
         </motion.div>
 
         <motion.div
-          variants={staggerChildren}
+          variants={staggerCards}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "-80px" }}
           className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-gold/8 rounded overflow-hidden"
         >
           {[featured, ...rest].map((service, index) => {
@@ -117,7 +117,7 @@ export default function ServicesSection() {
             return (
               <motion.div
                 key={service.id}
-                variants={fadeSlideUp}
+                variants={cardReveal}
                 onClick={() => setSelectedService(service)}
                 className={`group relative cursor-pointer flex flex-col ${
                   index < SERVICES.length - 1 ? "border-b md:border-b-0 md:border-l border-gold/8" : ""
