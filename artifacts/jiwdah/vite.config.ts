@@ -28,6 +28,10 @@ if (!basePath) {
 
 export default defineConfig({
   base: basePath,
+  define: {
+    "import.meta.env.VITE_APP_ID": JSON.stringify(process.env.APP_ID ?? ""),
+    "import.meta.env.VITE_KIMI_AUTH_URL": JSON.stringify(process.env.KIMI_AUTH_URL ?? ""),
+  },
   plugins: [
     react(),
     tailwindcss(),

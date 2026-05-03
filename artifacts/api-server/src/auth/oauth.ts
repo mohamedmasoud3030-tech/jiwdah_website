@@ -67,12 +67,12 @@ export function createOAuthCallbackHandler() {
   return async (req: Request, res: Response) => {
     // If the user already has a valid session, skip the OAuth flow
     const existing = await createAuthContext(req);
-    if (existing.user) return res.redirect("/");
+    if (existing.user) return res.redirect("/dashboard");
 
     const { code, state, error } = req.query as Record<string, string>;
 
     if (error) {
-      if (error === "access_denied") return res.redirect("/");
+      if (error === "access_denied") return res.redirect("/login");
       return res.status(400).json({ error });
     }
 
@@ -121,7 +121,7 @@ export function createOAuthCallbackHandler() {
         }),
       );
 
-      return res.redirect("/");
+      return res.redirect("/dashboard");
     } catch (err) {
       logger.error({ err }, "OAuth callback failed");
       return res.status(500).json({ error: "OAuth callback failed" });
