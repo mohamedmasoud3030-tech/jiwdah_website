@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LayoutDashboard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAV_LINKS } from "@/const";
 import { mobileMenuSlide } from "@/lib/motion";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 80);
@@ -22,6 +24,8 @@ export default function Navbar() {
 
   const isActive = (href: string) =>
     href === "/" ? location.pathname === "/" : location.pathname.startsWith(href);
+
+  const dashboardHref = user ? "/dashboard" : "/login";
 
   return (
     <nav
@@ -66,6 +70,22 @@ export default function Navbar() {
                 )}
               </Link>
             ))}
+
+            <Link
+              to={dashboardHref}
+              className={`relative flex items-center gap-1.5 text-xs tracking-wider font-medium transition-colors duration-300 uppercase ${
+                isActive("/dashboard") ? "text-gold" : "text-cream/50 hover:text-cream/80"
+              }`}
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              لوحة التحكم
+              {isActive("/dashboard") && (
+                <motion.span
+                  layoutId="nav-underline"
+                  className="absolute -bottom-1 left-0 right-0 h-px bg-gold/50 rounded-full"
+                />
+              )}
+            </Link>
           </div>
 
           <div className="hidden md:block">
@@ -117,6 +137,15 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              <Link
+                to={dashboardHref}
+                className={`flex items-center gap-2 py-2.5 text-sm font-medium transition-colors duration-300 ${
+                  isActive("/dashboard") ? "text-gold" : "text-cream/55 hover:text-cream/80"
+                }`}
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                لوحة التحكم
+              </Link>
               <div className="pt-3">
                 <Link to="/contact" className="btn-gold text-xs py-2 px-5 block text-center">احجز الآن</Link>
               </div>

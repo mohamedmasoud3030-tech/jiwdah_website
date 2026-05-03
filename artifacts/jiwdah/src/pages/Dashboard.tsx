@@ -5,7 +5,16 @@ import {
   LayoutDashboard, Users, Calendar, Phone, MapPin,
   ChevronDown, LogOut, RefreshCw, Filter,
   CheckCircle, Clock, XCircle, AlertCircle, List, ChevronLeft, ChevronRight,
+  Search, ArrowUpDown,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { trpc } from "@/providers/trpc";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -192,17 +201,31 @@ function MiniCalendar({ leads }: { leads: Lead[] }) {
   );
 }
 
+type SortKey = "createdAt_desc" | "createdAt_asc" | "eventDate_asc" | "eventDate_desc";
+
+type PendingStatus = {
+  leadId: number;
+  leadName: string;
+  status: keyof typeof statusConfig;
+} | null;
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user, logout, isLoading: authLoading } = useAuth();
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [expandedLead, setExpandedLead] = useState<number | null>(null);
   const [view, setView] = useState<"list" | "calendar">("list");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("createdAt_desc");
+  const [pendingStatus, setPendingStatus] = useState<PendingStatus>(null);
 
   const { data: leads, isLoading, refetch } = trpc.leads.list.useQuery();
 
   const updateStatus = trpc.leads.updateStatus.useMutation({
-    onSuccess: () => refetch(),
+    onSuccess: () => {
+      refetch();
+      setPendingStatus(null);
+    },
   });
 
   const deleteLead = trpc.leads.delete.useMutation({
@@ -222,8 +245,28 @@ export default function Dashboard() {
     return null;
   }
 
-  const filteredLeads =
-    statusFilter === "all" ? leads : leads?.filter((l) => l.status === statusFilter);
+  const filtered = (leads ?? [])
+    .filter((l) => statusFilter === "all" || l.status === statusFilter)
+    .filter((l) => {
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      return l.name.toLowerCase().includes(q) || l.phone.toLowerCase().includes(q);
+    })
+    .sort((a, b) => {
+      if (sortKey === "createdAt_desc") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (sortKey === "createdAt_asc") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      if (sortKey === "eventDate_asc") {
+        const da = a.eventDate ? new Date(a.eventDate).getTime() : Infinity;
+        const db = b.eventDate ? new Date(b.eventDate).getTime() : Infinity;
+        return da - db;
+      }
+      if (sortKey === "eventDate_desc") {
+        const da = a.eventDate ? new Date(a.eventDate).getTime() : -Infinity;
+        const db = b.eventDate ? new Date(b.eventDate).getTime() : -Infinity;
+        return db - da;
+      }
+      return 0;
+    });
 
   const stats = {
     total: leads?.length || 0,
@@ -232,8 +275,45 @@ export default function Dashboard() {
     completed: leads?.filter((l) => l.status === "completed").length || 0,
   };
 
+  const confirmStatusChange = () => {
+    if (!pendingStatus) return;
+    updateStatus.mutate({ id: pendingStatus.leadId, status: pendingStatus.status });
+  };
+
   return (
     <div className="min-h-screen bg-surface" dir="rtl">
+      {/* Confirmation Dialog */}
+      <Dialog open={!!pendingStatus} onOpenChange={(open) => { if (!open) setPendingStatus(null); }}>
+        <DialogContent className="bg-surface-light border border-gold/20 text-cream" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-cream">تأكيد تغيير الحالة</DialogTitle>
+            <DialogDescription className="text-cream-muted">
+              هل تريد تغيير حالة <span className="text-cream font-semibold">{pendingStatus?.leadName}</span> إلى{" "}
+              <span className="text-gold font-semibold">
+                {pendingStatus ? statusConfig[pendingStatus.status].label : ""}
+              </span>
+              ؟
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-3 flex-row-reverse sm:flex-row-reverse">
+            <button
+              onClick={confirmStatusChange}
+              disabled={updateStatus.isPending}
+              className="px-4 py-2 bg-gold text-surface rounded-lg text-sm font-medium hover:bg-gold/90 transition-colors disabled:opacity-50"
+            >
+              {updateStatus.isPending ? "جاري التحديث..." : "تأكيد"}
+            </button>
+            <button
+              onClick={() => setPendingStatus(null)}
+              className="px-4 py-2 border border-gold/20 text-cream-muted rounded-lg text-sm hover:text-cream transition-colors"
+            >
+              إلغاء
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Top Bar */}
       <header className="bg-surface-light border-b border-gold/10 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -260,6 +340,7 @@ export default function Dashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
             { label: "إجمالي الطلبات", value: stats.total, color: "text-cream" },
@@ -281,59 +362,95 @@ export default function Dashboard() {
           ))}
         </div>
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-3">
-            <h2 className="text-xl font-bold text-cream">الطلبات</h2>
-            <div className="flex items-center border border-gold/15 rounded-lg overflow-hidden">
+        {/* Controls */}
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-bold text-cream">الطلبات</h2>
+              <div className="flex items-center border border-gold/15 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setView("list")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors ${
+                    view === "list" ? "bg-gold/15 text-gold" : "text-cream-muted hover:text-cream"
+                  }`}
+                >
+                  <List className="w-3.5 h-3.5" />
+                  قائمة
+                </button>
+                <button
+                  onClick={() => setView("calendar")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors border-r border-gold/15 ${
+                    view === "calendar" ? "bg-gold/15 text-gold" : "text-cream-muted hover:text-cream"
+                  }`}
+                >
+                  <Calendar className="w-3.5 h-3.5" />
+                  تقويم
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 flex-wrap">
               <button
-                onClick={() => setView("list")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors ${
-                  view === "list" ? "bg-gold/15 text-gold" : "text-cream-muted hover:text-cream"
-                }`}
+                onClick={() => refetch()}
+                className="flex items-center gap-2 px-4 py-2 bg-surface-light border border-gold/20 rounded-lg text-cream-muted hover:text-gold transition-colors text-sm"
               >
-                <List className="w-3.5 h-3.5" />
-                قائمة
+                <RefreshCw className="w-4 h-4" />
+                تحديث
               </button>
-              <button
-                onClick={() => setView("calendar")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors border-r border-gold/15 ${
-                  view === "calendar" ? "bg-gold/15 text-gold" : "text-cream-muted hover:text-cream"
-                }`}
-              >
-                <Calendar className="w-3.5 h-3.5" />
-                تقويم
-              </button>
+
+              {view === "list" && (
+                <>
+                  {/* Sort */}
+                  <div className="relative">
+                    <ArrowUpDown className="w-4 h-4 text-cream-muted absolute right-3 top-1/2 -translate-y-1/2" />
+                    <select
+                      value={sortKey}
+                      onChange={(e) => setSortKey(e.target.value as SortKey)}
+                      className="bg-surface-light border border-gold/20 rounded-lg pl-4 pr-10 py-2 text-cream text-sm focus:outline-none focus:border-gold appearance-none"
+                    >
+                      <option value="createdAt_desc">تاريخ الإضافة (الأحدث)</option>
+                      <option value="createdAt_asc">تاريخ الإضافة (الأقدم)</option>
+                      <option value="eventDate_asc">تاريخ المناسبة (الأقرب)</option>
+                      <option value="eventDate_desc">تاريخ المناسبة (الأبعد)</option>
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-cream-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+
+                  {/* Status Filter */}
+                  <div className="relative">
+                    <Filter className="w-4 h-4 text-cream-muted absolute right-3 top-1/2 -translate-y-1/2" />
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="bg-surface-light border border-gold/20 rounded-lg pl-4 pr-10 py-2 text-cream text-sm focus:outline-none focus:border-gold appearance-none"
+                    >
+                      <option value="all">جميع الحالات</option>
+                      <option value="new">جديد</option>
+                      <option value="contacted">تم التواصل</option>
+                      <option value="confirmed">مؤكد</option>
+                      <option value="completed">مكتمل</option>
+                      <option value="cancelled">ملغي</option>
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-cream-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => refetch()}
-              className="flex items-center gap-2 px-4 py-2 bg-surface-light border border-gold/20 rounded-lg text-cream-muted hover:text-gold transition-colors text-sm"
-            >
-              <RefreshCw className="w-4 h-4" />
-              تحديث
-            </button>
-
-            {view === "list" && (
-              <div className="relative">
-                <Filter className="w-4 h-4 text-cream-muted absolute right-3 top-1/2 -translate-y-1/2" />
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="bg-surface-light border border-gold/20 rounded-lg pl-4 pr-10 py-2 text-cream text-sm focus:outline-none focus:border-gold appearance-none"
-                >
-                  <option value="all">جميع الحالات</option>
-                  <option value="new">جديد</option>
-                  <option value="contacted">تم التواصل</option>
-                  <option value="confirmed">مؤكد</option>
-                  <option value="completed">مكتمل</option>
-                  <option value="cancelled">ملغي</option>
-                </select>
-                <ChevronDown className="w-4 h-4 text-cream-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
-            )}
-          </div>
+          {/* Search — list view only */}
+          {view === "list" && (
+            <div className="relative">
+              <Search className="w-4 h-4 text-cream-muted absolute right-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="ابحث بالاسم أو رقم الهاتف..."
+                className="w-full bg-surface-light border border-gold/20 rounded-lg pr-10 pl-4 py-2 text-cream text-sm placeholder:text-cream-muted focus:outline-none focus:border-gold/50 transition-colors"
+              />
+            </div>
+          )}
         </div>
 
         {isLoading ? (
@@ -342,14 +459,14 @@ export default function Dashboard() {
           </div>
         ) : view === "calendar" ? (
           <MiniCalendar leads={(leads || []) as Lead[]} />
-        ) : !filteredLeads?.length ? (
+        ) : !filtered.length ? (
           <div className="text-center py-12 bg-surface-light border border-gold/10 rounded-xl">
             <AlertCircle className="w-12 h-12 text-cream-muted mx-auto mb-4" />
             <p className="text-cream-muted">لا توجد طلبات</p>
           </div>
         ) : (
           <div className="space-y-3">
-            {filteredLeads.map((lead) => {
+            {filtered.map((lead) => {
               const status = statusConfig[lead.status as keyof typeof statusConfig];
               const StatusIcon = status?.icon || AlertCircle;
               const isExpanded = expandedLead === lead.id;
@@ -452,7 +569,13 @@ export default function Dashboard() {
                         {Object.entries(statusConfig).map(([key, config]) => (
                           <button
                             key={key}
-                            onClick={() => updateStatus.mutate({ id: lead.id, status: key as "new" | "contacted" | "confirmed" | "completed" | "cancelled" })}
+                            onClick={() =>
+                              setPendingStatus({
+                                leadId: lead.id,
+                                leadName: lead.name,
+                                status: key as keyof typeof statusConfig,
+                              })
+                            }
                             className={`px-3 py-1 rounded-full text-xs border transition-colors ${
                               lead.status === key
                                 ? config.color

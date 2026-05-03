@@ -21,6 +21,7 @@ export default function Contact() {
     phone: "",
     guests: "",
     location: "",
+    budget: "",
     notes: "",
   });
   const [phoneError, setPhoneError] = useState("");
@@ -33,7 +34,7 @@ export default function Contact() {
   const createLead = trpc.leads.create.useMutation({
     onSuccess: () => {
       setIsSubmitted(true);
-      setFormData({ service: "", eventDate: "", name: "", phone: "", guests: "", location: "", notes: "" });
+      setFormData({ service: "", eventDate: "", name: "", phone: "", guests: "", location: "", budget: "", notes: "" });
       setStep(0);
     },
   });
@@ -67,6 +68,7 @@ export default function Contact() {
       service: formData.service as ServiceValue,
       eventDate: formData.eventDate || undefined,
       location: formData.location || undefined,
+      budget: formData.budget || undefined,
       guests: formData.guests ? parseInt(formData.guests) : undefined,
       notes: formData.notes || undefined,
       source: "contact",
@@ -304,6 +306,10 @@ export default function Contact() {
                                     <label className="block text-cream/40 text-xs mb-2 tracking-wide">الموقع</label>
                                     <input type="text" name="location" value={formData.location} onChange={handleChange} placeholder="المدينة أو الولاية" className={inputClass} />
                                   </div>
+                                </div>
+                                <div>
+                                  <label className="block text-cream/40 text-xs mb-2 tracking-wide">الميزانية التقريبية</label>
+                                  <input type="text" name="budget" value={formData.budget} onChange={handleChange} placeholder="مثال: ٥٠٠ ريال عماني" className={inputClass} />
                                 </div>
                                 <div>
                                   <label className="block text-cream/40 text-xs mb-2 tracking-wide">ملاحظات إضافية</label>
