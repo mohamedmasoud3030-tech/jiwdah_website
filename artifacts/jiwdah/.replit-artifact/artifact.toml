@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "مشاريع جودة الإنطلاقة"
+version = "1.0.0"
+id = "artifacts/jiwdah"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20063
+
+[services.development]
+run = "pnpm --filter @workspace/jiwdah run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/jiwdah", "run", "build" ]
+publicDir = "artifacts/jiwdah/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20063"
+BASE_PATH = "/"
