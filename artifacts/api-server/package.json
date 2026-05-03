@@ -12,7 +12,6 @@
   "dependencies": {
     "@hono/node-server": "^2.0.1",
     "@trpc/server": "^11.17.0",
-    "@types/nodemailer": "^8.0.0",
     "@workspace/api-zod": "workspace:*",
     "@workspace/db": "workspace:*",
     "cookie": "^1.1.1",
@@ -34,6 +33,7 @@
     "@types/express": "^5.0.6",
     "@types/multer": "^2.1.0",
     "@types/node": "catalog:",
+    "@types/nodemailer": "^8.0.0",
     "esbuild": "^0.27.3",
     "esbuild-plugin-pino": "^2.3.3",
     "pino-pretty": "^13",
