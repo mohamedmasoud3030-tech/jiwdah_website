@@ -1,4 +1,4 @@
-import { Camera } from "lucide-react";
+import { Camera, ExternalLink } from "lucide-react";
 
 function isVideo(url: string) {
   return /\.(mp4|webm|ogg)(\?|$)/i.test(url);
@@ -10,9 +10,10 @@ type MediaCardProps = {
   categoryLabel?: string;
   className?: string;
   onClick?: () => void;
+  instagramId?: string | null;
 };
 
-export default function MediaCard({ thumbnailUrl, title, categoryLabel, className = "", onClick }: MediaCardProps) {
+export default function MediaCard({ thumbnailUrl, title, categoryLabel, className = "", onClick, instagramId }: MediaCardProps) {
   if (!thumbnailUrl) {
     return (
       <div
@@ -63,6 +64,18 @@ export default function MediaCard({ thumbnailUrl, title, categoryLabel, classNam
           {categoryLabel && <p className="text-gold/60 text-[10px] tracking-widest uppercase mb-0.5">{categoryLabel}</p>}
           {title && <h4 className="text-cream text-xs font-medium" style={{ fontFamily: "'Noto Serif Arabic', serif" }}>{title}</h4>}
         </div>
+      )}
+      {instagramId && (
+        <a
+          href={`https://www.instagram.com/p/${instagramId}/`}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-surface/70 backdrop-blur-sm border border-gold/15 text-cream/70 text-[10px] tracking-wide opacity-0 group-hover:opacity-100 transition-all duration-400 hover:bg-surface/90 hover:text-gold hover:border-gold/35"
+        >
+          <ExternalLink className="w-3 h-3" />
+          <span>View on Instagram</span>
+        </a>
       )}
     </div>
   );

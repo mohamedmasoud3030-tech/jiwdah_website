@@ -130,6 +130,7 @@ export default function About() {
                       title={aboutPost.title}
                       categoryLabel="من نحن"
                       className="aspect-video"
+                      instagramId={aboutPost.instagramId}
                     />
                   </div>
                 )}
@@ -243,6 +244,7 @@ export default function About() {
                         thumbnailUrl={post.thumbnailUrl}
                         title={post.title}
                         className="w-full h-full"
+                        instagramId={post.instagramId}
                       />
                     </motion.div>
                   ))}

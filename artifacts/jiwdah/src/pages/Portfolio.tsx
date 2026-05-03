@@ -201,6 +201,7 @@ export default function Portfolio() {
                             title={item.title}
                             categoryLabel={CATEGORY_LABELS[item.category]}
                             className="w-full h-full"
+                            instagramId={item.instagramId}
                           />
                         </motion.div>
                       );
