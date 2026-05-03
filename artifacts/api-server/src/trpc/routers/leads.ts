@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createRouter, publicQuery, authedQuery } from "../middleware";
 import { leads, SERVICE_VALUES } from "@workspace/db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, isNotNull } from "drizzle-orm";
 
 const serviceEnum = z.enum(SERVICE_VALUES);
 
@@ -24,6 +24,16 @@ const eventDateSchema = z
 export const leadsRouter = createRouter({
   list: authedQuery.query(async ({ ctx }) => {
     return ctx.db.select().from(leads).orderBy(desc(leads.createdAt));
+  }),
+
+  bookedDates: publicQuery.query(async ({ ctx }) => {
+    const rows = await ctx.db
+      .select({ eventDate: leads.eventDate })
+      .from(leads)
+      .where(isNotNull(leads.eventDate));
+    return rows
+      .filter((r) => r.eventDate && r.eventDate.trim() !== "")
+      .map((r) => r.eventDate as string);
   }),
 
   create: publicQuery

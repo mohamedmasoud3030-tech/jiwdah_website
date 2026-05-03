@@ -4,6 +4,7 @@ import { Phone, Instagram, MapPin, Clock, MessageSquare, Check, ArrowLeft } from
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import DatePicker from "@/components/DatePicker";
 import { trpc } from "@/providers/trpc";
 import type { ServiceValue } from "@workspace/api-client-react";
 import { SERVICES, WHATSAPP_NUMBER } from "@/const";
@@ -26,6 +27,8 @@ export default function Contact() {
 
   const OMANI_PHONE_RE = /^(\+9689\d{7}|09\d{7})$/;
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const { data: bookedDates = [] } = trpc.leads.bookedDates.useQuery();
 
   const createLead = trpc.leads.create.useMutation({
     onSuccess: () => {
@@ -251,7 +254,12 @@ export default function Contact() {
                                 </div>
                                 <div>
                                   <label className="block text-cream/40 text-xs mb-2 tracking-wide">تاريخ المناسبة</label>
-                                  <input type="date" name="eventDate" value={formData.eventDate} onChange={handleChange} className={inputClass} />
+                                  <DatePicker
+                                    value={formData.eventDate}
+                                    onChange={(date) => setFormData((prev) => ({ ...prev, eventDate: date }))}
+                                    bookedDates={bookedDates}
+                                    placeholder="اختر تاريخ المناسبة"
+                                  />
                                 </div>
                               </div>
                             </div>
