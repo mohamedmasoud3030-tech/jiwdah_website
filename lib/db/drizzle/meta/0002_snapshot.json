@@ -1,0 +1,136 @@
+{
+  "id": "a3b4c5d6-0002-0002-0002-instagram0002",
+  "prevId": "65e51418-54bd-429c-9292-19b2f0264be4",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.leads": {
+      "name": "leads",
+      "schema": "",
+      "columns": {
+        "id": { "name": "id", "type": "serial", "primaryKey": true, "notNull": true },
+        "name": { "name": "name", "type": "varchar(255)", "primaryKey": false, "notNull": true },
+        "phone": { "name": "phone", "type": "varchar(50)", "primaryKey": false, "notNull": true },
+        "service": { "name": "service", "type": "service", "typeSchema": "public", "primaryKey": false, "notNull": true },
+        "event_date": { "name": "event_date", "type": "varchar(50)", "primaryKey": false, "notNull": false },
+        "location": { "name": "location", "type": "varchar(255)", "primaryKey": false, "notNull": false },
+        "budget": { "name": "budget", "type": "varchar(100)", "primaryKey": false, "notNull": false },
+        "guests": { "name": "guests", "type": "integer", "primaryKey": false, "notNull": false },
+        "notes": { "name": "notes", "type": "text", "primaryKey": false, "notNull": false },
+        "source": { "name": "source", "type": "varchar(50)", "primaryKey": false, "notNull": false },
+        "status": { "name": "status", "type": "lead_status", "typeSchema": "public", "primaryKey": false, "notNull": true, "default": "'new'" },
+        "created_at": { "name": "created_at", "type": "timestamp", "primaryKey": false, "notNull": true, "default": "now()" }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.portfolio": {
+      "name": "portfolio",
+      "schema": "",
+      "columns": {
+        "id": { "name": "id", "type": "serial", "primaryKey": true, "notNull": true },
+        "title": { "name": "title", "type": "varchar(255)", "primaryKey": false, "notNull": true },
+        "image_url": { "name": "image_url", "type": "text", "primaryKey": false, "notNull": true },
+        "category": { "name": "category", "type": "portfolio_category", "typeSchema": "public", "primaryKey": false, "notNull": true },
+        "created_at": { "name": "created_at", "type": "timestamp", "primaryKey": false, "notNull": true, "default": "now()" }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": { "name": "id", "type": "serial", "primaryKey": true, "notNull": true },
+        "union_id": { "name": "union_id", "type": "varchar(255)", "primaryKey": false, "notNull": true },
+        "name": { "name": "name", "type": "varchar(255)", "primaryKey": false, "notNull": false },
+        "email": { "name": "email", "type": "varchar(320)", "primaryKey": false, "notNull": false },
+        "avatar": { "name": "avatar", "type": "text", "primaryKey": false, "notNull": false },
+        "role": { "name": "role", "type": "role", "typeSchema": "public", "primaryKey": false, "notNull": true, "default": "'user'" },
+        "created_at": { "name": "created_at", "type": "timestamp", "primaryKey": false, "notNull": true, "default": "now()" },
+        "updated_at": { "name": "updated_at", "type": "timestamp", "primaryKey": false, "notNull": true, "default": "now()" },
+        "last_sign_in_at": { "name": "last_sign_in_at", "type": "timestamp", "primaryKey": false, "notNull": true, "default": "now()" }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_union_id_unique": {
+          "name": "users_union_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["union_id"]
+        },
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
+          "columns": ["email"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.instagram_posts": {
+      "name": "instagram_posts",
+      "schema": "",
+      "columns": {
+        "id": { "name": "id", "type": "serial", "primaryKey": true, "notNull": true },
+        "instagram_id": { "name": "instagram_id", "type": "varchar(255)", "primaryKey": false, "notNull": true },
+        "section": { "name": "section", "type": "instagram_section", "typeSchema": "public", "primaryKey": false, "notNull": true },
+        "title": { "name": "title", "type": "varchar(255)", "primaryKey": false, "notNull": true, "default": "''" },
+        "sort_order": { "name": "sort_order", "type": "integer", "primaryKey": false, "notNull": true, "default": 0 },
+        "created_at": { "name": "created_at", "type": "timestamp", "primaryKey": false, "notNull": true, "default": "now()" }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.lead_status": {
+      "name": "lead_status",
+      "schema": "public",
+      "values": ["new", "contacted", "confirmed", "completed", "cancelled"]
+    },
+    "public.portfolio_category": {
+      "name": "portfolio_category",
+      "schema": "public",
+      "values": ["wedding", "conference", "private", "corporate", "coffee", "vip"]
+    },
+    "public.role": {
+      "name": "role",
+      "schema": "public",
+      "values": ["user", "admin"]
+    },
+    "public.service": {
+      "name": "service",
+      "schema": "public",
+      "values": ["vip", "wedding", "events"]
+    },
+    "public.instagram_section": {
+      "name": "instagram_section",
+      "schema": "public",
+      "values": ["wedding", "conference", "private", "corporate", "coffee", "vip", "about", "team"]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": { "columns": {}, "schemas": {}, "tables": {} }
+}

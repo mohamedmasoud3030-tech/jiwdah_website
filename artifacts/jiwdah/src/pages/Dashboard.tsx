@@ -6,6 +6,7 @@ import {
   ChevronDown, LogOut, RefreshCw, Filter,
   CheckCircle, Clock, XCircle, AlertCircle, List, ChevronLeft, ChevronRight,
   Search, ArrowUpDown, ImageIcon, Trash2, Plus, Link as LinkIcon, Download, Pencil, X,
+  Instagram, ChevronUp, ExternalLink, Loader2,
 } from "lucide-react";
 import {
   Dialog,
@@ -17,7 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { trpc } from "@/providers/trpc";
 import { useAuth } from "@/hooks/useAuth";
-import { CATEGORY_VALUES } from "@workspace/api-client-react";
+import { CATEGORY_VALUES, INSTAGRAM_SECTION_VALUES } from "@workspace/api-client-react";
 
 const statusConfig = {
   new: { label: "جديد", color: "bg-blue-500/20 text-blue-400 border-blue-500/30", icon: AlertCircle },
@@ -622,6 +623,277 @@ function PortfolioManager() {
   );
 }
 
+const INSTAGRAM_SECTION_LABELS: Record<string, string> = {
+  wedding: "أفراح",
+  conference: "مؤتمرات",
+  private: "فعاليات خاصة",
+  corporate: "شركات",
+  coffee: "قهوة عربية",
+  vip: "ضيافة VIP",
+  about: "من نحن",
+  team: "الفريق",
+};
+
+function extractInstagramId(input: string): string {
+  const trimmed = input.trim();
+  const match = trimmed.match(/instagram\.com\/p\/([A-Za-z0-9_\-]+)/);
+  if (match) return match[1];
+  return trimmed.replace(/\/$/, "");
+}
+
+function InstagramManager() {
+  const { data: posts = [], isLoading, refetch } = trpc.instagramPosts.list.useQuery();
+  const [activeSection, setActiveSection] = useState<string>(INSTAGRAM_SECTION_VALUES[0]);
+  const [urlInput, setUrlInput] = useState("");
+  const [titleInput, setTitleInput] = useState("");
+  const [addError, setAddError] = useState("");
+
+  const createPost = trpc.instagramPosts.create.useMutation({
+    onSuccess: () => {
+      setUrlInput("");
+      setTitleInput("");
+      setAddError("");
+      refetch();
+    },
+    onError: (err) => setAddError(err.message),
+  });
+
+  const deletePost = trpc.instagramPosts.delete.useMutation({
+    onSuccess: () => refetch(),
+  });
+
+  const reorderPost = trpc.instagramPosts.reorder.useMutation({
+    onSuccess: () => refetch(),
+  });
+
+  const seedPosts = trpc.instagramPosts.seed.useMutation({
+    onSuccess: () => refetch(),
+  });
+
+  const sectionPosts = posts
+    .filter((p) => p.section === activeSection)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+
+  const handleAdd = (e: React.FormEvent) => {
+    e.preventDefault();
+    const id = extractInstagramId(urlInput);
+    if (!id) { setAddError("أدخل رابط أو معرّف بوست إنستغرام"); return; }
+    createPost.mutate({
+      instagramId: id,
+      section: activeSection as typeof INSTAGRAM_SECTION_VALUES[number],
+      title: titleInput.trim() || INSTAGRAM_SECTION_LABELS[activeSection] || activeSection,
+    });
+  };
+
+  const movePost = (postId: number, direction: "up" | "down") => {
+    const idx = sectionPosts.findIndex((p) => p.id === postId);
+    if (direction === "up" && idx === 0) return;
+    if (direction === "down" && idx === sectionPosts.length - 1) return;
+
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    const updated = sectionPosts.map((p, i) => {
+      if (i === idx) return { id: p.id, sortOrder: sectionPosts[swapIdx].sortOrder };
+      if (i === swapIdx) return { id: p.id, sortOrder: sectionPosts[idx].sortOrder };
+      return { id: p.id, sortOrder: p.sortOrder };
+    });
+    reorderPost.mutate({ items: updated });
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Seed button shown when empty */}
+      {!isLoading && posts.length === 0 && (
+        <div className="bg-surface-light border border-gold/10 rounded-xl p-6 text-center">
+          <Instagram className="w-10 h-10 text-gold/40 mx-auto mb-3" />
+          <p className="text-cream-muted text-sm mb-4">لا توجد منشورات إنستغرام بعد</p>
+          <button
+            onClick={() => seedPosts.mutate()}
+            disabled={seedPosts.isPending}
+            className="px-5 py-2.5 bg-gold text-surface rounded-lg text-sm font-medium hover:bg-gold/90 transition-colors disabled:opacity-50 flex items-center gap-2 mx-auto"
+          >
+            {seedPosts.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+            تحميل المنشورات الافتراضية
+          </button>
+          {seedPosts.data && (
+            <p className="text-green-400 text-xs mt-3">{(seedPosts.data as { message?: string }).message}</p>
+          )}
+        </div>
+      )}
+
+      {/* Section tabs */}
+      <div className="flex flex-wrap gap-1.5">
+        {INSTAGRAM_SECTION_VALUES.map((sec) => {
+          const count = posts.filter((p) => p.section === sec).length;
+          return (
+            <button
+              key={sec}
+              onClick={() => setActiveSection(sec)}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                activeSection === sec
+                  ? "bg-gold text-surface"
+                  : "bg-surface border border-gold/15 text-cream-muted hover:text-cream hover:border-gold/30"
+              }`}
+            >
+              {INSTAGRAM_SECTION_LABELS[sec]}
+              {count > 0 && (
+                <span className={`mr-1.5 text-[10px] ${activeSection === sec ? "text-surface/70" : "text-gold/60"}`}>
+                  {count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Add form */}
+      <div className="bg-surface-light border border-gold/10 rounded-xl p-6">
+        <h3 className="text-cream font-semibold mb-5 flex items-center gap-2 text-sm">
+          <Plus className="w-4 h-4 text-gold" />
+          إضافة منشور - {INSTAGRAM_SECTION_LABELS[activeSection]}
+        </h3>
+        <form onSubmit={handleAdd} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-2">
+            <label className="text-cream-muted text-xs mb-1.5 block">رابط أو معرّف البوست</label>
+            <input
+              type="text"
+              value={urlInput}
+              onChange={(e) => { setUrlInput(e.target.value); setAddError(""); }}
+              placeholder="https://www.instagram.com/p/ABC123/ أو ABC123"
+              dir="ltr"
+              className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-2.5 text-cream text-sm placeholder:text-cream/30 focus:outline-none focus:border-gold/50 transition-colors"
+            />
+          </div>
+          <div>
+            <label className="text-cream-muted text-xs mb-1.5 block">عنوان (اختياري)</label>
+            <input
+              type="text"
+              value={titleInput}
+              onChange={(e) => setTitleInput(e.target.value)}
+              placeholder={INSTAGRAM_SECTION_LABELS[activeSection]}
+              dir="rtl"
+              className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-2.5 text-cream text-sm placeholder:text-cream/30 focus:outline-none focus:border-gold/50 transition-colors"
+            />
+          </div>
+          <div className="flex items-end">
+            <button
+              type="submit"
+              disabled={createPost.isPending}
+              className="px-5 py-2.5 bg-gold text-surface rounded-lg text-sm font-medium hover:bg-gold/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+            >
+              {createPost.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+              إضافة
+            </button>
+          </div>
+          {addError && <p className="sm:col-span-2 text-red-400 text-xs">{addError}</p>}
+        </form>
+      </div>
+
+      {/* Posts list */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-cream font-semibold text-sm">
+            منشورات {INSTAGRAM_SECTION_LABELS[activeSection]}
+            <span className="text-cream-muted text-xs font-normal mr-2">({sectionPosts.length})</span>
+          </h3>
+          <button onClick={() => refetch()} className="flex items-center gap-2 text-cream-muted hover:text-gold transition-colors text-xs">
+            <RefreshCw className="w-3.5 h-3.5" />
+            تحديث
+          </button>
+        </div>
+
+        {isLoading ? (
+          <div className="flex justify-center py-12">
+            <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : sectionPosts.length === 0 ? (
+          <div className="text-center py-10 bg-surface-light border border-gold/10 rounded-xl">
+            <Instagram className="w-8 h-8 text-cream-muted mx-auto mb-2" />
+            <p className="text-cream-muted text-sm">لا توجد منشورات في هذا القسم</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {sectionPosts.map((post, idx) => (
+              <div
+                key={post.id}
+                className="flex items-center gap-3 bg-surface-light border border-gold/10 rounded-xl px-4 py-3 hover:border-gold/20 transition-all duration-200"
+              >
+                <div className="flex flex-col gap-1 shrink-0">
+                  <button
+                    onClick={() => movePost(post.id, "up")}
+                    disabled={idx === 0 || reorderPost.isPending}
+                    className="w-6 h-6 flex items-center justify-center text-cream-muted hover:text-gold disabled:opacity-20 transition-colors"
+                  >
+                    <ChevronUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => movePost(post.id, "down")}
+                    disabled={idx === sectionPosts.length - 1 || reorderPost.isPending}
+                    className="w-6 h-6 flex items-center justify-center text-cream-muted hover:text-gold disabled:opacity-20 transition-colors"
+                  >
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="w-8 h-8 bg-gold/8 border border-gold/12 rounded-lg flex items-center justify-center shrink-0">
+                  <Instagram className="w-4 h-4 text-gold/60" />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <p className="text-cream text-sm font-medium">{post.title}</p>
+                  <p className="text-cream-muted text-xs font-mono mt-0.5 truncate">{post.instagramId}</p>
+                </div>
+
+                <a
+                  href={`https://www.instagram.com/p/${post.instagramId}/`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-7 h-7 flex items-center justify-center text-cream-muted hover:text-gold transition-colors shrink-0"
+                  title="فتح في إنستغرام"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+
+                <button
+                  onClick={() => {
+                    if (confirm(`حذف منشور "${post.instagramId}"؟`)) {
+                      deletePost.mutate({ id: post.id });
+                    }
+                  }}
+                  disabled={deletePost.isPending}
+                  className="w-7 h-7 flex items-center justify-center text-red-400/60 hover:text-red-400 transition-colors shrink-0"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Seed button shown at bottom when data exists */}
+      {!isLoading && posts.length > 0 && (
+        <div className="border-t border-gold/8 pt-4">
+          <button
+            onClick={() => {
+              if (confirm("إعادة تحميل البيانات الافتراضية؟ هذا سيعمل فقط إذا كانت قاعدة البيانات فارغة.")) {
+                seedPosts.mutate();
+              }
+            }}
+            disabled={seedPosts.isPending}
+            className="flex items-center gap-2 text-cream-muted hover:text-cream text-xs transition-colors"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            تحميل البيانات الافتراضية (للقواعد الفارغة فقط)
+          </button>
+          {seedPosts.data && (
+            <p className="text-cream-muted text-xs mt-2">{(seedPosts.data as { message?: string }).message}</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 type SortKey = "createdAt_desc" | "createdAt_asc" | "eventDate_asc" | "eventDate_desc";
 
 type PendingStatus = {
@@ -630,7 +902,7 @@ type PendingStatus = {
   status: keyof typeof statusConfig;
 } | null;
 
-type DashboardTab = "leads" | "portfolio";
+type DashboardTab = "leads" | "portfolio" | "instagram";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -845,6 +1117,7 @@ export default function Dashboard() {
           {([
             { key: "leads", label: "الطلبات" },
             { key: "portfolio", label: "معرض الأعمال" },
+            { key: "instagram", label: "منشورات إنستغرام" },
           ] as { key: DashboardTab; label: string }[]).map((tab) => (
             <button
               key={tab.key}
@@ -860,7 +1133,9 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {activeTab === "portfolio" ? (
+        {activeTab === "instagram" ? (
+          <InstagramManager />
+        ) : activeTab === "portfolio" ? (
           <PortfolioManager />
         ) : (
           <>

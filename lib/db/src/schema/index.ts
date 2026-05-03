@@ -1,5 +1,5 @@
 import { pgTable, pgEnum, serial, varchar, text, timestamp, integer } from "drizzle-orm/pg-core";
-import { SERVICE_VALUES, CATEGORY_VALUES, LEAD_STATUS_VALUES, ROLE_VALUES } from "./enums";
+import { SERVICE_VALUES, CATEGORY_VALUES, LEAD_STATUS_VALUES, ROLE_VALUES, INSTAGRAM_SECTION_VALUES } from "./enums";
 
 export * from "./enums";
 
@@ -51,3 +51,17 @@ export const portfolio = pgTable("portfolio", {
 
 export type PortfolioItem = typeof portfolio.$inferSelect;
 export type InsertPortfolioItem = typeof portfolio.$inferInsert;
+
+export const instagramSectionEnum = pgEnum("instagram_section", INSTAGRAM_SECTION_VALUES);
+
+export const instagramPosts = pgTable("instagram_posts", {
+  id: serial("id").primaryKey(),
+  instagramId: varchar("instagram_id", { length: 255 }).notNull(),
+  section: instagramSectionEnum("section").notNull(),
+  title: varchar("title", { length: 255 }).default("").notNull(),
+  sortOrder: integer("sort_order").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type InstagramPost = typeof instagramPosts.$inferSelect;
+export type InsertInstagramPost = typeof instagramPosts.$inferInsert;

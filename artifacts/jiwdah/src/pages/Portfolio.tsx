@@ -7,7 +7,6 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { trpc } from "@/providers/trpc";
 import { CATEGORY_VALUES } from "@workspace/api-client-react";
 import { fadeSlideUp } from "@/lib/motion";
-import { INSTAGRAM_PORTFOLIO_ITEMS, type InstagramPortfolioItem } from "@/const";
 
 const CATEGORY_LABELS: Record<string, string> = {
   wedding: "أفراح",
@@ -36,7 +35,18 @@ type DbPortfolioItem = {
   type?: undefined;
 };
 
-type CombinedItem = DbPortfolioItem | (InstagramPortfolioItem & { id: string });
+type IgPortfolioItem = {
+  id: string;
+  instagramId: string;
+  section: string;
+  category: string;
+  title: string;
+  sortOrder: number;
+  createdAt: Date;
+  type: "instagram";
+};
+
+type CombinedItem = DbPortfolioItem | IgPortfolioItem;
 
 function InstagramEmbed({ postId, className }: { postId: string; className?: string }) {
   useEffect(() => {
@@ -67,15 +77,23 @@ function InstagramEmbed({ postId, className }: { postId: string; className?: str
   );
 }
 
+const PORTFOLIO_SECTIONS = ["wedding", "conference", "private", "corporate", "coffee", "vip"];
+
 export default function Portfolio() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedItem, setSelectedItem] = useState<DbPortfolioItem | null>(null);
-  const { data: dbItems = [], isLoading } = trpc.portfolio.list.useQuery();
+  const { data: dbItems = [], isLoading: dbLoading } = trpc.portfolio.list.useQuery();
+  const { data: igRaw = [], isLoading: igLoading } = trpc.instagramPosts.list.useQuery();
+  const isLoading = dbLoading || igLoading;
 
-  const igItems: (InstagramPortfolioItem & { id: string })[] = INSTAGRAM_PORTFOLIO_ITEMS.map((item) => ({
-    ...item,
-    id: `ig-${item.instagramId}`,
-  }));
+  const igItems: IgPortfolioItem[] = igRaw
+    .filter((p) => PORTFOLIO_SECTIONS.includes(p.section))
+    .map((p) => ({
+      ...p,
+      id: `ig-${p.id}`,
+      category: p.section,
+      type: "instagram" as const,
+    }));
 
   const allItems: CombinedItem[] = [...dbItems, ...igItems];
 

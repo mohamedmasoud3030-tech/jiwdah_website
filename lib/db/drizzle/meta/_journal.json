@@ -15,6 +15,13 @@
       "when": 1746230002000,
       "tag": "0001_add_leads_source",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1746277800000,
+      "tag": "0002_add_instagram_posts",
+      "breakpoints": true
     }
   ]
 }

@@ -9,3 +9,6 @@ export type LeadStatusValue = (typeof LEAD_STATUS_VALUES)[number];
 
 export const ROLE_VALUES = ["user", "admin"] as const;
 export type RoleValue = (typeof ROLE_VALUES)[number];
+
+export const INSTAGRAM_SECTION_VALUES = ["wedding", "conference", "private", "corporate", "coffee", "vip", "about", "team"] as const;
+export type InstagramSectionValue = (typeof INSTAGRAM_SECTION_VALUES)[number];

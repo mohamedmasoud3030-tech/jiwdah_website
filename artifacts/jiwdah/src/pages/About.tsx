@@ -5,7 +5,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { Link } from "react-router";
-import { FAQS, ABOUT_INSTAGRAM_POST, TEAM_INSTAGRAM_POSTS } from "@/const";
+import { FAQS } from "@/const";
+import { trpc } from "@/providers/trpc";
 import { fadeSlideUp, staggerChildren, slowReveal } from "@/lib/motion";
 
 const team = [
@@ -95,6 +96,10 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 }
 
 export default function About() {
+  const { data: igPosts = [] } = trpc.instagramPosts.list.useQuery();
+  const aboutPost = igPosts.find((p) => p.section === "about");
+  const teamPosts = igPosts.filter((p) => p.section === "team").sort((a, b) => a.sortOrder - b.sortOrder);
+
   return (
     <div className="min-h-screen bg-surface">
       <Navbar />
@@ -147,7 +152,7 @@ export default function About() {
                   <div className="px-4 pt-4 pb-1">
                     <span className="text-gold/60 text-xs tracking-widest uppercase">من نحن</span>
                   </div>
-                  <InstagramEmbed postId={ABOUT_INSTAGRAM_POST} />
+                  {aboutPost && <InstagramEmbed postId={aboutPost.instagramId} />}
                 </div>
               </motion.div>
 
@@ -246,14 +251,14 @@ export default function About() {
               viewport={{ once: true }}
               className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
             >
-              {TEAM_INSTAGRAM_POSTS.map((postId, index) => (
+              {teamPosts.map((post, index) => (
                 <motion.div
-                  key={postId}
+                  key={post.id}
                   variants={fadeSlideUp}
                   className="rounded overflow-hidden border border-gold/8 hover:border-gold/20 transition-all duration-500"
                   style={{ transitionDelay: `${index * 40}ms` }}
                 >
-                  <InstagramEmbed postId={postId} />
+                  <InstagramEmbed postId={post.instagramId} />
                 </motion.div>
               ))}
             </motion.div>

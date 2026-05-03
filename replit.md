@@ -49,11 +49,18 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - `leads.list` — admin only, list all leads
 - `portfolio.list` — public, list portfolio items (from DB)
 - `portfolio.create/update/delete` — admin only
+- `instagramPosts.list` — public, list all instagram posts ordered by section + sortOrder
+- `instagramPosts.listBySection` — public, list instagram posts for a specific section
+- `instagramPosts.create` — admin only, add a post
+- `instagramPosts.delete` — admin only, remove a post
+- `instagramPosts.reorder` — admin only, update sort order
+- `instagramPosts.seed` — admin only, seed initial posts from hardcoded defaults (only if table empty)
 
 ## Database Schema (`lib/db/src/schema/index.ts`)
 - `users` — admin users (linked to Kimi OAuth)
 - `leads` — contact form submissions
-- `portfolioItems` — managed portfolio entries
+- `portfolio` — managed portfolio entries (image/video uploads)
+- `instagram_posts` — Instagram embed posts with section (wedding/conference/private/corporate/coffee/vip/about/team), sortOrder, and instagramId
 
 ## Key Commands
 
@@ -82,4 +89,5 @@ The following must be set as Replit secrets for full functionality:
 - **API server dev script**: runs pre-built `dist/index.mjs` directly (avoids workflow startup timeout during build). After source changes, run `pnpm --filter @workspace/api-server run build` manually then restart the workflow.
 - **Tailwind v4**: uses `@theme inline` in `index.css` for custom tokens (`--color-gold`, `--color-surface`, etc.). Uses `@reference "tailwindcss"` in `App.css` instead of `@apply` with custom tokens.
 - **tRPC type bridge**: `artifacts/jiwdah/src/types/router.ts` re-exports `AppRouter` from the api-server via relative path.
-- **Portfolio data**: currently static (`src/const.ts`). DB table exists but isn't yet wired to the frontend.
+- **Instagram Posts**: previously hardcoded in `const.ts` as `INSTAGRAM_PORTFOLIO_ITEMS`, `ABOUT_INSTAGRAM_POST`, `TEAM_INSTAGRAM_POSTS`. Now managed via the admin dashboard's "منشورات إنستغرام" tab. Admin can seed initial data using the "تحميل المنشورات الافتراضية" button.
+- **Shared enum build**: When adding new enum values to `lib/api-zod/src/enums.ts`, run `cd lib/api-zod && npx tsc -p tsconfig.json && cd ../api-client-react && npx tsc -p tsconfig.json && cd ../db && npx tsc -p tsconfig.json` to regenerate declaration files.
