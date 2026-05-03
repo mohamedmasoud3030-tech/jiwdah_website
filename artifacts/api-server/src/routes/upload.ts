@@ -10,10 +10,14 @@ if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 
-async function requireAuth(req: Request, res: Response, next: NextFunction) {
+async function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const { user } = await createAuthContext(req);
   if (!user) {
     res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  if (user.role !== "admin") {
+    res.status(403).json({ error: "Admin access required" });
     return;
   }
   next();
@@ -46,7 +50,7 @@ const upload = multer({
 
 const router: IRouter = Router();
 
-router.post("/upload", requireAuth, upload.single("file"), (req: Request, res: Response) => {
+router.post("/upload", requireAdmin, upload.single("file"), (req: Request, res: Response) => {
   if (!req.file) {
     res.status(400).json({ error: "No file uploaded" });
     return;

@@ -634,7 +634,7 @@ type DashboardTab = "leads" | "portfolio";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { user, logout, isLoading: authLoading } = useAuth();
+  const { user, isAdmin, logout, isLoading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<DashboardTab>("leads");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [expandedLead, setExpandedLead] = useState<number | null>(null);
@@ -643,7 +643,9 @@ export default function Dashboard() {
   const [sortKey, setSortKey] = useState<SortKey>("createdAt_desc");
   const [pendingStatus, setPendingStatus] = useState<PendingStatus>(null);
 
-  const { data: leads, isLoading, refetch } = trpc.leads.list.useQuery();
+  const { data: leads, isLoading, refetch } = trpc.leads.list.useQuery(undefined, {
+    enabled: isAdmin,
+  });
 
   const updateStatus = trpc.leads.updateStatus.useMutation({
     onSuccess: () => {
@@ -657,12 +659,16 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      navigate("/login");
+    if (!authLoading) {
+      if (!user) {
+        navigate("/login");
+      } else if (!isAdmin) {
+        navigate("/login");
+      }
     }
-  }, [authLoading, user, navigate]);
+  }, [authLoading, user, isAdmin, navigate]);
 
-  if (authLoading || !user) {
+  if (authLoading || !user || !isAdmin) {
     return (
       <div className="min-h-screen bg-surface flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />

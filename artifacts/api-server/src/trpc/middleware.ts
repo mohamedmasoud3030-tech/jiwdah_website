@@ -17,4 +17,16 @@ const requireAuth = t.middleware(async (opts) => {
   return next({ ctx: { ...ctx, user: ctx.user } });
 });
 
+const requireAdmin = t.middleware(async (opts) => {
+  const { ctx, next } = opts;
+  if (!ctx.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "Authentication required" });
+  }
+  if (ctx.user.role !== "admin") {
+    throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+  }
+  return next({ ctx: { ...ctx, user: ctx.user } });
+});
+
 export const authedQuery = t.procedure.use(requireAuth);
+export const adminQuery = t.procedure.use(requireAdmin);

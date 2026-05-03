@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createRouter, publicQuery, authedQuery } from "../middleware";
+import { createRouter, publicQuery, adminQuery } from "../middleware";
 import { portfolio, CATEGORY_VALUES } from "@workspace/db";
 import { eq, asc, desc } from "drizzle-orm";
 
@@ -24,7 +24,7 @@ export const portfolioRouter = createRouter({
         .orderBy(desc(portfolio.createdAt));
     }),
 
-  create: authedQuery
+  create: adminQuery
     .input(
       z.object({
         title: z.string().min(1),
@@ -41,7 +41,7 @@ export const portfolioRouter = createRouter({
       return result[0];
     }),
 
-  update: authedQuery
+  update: adminQuery
     .input(
       z.object({
         id: z.number(),
@@ -60,7 +60,7 @@ export const portfolioRouter = createRouter({
       return result[0];
     }),
 
-  delete: authedQuery
+  delete: adminQuery
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.db.delete(portfolio).where(eq(portfolio.id, input.id));

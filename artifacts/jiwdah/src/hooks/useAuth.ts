@@ -35,6 +35,8 @@ export function useAuth(options?: UseAuthOptions) {
 
   const logout = useCallback(() => logoutMutation.mutate(), [logoutMutation]);
 
+  const isAdmin = user?.role === "admin";
+
   useEffect(() => {
     if (redirectOnUnauthenticated && !isLoading && !user) {
       const currentPath = window.location.pathname;
@@ -48,11 +50,12 @@ export function useAuth(options?: UseAuthOptions) {
     () => ({
       user: user ?? null,
       isAuthenticated: !!user,
+      isAdmin,
       isLoading: isLoading || logoutMutation.isPending,
       error,
       logout,
       refresh: refetch,
     }),
-    [user, isLoading, logoutMutation.isPending, error, logout, refetch],
+    [user, isAdmin, isLoading, logoutMutation.isPending, error, logout, refetch],
   );
 }

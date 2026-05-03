@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createRouter, publicQuery, authedQuery } from "../middleware";
+import { createRouter, publicQuery, adminQuery } from "../middleware";
 import { leads, SERVICE_VALUES } from "@workspace/db";
 import { eq, desc, isNotNull } from "drizzle-orm";
 
@@ -22,7 +22,7 @@ const eventDateSchema = z
   );
 
 export const leadsRouter = createRouter({
-  list: authedQuery.query(async ({ ctx }) => {
+  list: adminQuery.query(async ({ ctx }) => {
     return ctx.db.select().from(leads).orderBy(desc(leads.createdAt));
   }),
 
@@ -66,7 +66,7 @@ export const leadsRouter = createRouter({
       return result[0];
     }),
 
-  updateStatus: authedQuery
+  updateStatus: adminQuery
     .input(
       z.object({
         id: z.number(),
@@ -82,7 +82,7 @@ export const leadsRouter = createRouter({
       return result[0];
     }),
 
-  delete: authedQuery
+  delete: adminQuery
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.db.delete(leads).where(eq(leads.id, input.id));
