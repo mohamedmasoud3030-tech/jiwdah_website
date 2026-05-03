@@ -1,4 +1,4 @@
-export const SERVICE_VALUES = ["vip", "wedding", "events", "conference", "private", "corporate", "coffee"] as const;
+export const SERVICE_VALUES = ["vip", "wedding", "conference", "private", "corporate", "coffee"] as const;
 export type ServiceValue = (typeof SERVICE_VALUES)[number];
 
 export const CATEGORY_VALUES = ["wedding", "conference", "private", "corporate", "coffee", "vip"] as const;
