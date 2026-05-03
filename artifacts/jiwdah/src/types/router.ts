@@ -1,1 +1,1 @@
-export type { AppRouter } from "../../../artifacts/api-server/src/trpc/router";
+export type { AppRouter } from "../../../api-server/src/trpc/router";

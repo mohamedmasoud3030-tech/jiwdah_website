@@ -1,4 +1,4 @@
-import type { Request } from "express";
+import type { Request, Response } from "express";
 import type { User } from "@workspace/db";
 import { db } from "@workspace/db";
 import { users } from "@workspace/db";
@@ -8,14 +8,15 @@ import cookie from "cookie";
 
 export type TrpcContext = {
   req: Request;
+  res: Response;
   user?: User;
   db: typeof db;
 };
 
 const SESSION_COOKIE = "kimi_sid";
 
-export async function createTrpcContext(req: Request): Promise<TrpcContext> {
-  const ctx: TrpcContext = { req, db };
+export async function createTrpcContext(req: Request, res: Response): Promise<TrpcContext> {
+  const ctx: TrpcContext = { req, res, db };
 
   try {
     const cookies = cookie.parse(req.headers.cookie || "");
@@ -38,3 +39,5 @@ export async function createTrpcContext(req: Request): Promise<TrpcContext> {
 
   return ctx;
 }
+
+export { SESSION_COOKIE };
