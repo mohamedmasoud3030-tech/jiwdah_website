@@ -643,8 +643,20 @@ export default function Dashboard() {
   const [sortKey, setSortKey] = useState<SortKey>("createdAt_desc");
   const [pendingStatus, setPendingStatus] = useState<PendingStatus>(null);
 
+  const LAST_VISIT_KEY = "dashboard_last_visit";
+  const [lastVisit, setLastVisit] = useState<Date | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(LAST_VISIT_KEY);
+    if (stored) {
+      setLastVisit(new Date(parseInt(stored, 10)));
+    }
+    localStorage.setItem(LAST_VISIT_KEY, Date.now().toString());
+  }, []);
+
   const { data: leads, isLoading, refetch } = trpc.leads.list.useQuery(undefined, {
     enabled: isAdmin,
+    refetchInterval: 30000,
   });
 
   const updateStatus = trpc.leads.updateStatus.useMutation({
@@ -969,13 +981,18 @@ export default function Dashboard() {
                   const status = statusConfig[lead.status as keyof typeof statusConfig];
                   const StatusIcon = status?.icon || AlertCircle;
                   const isExpanded = expandedLead === lead.id;
+                  const isNewSinceLastVisit = lastVisit !== null && new Date(lead.createdAt) > lastVisit;
 
                   return (
                     <motion.div
                       key={lead.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="bg-surface-light border border-gold/10 rounded-xl overflow-hidden"
+                      className={`bg-surface-light rounded-xl overflow-hidden ${
+                        isNewSinceLastVisit
+                          ? "border border-blue-500/40 shadow-[0_0_0_1px_rgba(59,130,246,0.15)]"
+                          : "border border-gold/10"
+                      }`}
                     >
                       <div
                         className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-gold/5 transition-colors"
@@ -989,6 +1006,11 @@ export default function Dashboard() {
                             <span className={`px-2 py-0.5 rounded-full text-xs border ${status?.color}`}>
                               {status?.label}
                             </span>
+                            {isNewSinceLastVisit && (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                                جديد منذ آخر زيارة
+                              </span>
+                            )}
                           </div>
                           <div className="flex items-center gap-4 mt-1 text-sm text-cream-muted">
                             <span className="flex items-center gap-1">

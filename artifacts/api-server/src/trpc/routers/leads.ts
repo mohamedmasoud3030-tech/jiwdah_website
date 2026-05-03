@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createRouter, publicQuery, adminQuery } from "../middleware";
 import { leads, SERVICE_VALUES } from "@workspace/db";
-import { eq, desc, isNotNull } from "drizzle-orm";
+import { eq, desc, isNotNull, count } from "drizzle-orm";
 
 const serviceEnum = z.enum(SERVICE_VALUES);
 
@@ -24,6 +24,14 @@ const eventDateSchema = z
 export const leadsRouter = createRouter({
   list: adminQuery.query(async ({ ctx }) => {
     return ctx.db.select().from(leads).orderBy(desc(leads.createdAt));
+  }),
+
+  countNew: adminQuery.query(async ({ ctx }) => {
+    const result = await ctx.db
+      .select({ count: count() })
+      .from(leads)
+      .where(eq(leads.status, "new"));
+    return result[0]?.count ?? 0;
   }),
 
   bookedDates: publicQuery.query(async ({ ctx }) => {

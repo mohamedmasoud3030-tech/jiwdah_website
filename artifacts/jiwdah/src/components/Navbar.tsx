@@ -5,12 +5,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { NAV_LINKS } from "@/const";
 import { mobileMenuSlide } from "@/lib/motion";
 import { useAuth } from "@/hooks/useAuth";
+import { trpc } from "@/providers/trpc";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
+
+  const { data: newLeadsCount } = trpc.leads.countNew.useQuery(undefined, {
+    enabled: !!user && !!isAdmin,
+    refetchInterval: 30000,
+  });
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 80);
@@ -79,6 +85,11 @@ export default function Navbar() {
             >
               <LayoutDashboard className="w-3.5 h-3.5" />
               لوحة التحكم
+              {!!newLeadsCount && newLeadsCount > 0 && (
+                <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-blue-500 text-white text-[10px] font-bold rounded-full leading-none">
+                  {newLeadsCount > 99 ? "99+" : newLeadsCount}
+                </span>
+              )}
               {isActive("/dashboard") && (
                 <motion.span
                   layoutId="nav-underline"
@@ -145,6 +156,11 @@ export default function Navbar() {
               >
                 <LayoutDashboard className="w-4 h-4" />
                 لوحة التحكم
+                {!!newLeadsCount && newLeadsCount > 0 && (
+                  <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-blue-500 text-white text-[10px] font-bold rounded-full leading-none">
+                    {newLeadsCount > 99 ? "99+" : newLeadsCount}
+                  </span>
+                )}
               </Link>
               <div className="pt-3">
                 <Link to="/contact" className="btn-gold text-xs py-2 px-5 block text-center">احجز الآن</Link>
