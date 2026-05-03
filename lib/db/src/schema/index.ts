@@ -60,6 +60,7 @@ export const instagramPosts = pgTable("instagram_posts", {
   section: instagramSectionEnum("section").notNull(),
   title: varchar("title", { length: 255 }).default("").notNull(),
   sortOrder: integer("sort_order").default(0).notNull(),
+  thumbnailUrl: text("thumbnail_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

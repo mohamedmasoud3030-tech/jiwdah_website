@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Target, Heart, Shield, Award, Users, MapPin, Plus, Minus } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import MediaCard from "@/components/MediaCard";
 import { Link } from "react-router";
 import { FAQS } from "@/const";
 import { trpc } from "@/providers/trpc";
@@ -36,35 +37,6 @@ const values = [
   { icon: Shield, title: "الموثوقية", description: "نلتزم بوعودنا في كل مناسبة" },
   { icon: Target, title: "الابتكار", description: "حلول مبتكرة لتجارب فريدة لا تُنسى" },
 ];
-
-function InstagramEmbed({ postId, className }: { postId: string; className?: string }) {
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.instgrm) {
-      window.instgrm.Embeds.process();
-    }
-  }, [postId]);
-
-  return (
-    <div className={className}>
-      <blockquote
-        className="instagram-media"
-        data-instgrm-captioned
-        data-instgrm-permalink={`https://www.instagram.com/p/${postId}/`}
-        data-instgrm-version="14"
-        style={{
-          background: "#161616",
-          border: "1px solid rgba(200,164,92,0.12)",
-          borderRadius: "4px",
-          margin: 0,
-          padding: 0,
-          width: "100%",
-          minWidth: "unset",
-          maxWidth: "100%",
-        }}
-      />
-    </div>
-  );
-}
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -145,15 +117,22 @@ export default function About() {
                   </p>
                 </div>
 
-                <div
-                  className="rounded overflow-hidden border border-gold/15"
-                  style={{ background: "rgba(200,164,92,0.04)" }}
-                >
-                  <div className="px-4 pt-4 pb-1">
-                    <span className="text-gold/60 text-xs tracking-widest uppercase">من نحن</span>
+                {aboutPost && (
+                  <div
+                    className="rounded overflow-hidden border border-gold/15"
+                    style={{ background: "rgba(200,164,92,0.04)" }}
+                  >
+                    <div className="px-4 pt-4 pb-1">
+                      <span className="text-gold/60 text-xs tracking-widest uppercase">من نحن</span>
+                    </div>
+                    <MediaCard
+                      thumbnailUrl={aboutPost.thumbnailUrl}
+                      title={aboutPost.title}
+                      categoryLabel="من نحن"
+                      className="aspect-video"
+                    />
                   </div>
-                  {aboutPost && <InstagramEmbed postId={aboutPost.instagramId} />}
-                </div>
+                )}
               </motion.div>
 
               <motion.div
@@ -238,30 +217,38 @@ export default function About() {
 
             <div className="divider-gold mb-12" />
 
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-8">
-              <h3 className="text-lg text-cream" style={{ fontFamily: "'Noto Serif Arabic', serif", fontWeight: 500 }}>
-                لحظاتنا على <span className="text-gold">إنستغرام</span>
-              </h3>
-            </motion.div>
-
-            <motion.div
-              variants={staggerChildren}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-            >
-              {teamPosts.map((post, index) => (
-                <motion.div
-                  key={post.id}
-                  variants={fadeSlideUp}
-                  className="rounded overflow-hidden border border-gold/8 hover:border-gold/20 transition-all duration-500"
-                  style={{ transitionDelay: `${index * 40}ms` }}
-                >
-                  <InstagramEmbed postId={post.instagramId} />
+            {teamPosts.length > 0 && (
+              <>
+                <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-8">
+                  <h3 className="text-lg text-cream" style={{ fontFamily: "'Noto Serif Arabic', serif", fontWeight: 500 }}>
+                    لحظاتنا <span className="text-gold">المميزة</span>
+                  </h3>
                 </motion.div>
-              ))}
-            </motion.div>
+
+                <motion.div
+                  variants={staggerChildren}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                >
+                  {teamPosts.map((post, index) => (
+                    <motion.div
+                      key={post.id}
+                      variants={fadeSlideUp}
+                      className="rounded overflow-hidden border border-gold/8 hover:border-gold/20 transition-all duration-500 aspect-square"
+                      style={{ transitionDelay: `${index * 40}ms` }}
+                    >
+                      <MediaCard
+                        thumbnailUrl={post.thumbnailUrl}
+                        title={post.title}
+                        className="w-full h-full"
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </>
+            )}
           </div>
         </section>
 

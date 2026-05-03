@@ -67,6 +67,7 @@ export const instagramPostsRouter = createRouter({
         section: sectionEnum,
         title: z.string().default(""),
         sortOrder: z.number().int().default(0),
+        thumbnailUrl: z.string().nullable().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -85,7 +86,28 @@ export const instagramPostsRouter = createRouter({
           section: input.section,
           title: input.title,
           sortOrder: maxOrder,
+          thumbnailUrl: input.thumbnailUrl ?? null,
         })
+        .returning();
+      return result[0];
+    }),
+
+  update: adminQuery
+    .input(
+      z.object({
+        id: z.number(),
+        thumbnailUrl: z.string().nullable().optional(),
+        title: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const updates: Partial<{ thumbnailUrl: string | null; title: string }> = {};
+      if (input.thumbnailUrl !== undefined) updates.thumbnailUrl = input.thumbnailUrl;
+      if (input.title !== undefined) updates.title = input.title;
+      const result = await ctx.db
+        .update(instagramPosts)
+        .set(updates)
+        .where(eq(instagramPosts.id, input.id))
         .returning();
       return result[0];
     }),

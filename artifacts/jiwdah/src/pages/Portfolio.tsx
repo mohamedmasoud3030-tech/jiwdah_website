@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Award } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import MediaCard from "@/components/MediaCard";
 import { trpc } from "@/providers/trpc";
 import { CATEGORY_VALUES } from "@workspace/api-client-react";
 import { fadeSlideUp } from "@/lib/motion";
@@ -42,40 +43,12 @@ type IgPortfolioItem = {
   category: string;
   title: string;
   sortOrder: number;
+  thumbnailUrl?: string | null;
   createdAt: Date;
   type: "instagram";
 };
 
 type CombinedItem = DbPortfolioItem | IgPortfolioItem;
-
-function InstagramEmbed({ postId, className }: { postId: string; className?: string }) {
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.instgrm) {
-      window.instgrm.Embeds.process();
-    }
-  }, [postId]);
-
-  return (
-    <div className={className} style={{ minHeight: 480 }}>
-      <blockquote
-        className="instagram-media"
-        data-instgrm-captioned
-        data-instgrm-permalink={`https://www.instagram.com/p/${postId}/`}
-        data-instgrm-version="14"
-        style={{
-          background: "#161616",
-          border: "1px solid rgba(200,164,92,0.12)",
-          borderRadius: "4px",
-          margin: 0,
-          padding: 0,
-          width: "100%",
-          minWidth: "unset",
-          maxWidth: "100%",
-        }}
-      />
-    </div>
-  );
-}
 
 const PORTFOLIO_SECTIONS = ["wedding", "conference", "private", "corporate", "coffee", "vip"];
 
@@ -221,9 +194,14 @@ export default function Portfolio() {
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.95 }}
                           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                          className="break-inside-avoid"
+                          className={`break-inside-avoid ${index % 3 === 0 ? "aspect-[3/4]" : "aspect-[4/3]"}`}
                         >
-                          <InstagramEmbed postId={item.instagramId} />
+                          <MediaCard
+                            thumbnailUrl={item.thumbnailUrl}
+                            title={item.title}
+                            categoryLabel={CATEGORY_LABELS[item.category]}
+                            className="w-full h-full"
+                          />
                         </motion.div>
                       );
                     }

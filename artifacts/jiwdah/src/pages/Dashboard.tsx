@@ -641,17 +641,60 @@ function extractInstagramId(input: string): string {
   return trimmed.replace(/\/$/, "");
 }
 
+function ThumbnailUploadButton({ postId, currentUrl, onDone }: { postId: number; currentUrl?: string | null; onDone: () => void }) {
+  const [uploading, setUploading] = useState(false);
+  const [err, setErr] = useState("");
+  const updatePost = trpc.instagramPosts.update.useMutation({ onSuccess: onDone });
+
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setErr("");
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd, credentials: "include" });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({ error: "فشل الرفع" }));
+        throw new Error(j.error || "فشل الرفع");
+      }
+      const { objectPath } = await res.json();
+      await updatePost.mutateAsync({ id: postId, thumbnailUrl: objectPath });
+    } catch (e2) {
+      setErr(e2 instanceof Error ? e2.message : "خطأ");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <label className={`flex items-center justify-center w-8 h-8 rounded-lg cursor-pointer transition-colors shrink-0 ${currentUrl ? "bg-gold/20 border border-gold/40 text-gold hover:bg-gold/30" : "bg-surface-lighter border border-gold/20 text-cream-muted hover:text-gold hover:border-gold/40"}`} title="رفع صورة مصغرة">
+        {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ImageIcon className="w-3.5 h-3.5" />}
+        <input type="file" accept="image/*,video/mp4,video/webm" onChange={handleChange} className="sr-only" disabled={uploading} />
+      </label>
+      {err && <p className="text-red-400 text-[9px] max-w-[60px] text-center leading-tight">{err}</p>}
+    </div>
+  );
+}
+
 function InstagramManager() {
   const { data: posts = [], isLoading, refetch } = trpc.instagramPosts.list.useQuery();
   const [activeSection, setActiveSection] = useState<string>(INSTAGRAM_SECTION_VALUES[0]);
   const [urlInput, setUrlInput] = useState("");
   const [titleInput, setTitleInput] = useState("");
   const [addError, setAddError] = useState("");
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState("");
+  const [addUploading, setAddUploading] = useState(false);
 
   const createPost = trpc.instagramPosts.create.useMutation({
     onSuccess: () => {
       setUrlInput("");
       setTitleInput("");
+      setThumbnailFile(null);
+      setThumbnailPreview("");
       setAddError("");
       refetch();
     },
@@ -674,15 +717,43 @@ function InstagramManager() {
     .filter((p) => p.section === activeSection)
     .sort((a, b) => a.sortOrder - b.sortOrder);
 
-  const handleAdd = (e: React.FormEvent) => {
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setThumbnailFile(file);
+    setThumbnailPreview(URL.createObjectURL(file));
+  };
+
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     const id = extractInstagramId(urlInput);
     if (!id) { setAddError("أدخل رابط أو معرّف بوست إنستغرام"); return; }
-    createPost.mutate({
-      instagramId: id,
-      section: activeSection as typeof INSTAGRAM_SECTION_VALUES[number],
-      title: titleInput.trim() || INSTAGRAM_SECTION_LABELS[activeSection] || activeSection,
-    });
+    setAddError("");
+    setAddUploading(true);
+    try {
+      let thumbnailUrl: string | undefined;
+      if (thumbnailFile) {
+        const fd = new FormData();
+        fd.append("file", thumbnailFile);
+        const res = await fetch("/api/upload", { method: "POST", body: fd, credentials: "include" });
+        if (!res.ok) {
+          const j = await res.json().catch(() => ({ error: "فشل الرفع" }));
+          throw new Error(j.error || "فشل رفع الصورة");
+        }
+        const { objectPath } = await res.json();
+        thumbnailUrl = objectPath;
+      }
+      await createPost.mutateAsync({
+        instagramId: id,
+        section: activeSection as typeof INSTAGRAM_SECTION_VALUES[number],
+        title: titleInput.trim() || INSTAGRAM_SECTION_LABELS[activeSection] || activeSection,
+        thumbnailUrl: thumbnailUrl ?? null,
+      });
+    } catch (err) {
+      setAddError(err instanceof Error ? err.message : "حدث خطأ");
+    } finally {
+      setAddUploading(false);
+    }
   };
 
   const movePost = (postId: number, direction: "up" | "down") => {
@@ -774,14 +845,34 @@ function InstagramManager() {
               className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-2.5 text-cream text-sm placeholder:text-cream/30 focus:outline-none focus:border-gold/50 transition-colors"
             />
           </div>
+          <div>
+            <label className="text-cream-muted text-xs mb-1.5 block">صورة مصغرة (اختياري)</label>
+            <label className="flex items-center gap-3 cursor-pointer w-full bg-surface border border-gold/20 border-dashed rounded-lg px-4 py-3 hover:border-gold/40 transition-colors group">
+              <ImageIcon className="w-4 h-4 text-gold/50 group-hover:text-gold/70 shrink-0 transition-colors" />
+              <span className="text-cream-muted text-sm truncate">
+                {thumbnailFile ? thumbnailFile.name : "اختر صورة أو فيديو..."}
+              </span>
+              <input type="file" accept="image/*,video/mp4,video/webm" onChange={handleThumbnailChange} className="sr-only" />
+            </label>
+          </div>
+          {thumbnailPreview && (
+            <div className="sm:col-span-2">
+              <p className="text-cream-muted text-xs mb-1.5">معاينة الصورة المصغرة</p>
+              {thumbnailFile?.type.startsWith("video/") ? (
+                <video src={thumbnailPreview} className="h-20 rounded-lg object-cover" muted playsInline />
+              ) : (
+                <img src={thumbnailPreview} alt="preview" className="h-20 rounded-lg object-cover" />
+              )}
+            </div>
+          )}
           <div className="flex items-end">
             <button
               type="submit"
-              disabled={createPost.isPending}
+              disabled={addUploading || createPost.isPending}
               className="px-5 py-2.5 bg-gold text-surface rounded-lg text-sm font-medium hover:bg-gold/90 transition-colors disabled:opacity-50 flex items-center gap-2"
             >
-              {createPost.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-              إضافة
+              {addUploading || createPost.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+              {addUploading ? "جاري الرفع..." : "إضافة"}
             </button>
           </div>
           {addError && <p className="sm:col-span-2 text-red-400 text-xs">{addError}</p>}
@@ -834,14 +925,23 @@ function InstagramManager() {
                   </button>
                 </div>
 
-                <div className="w-8 h-8 bg-gold/8 border border-gold/12 rounded-lg flex items-center justify-center shrink-0">
-                  <Instagram className="w-4 h-4 text-gold/60" />
-                </div>
+                {post.thumbnailUrl ? (
+                  <img src={post.thumbnailUrl} alt={post.title} className="w-10 h-10 rounded-lg object-cover border border-gold/20 shrink-0" />
+                ) : (
+                  <div className="w-10 h-10 bg-gold/8 border border-gold/12 rounded-lg flex items-center justify-center shrink-0">
+                    <Instagram className="w-4 h-4 text-gold/60" />
+                  </div>
+                )}
 
                 <div className="flex-1 min-w-0">
                   <p className="text-cream text-sm font-medium">{post.title}</p>
                   <p className="text-cream-muted text-xs font-mono mt-0.5 truncate">{post.instagramId}</p>
+                  {post.thumbnailUrl && (
+                    <p className="text-green-400/60 text-[10px] mt-0.5">✓ صورة مصغرة مرفوعة</p>
+                  )}
                 </div>
+
+                <ThumbnailUploadButton postId={post.id} currentUrl={post.thumbnailUrl} onDone={() => refetch()} />
 
                 <a
                   href={`https://www.instagram.com/p/${post.instagramId}/`}
