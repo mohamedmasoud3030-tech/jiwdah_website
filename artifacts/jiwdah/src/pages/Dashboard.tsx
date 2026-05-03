@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Users, Calendar, Phone, MapPin,
   ChevronDown, LogOut, RefreshCw, Filter,
   CheckCircle, Clock, XCircle, AlertCircle, List, ChevronLeft, ChevronRight,
-  Search, ArrowUpDown,
+  Search, ArrowUpDown, ImageIcon, Trash2, Plus, Link as LinkIcon,
 } from "lucide-react";
 import {
   Dialog,
@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { trpc } from "@/providers/trpc";
 import { useAuth } from "@/hooks/useAuth";
+import { CATEGORY_VALUES } from "@workspace/api-client-react";
 
 const statusConfig = {
   new: { label: "جديد", color: "bg-blue-500/20 text-blue-400 border-blue-500/30", icon: AlertCircle },
@@ -24,6 +25,15 @@ const statusConfig = {
   confirmed: { label: "مؤكد", color: "bg-green-500/20 text-green-400 border-green-500/30", icon: CheckCircle },
   completed: { label: "مكتمل", color: "bg-purple-500/20 text-purple-400 border-purple-500/30", icon: CheckCircle },
   cancelled: { label: "ملغي", color: "bg-red-500/20 text-red-400 border-red-500/30", icon: XCircle },
+};
+
+const CATEGORY_LABELS: Record<string, string> = {
+  wedding: "أفراح",
+  conference: "مؤتمرات",
+  private: "فعاليات خاصة",
+  corporate: "شركات",
+  coffee: "قهوة عربية",
+  vip: "ضيافة VIP",
 };
 
 const ARABIC_MONTHS = [
@@ -46,6 +56,10 @@ type Lead = {
   status: string;
   createdAt: Date;
 };
+
+function isVideo(url: string) {
+  return /\.(mp4|webm|ogg)(\?|$)/i.test(url);
+}
 
 function MiniCalendar({ leads }: { leads: Lead[] }) {
   const today = new Date();
@@ -201,6 +215,184 @@ function MiniCalendar({ leads }: { leads: Lead[] }) {
   );
 }
 
+function PortfolioManager() {
+  const { data: items = [], isLoading, refetch } = trpc.portfolio.list.useQuery();
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState<string>(CATEGORY_VALUES[0]);
+  const [mediaUrl, setMediaUrl] = useState("");
+  const [formError, setFormError] = useState("");
+
+  const createItem = trpc.portfolio.create.useMutation({
+    onSuccess: () => {
+      setTitle("");
+      setMediaUrl("");
+      setFormError("");
+      refetch();
+    },
+    onError: (err) => setFormError(err.message),
+  });
+
+  const deleteItem = trpc.portfolio.delete.useMutation({
+    onSuccess: () => refetch(),
+  });
+
+  const handleAdd = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) { setFormError("أدخل عنوان العمل"); return; }
+    if (!mediaUrl.trim()) { setFormError("أدخل رابط الصورة أو الفيديو"); return; }
+    setFormError("");
+    createItem.mutate({
+      title: title.trim(),
+      category: category as typeof CATEGORY_VALUES[number],
+      imageUrl: mediaUrl.trim(),
+    });
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Add form */}
+      <div className="bg-surface-light border border-gold/10 rounded-xl p-6">
+        <h3 className="text-cream font-semibold mb-5 flex items-center gap-2">
+          <Plus className="w-4 h-4 text-gold" />
+          إضافة عمل جديد
+        </h3>
+        <form onSubmit={handleAdd} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-2">
+            <label className="text-cream-muted text-xs mb-1.5 block">عنوان العمل</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="مثال: حفل زفاف فاخر"
+              dir="rtl"
+              className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-2.5 text-cream text-sm placeholder:text-cream-muted focus:outline-none focus:border-gold/50 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label className="text-cream-muted text-xs mb-1.5 block">الفئة</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-2.5 text-cream text-sm focus:outline-none focus:border-gold/50 appearance-none transition-colors"
+            >
+              {CATEGORY_VALUES.map((val) => (
+                <option key={val} value={val}>{CATEGORY_LABELS[val] ?? val}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="text-cream-muted text-xs mb-1.5 flex items-center gap-1">
+              <LinkIcon className="w-3 h-3" />
+              رابط الوسائط (صورة أو فيديو)
+            </label>
+            <input
+              type="text"
+              value={mediaUrl}
+              onChange={(e) => setMediaUrl(e.target.value)}
+              placeholder="https://... أو /images/photo.webp"
+              dir="ltr"
+              className="w-full bg-surface border border-gold/20 rounded-lg px-4 py-2.5 text-cream text-sm placeholder:text-cream-muted focus:outline-none focus:border-gold/50 transition-colors"
+            />
+          </div>
+
+          {formError && (
+            <p className="sm:col-span-2 text-red-400 text-xs">{formError}</p>
+          )}
+
+          <div className="sm:col-span-2 flex items-center gap-3">
+            <button
+              type="submit"
+              disabled={createItem.isPending}
+              className="px-5 py-2.5 bg-gold text-surface rounded-lg text-sm font-medium hover:bg-gold/90 transition-colors disabled:opacity-50"
+            >
+              {createItem.isPending ? "جاري الإضافة..." : "إضافة"}
+            </button>
+            <p className="text-cream/25 text-xs">
+              روابط الملفات المحلية: <span dir="ltr">/images/... أو /videos/...</span>
+            </p>
+          </div>
+        </form>
+      </div>
+
+      {/* Items grid */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-cream font-semibold">
+            الأعمال الحالية
+            <span className="text-cream-muted text-sm font-normal mr-2">({items.length})</span>
+          </h3>
+          <button onClick={() => refetch()} className="flex items-center gap-2 text-cream-muted hover:text-gold transition-colors text-xs">
+            <RefreshCw className="w-3.5 h-3.5" />
+            تحديث
+          </button>
+        </div>
+
+        {isLoading ? (
+          <div className="flex justify-center py-12">
+            <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : items.length === 0 ? (
+          <div className="text-center py-12 bg-surface-light border border-gold/10 rounded-xl">
+            <ImageIcon className="w-10 h-10 text-cream-muted mx-auto mb-3" />
+            <p className="text-cream-muted text-sm">لا توجد أعمال حتى الآن</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {items.map((item) => (
+              <div key={item.id} className="group relative rounded-xl overflow-hidden border border-gold/10 bg-surface-light aspect-[4/3]">
+                {isVideo(item.imageUrl) ? (
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  >
+                    <source src={item.imageUrl} type="video/mp4" />
+                  </video>
+                ) : (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "";
+                      (e.target as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-surface/95 via-surface/30 to-transparent" />
+                <div className="absolute bottom-0 right-0 left-0 p-3">
+                  <p className="text-cream text-xs font-medium line-clamp-1">{item.title}</p>
+                  <p className="text-gold/60 text-[10px] mt-0.5">{CATEGORY_LABELS[item.category] ?? item.category}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    if (confirm(`حذف "${item.title}"؟`)) {
+                      deleteItem.mutate({ id: item.id });
+                    }
+                  }}
+                  disabled={deleteItem.isPending}
+                  className="absolute top-2 left-2 w-7 h-7 bg-red-500/80 hover:bg-red-500 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-white" />
+                </button>
+                <div className="absolute top-2 right-2">
+                  <span className="bg-surface/80 text-gold/70 text-[9px] px-1.5 py-0.5 rounded">
+                    {isVideo(item.imageUrl) ? "فيديو" : "صورة"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 type SortKey = "createdAt_desc" | "createdAt_asc" | "eventDate_asc" | "eventDate_desc";
 
 type PendingStatus = {
@@ -209,9 +401,12 @@ type PendingStatus = {
   status: keyof typeof statusConfig;
 } | null;
 
+type DashboardTab = "leads" | "portfolio";
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user, logout, isLoading: authLoading } = useAuth();
+  const [activeTab, setActiveTab] = useState<DashboardTab>("leads");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [expandedLead, setExpandedLead] = useState<number | null>(null);
   const [view, setView] = useState<"list" | "calendar">("list");
@@ -362,249 +557,274 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Controls */}
-        <div className="flex flex-col gap-4 mb-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <h2 className="text-xl font-bold text-cream">الطلبات</h2>
-              <div className="flex items-center border border-gold/15 rounded-lg overflow-hidden">
-                <button
-                  onClick={() => setView("list")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors ${
-                    view === "list" ? "bg-gold/15 text-gold" : "text-cream-muted hover:text-cream"
-                  }`}
-                >
-                  <List className="w-3.5 h-3.5" />
-                  قائمة
-                </button>
-                <button
-                  onClick={() => setView("calendar")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors border-r border-gold/15 ${
-                    view === "calendar" ? "bg-gold/15 text-gold" : "text-cream-muted hover:text-cream"
-                  }`}
-                >
-                  <Calendar className="w-3.5 h-3.5" />
-                  تقويم
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 flex-wrap">
-              <button
-                onClick={() => refetch()}
-                className="flex items-center gap-2 px-4 py-2 bg-surface-light border border-gold/20 rounded-lg text-cream-muted hover:text-gold transition-colors text-sm"
-              >
-                <RefreshCw className="w-4 h-4" />
-                تحديث
-              </button>
-
-              {view === "list" && (
-                <>
-                  {/* Sort */}
-                  <div className="relative">
-                    <ArrowUpDown className="w-4 h-4 text-cream-muted absolute right-3 top-1/2 -translate-y-1/2" />
-                    <select
-                      value={sortKey}
-                      onChange={(e) => setSortKey(e.target.value as SortKey)}
-                      className="bg-surface-light border border-gold/20 rounded-lg pl-4 pr-10 py-2 text-cream text-sm focus:outline-none focus:border-gold appearance-none"
-                    >
-                      <option value="createdAt_desc">تاريخ الإضافة (الأحدث)</option>
-                      <option value="createdAt_asc">تاريخ الإضافة (الأقدم)</option>
-                      <option value="eventDate_asc">تاريخ المناسبة (الأقرب)</option>
-                      <option value="eventDate_desc">تاريخ المناسبة (الأبعد)</option>
-                    </select>
-                    <ChevronDown className="w-4 h-4 text-cream-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  </div>
-
-                  {/* Status Filter */}
-                  <div className="relative">
-                    <Filter className="w-4 h-4 text-cream-muted absolute right-3 top-1/2 -translate-y-1/2" />
-                    <select
-                      value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value)}
-                      className="bg-surface-light border border-gold/20 rounded-lg pl-4 pr-10 py-2 text-cream text-sm focus:outline-none focus:border-gold appearance-none"
-                    >
-                      <option value="all">جميع الحالات</option>
-                      <option value="new">جديد</option>
-                      <option value="contacted">تم التواصل</option>
-                      <option value="confirmed">مؤكد</option>
-                      <option value="completed">مكتمل</option>
-                      <option value="cancelled">ملغي</option>
-                    </select>
-                    <ChevronDown className="w-4 h-4 text-cream-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Search — list view only */}
-          {view === "list" && (
-            <div className="relative">
-              <Search className="w-4 h-4 text-cream-muted absolute right-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="ابحث بالاسم أو رقم الهاتف..."
-                className="w-full bg-surface-light border border-gold/20 rounded-lg pr-10 pl-4 py-2 text-cream text-sm placeholder:text-cream-muted focus:outline-none focus:border-gold/50 transition-colors"
-              />
-            </div>
-          )}
+        {/* Main tabs */}
+        <div className="flex items-center gap-1 mb-6 border-b border-gold/10">
+          {([
+            { key: "leads", label: "الطلبات" },
+            { key: "portfolio", label: "معرض الأعمال" },
+          ] as { key: DashboardTab; label: string }[]).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`px-5 py-2.5 text-sm font-medium border-b-2 -mb-px transition-all duration-200 ${
+                activeTab === tab.key
+                  ? "border-gold text-gold"
+                  : "border-transparent text-cream-muted hover:text-cream"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
-        {isLoading ? (
-          <div className="text-center py-12">
-            <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin mx-auto" />
-          </div>
-        ) : view === "calendar" ? (
-          <MiniCalendar leads={(leads || []) as Lead[]} />
-        ) : !filtered.length ? (
-          <div className="text-center py-12 bg-surface-light border border-gold/10 rounded-xl">
-            <AlertCircle className="w-12 h-12 text-cream-muted mx-auto mb-4" />
-            <p className="text-cream-muted">لا توجد طلبات</p>
-          </div>
+        {activeTab === "portfolio" ? (
+          <PortfolioManager />
         ) : (
-          <div className="space-y-3">
-            {filtered.map((lead) => {
-              const status = statusConfig[lead.status as keyof typeof statusConfig];
-              const StatusIcon = status?.icon || AlertCircle;
-              const isExpanded = expandedLead === lead.id;
-
-              return (
-                <motion.div
-                  key={lead.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-surface-light border border-gold/10 rounded-xl overflow-hidden"
-                >
-                  <div
-                    className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-gold/5 transition-colors"
-                    onClick={() => setExpandedLead(isExpanded ? null : lead.id)}
-                  >
-                    <StatusIcon className={`w-5 h-5 shrink-0 ${status?.color.split(" ")[1]}`} />
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span className="text-cream font-semibold">{lead.name}</span>
-                        <span className={`px-2 py-0.5 rounded-full text-xs border ${status?.color}`}>
-                          {status?.label}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-4 mt-1 text-sm text-cream-muted">
-                        <span className="flex items-center gap-1">
-                          <Phone className="w-3 h-3" />
-                          {lead.phone}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {lead.service}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="text-cream-muted text-xs shrink-0">
-                      {new Date(lead.createdAt).toLocaleDateString("ar-OM")}
-                    </div>
-
-                    <ChevronDown
-                      className={`w-5 h-5 text-cream-muted transition-transform shrink-0 ${
-                        isExpanded ? "rotate-180" : ""
+          <>
+            {/* Controls */}
+            <div className="flex flex-col gap-4 mb-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center border border-gold/15 rounded-lg overflow-hidden">
+                    <button
+                      onClick={() => setView("list")}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors ${
+                        view === "list" ? "bg-gold/15 text-gold" : "text-cream-muted hover:text-cream"
                       }`}
-                    />
+                    >
+                      <List className="w-3.5 h-3.5" />
+                      قائمة
+                    </button>
+                    <button
+                      onClick={() => setView("calendar")}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors border-r border-gold/15 ${
+                        view === "calendar" ? "bg-gold/15 text-gold" : "text-cream-muted hover:text-cream"
+                      }`}
+                    >
+                      <Calendar className="w-3.5 h-3.5" />
+                      تقويم
+                    </button>
                   </div>
+                </div>
 
-                  {isExpanded && (
-                    <div className="border-t border-gold/10 px-5 py-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                        {lead.eventDate && (
-                          <div>
-                            <span className="text-cream-muted text-xs">تاريخ المناسبة</span>
-                            <p className="text-cream">{lead.eventDate}</p>
-                          </div>
-                        )}
-                        {lead.location && (
-                          <div>
-                            <span className="text-cream-muted text-xs flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
-                              الموقع
-                            </span>
-                            <p className="text-cream">{lead.location}</p>
-                          </div>
-                        )}
-                        {lead.guests && (
-                          <div>
-                            <span className="text-cream-muted text-xs flex items-center gap-1">
-                              <Users className="w-3 h-3" />
-                              عدد الضيوف
-                            </span>
-                            <p className="text-cream">{lead.guests}</p>
-                          </div>
-                        )}
-                        {lead.budget && (
-                          <div>
-                            <span className="text-cream-muted text-xs">الميزانية</span>
-                            <p className="text-cream">{lead.budget}</p>
-                          </div>
-                        )}
-                        {"source" in lead && lead.source && (
-                          <div>
-                            <span className="text-cream-muted text-xs">مصدر الطلب</span>
-                            <p className="text-cream text-sm">
-                              {lead.source === "home" ? "الصفحة الرئيسية" : lead.source === "contact" ? "صفحة التواصل" : String(lead.source)}
-                            </p>
-                          </div>
-                        )}
+                <div className="flex items-center gap-3 flex-wrap">
+                  <button
+                    onClick={() => refetch()}
+                    className="flex items-center gap-2 px-4 py-2 bg-surface-light border border-gold/20 rounded-lg text-cream-muted hover:text-gold transition-colors text-sm"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    تحديث
+                  </button>
+
+                  {view === "list" && (
+                    <>
+                      {/* Sort */}
+                      <div className="relative">
+                        <ArrowUpDown className="w-4 h-4 text-cream-muted absolute right-3 top-1/2 -translate-y-1/2" />
+                        <select
+                          value={sortKey}
+                          onChange={(e) => setSortKey(e.target.value as SortKey)}
+                          className="bg-surface-light border border-gold/20 rounded-lg pl-4 pr-10 py-2 text-cream text-sm focus:outline-none focus:border-gold appearance-none"
+                        >
+                          <option value="createdAt_desc">تاريخ الإضافة (الأحدث)</option>
+                          <option value="createdAt_asc">تاريخ الإضافة (الأقدم)</option>
+                          <option value="eventDate_asc">تاريخ المناسبة (الأقرب)</option>
+                          <option value="eventDate_desc">تاريخ المناسبة (الأبعد)</option>
+                        </select>
+                        <ChevronDown className="w-4 h-4 text-cream-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                       </div>
 
-                      {lead.notes && (
-                        <div className="mb-4">
-                          <span className="text-cream-muted text-xs">ملاحظات</span>
-                          <p className="text-cream text-sm">{lead.notes}</p>
+                      {/* Status Filter */}
+                      <div className="relative">
+                        <Filter className="w-4 h-4 text-cream-muted absolute right-3 top-1/2 -translate-y-1/2" />
+                        <select
+                          value={statusFilter}
+                          onChange={(e) => setStatusFilter(e.target.value)}
+                          className="bg-surface-light border border-gold/20 rounded-lg pl-4 pr-10 py-2 text-cream text-sm focus:outline-none focus:border-gold appearance-none"
+                        >
+                          <option value="all">جميع الحالات</option>
+                          <option value="new">جديد</option>
+                          <option value="contacted">تم التواصل</option>
+                          <option value="confirmed">مؤكد</option>
+                          <option value="completed">مكتمل</option>
+                          <option value="cancelled">ملغي</option>
+                        </select>
+                        <ChevronDown className="w-4 h-4 text-cream-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Search — list view only */}
+              {view === "list" && (
+                <div className="relative">
+                  <Search className="w-4 h-4 text-cream-muted absolute right-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="ابحث بالاسم أو رقم الهاتف..."
+                    className="w-full bg-surface-light border border-gold/20 rounded-lg pr-10 pl-4 py-2 text-cream text-sm placeholder:text-cream-muted focus:outline-none focus:border-gold/50 transition-colors"
+                  />
+                </div>
+              )}
+            </div>
+
+            {isLoading ? (
+              <div className="text-center py-12">
+                <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin mx-auto" />
+              </div>
+            ) : view === "calendar" ? (
+              <MiniCalendar leads={(leads || []) as Lead[]} />
+            ) : !filtered.length ? (
+              <div className="text-center py-12 bg-surface-light border border-gold/10 rounded-xl">
+                <AlertCircle className="w-12 h-12 text-cream-muted mx-auto mb-4" />
+                <p className="text-cream-muted">لا توجد طلبات</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filtered.map((lead) => {
+                  const status = statusConfig[lead.status as keyof typeof statusConfig];
+                  const StatusIcon = status?.icon || AlertCircle;
+                  const isExpanded = expandedLead === lead.id;
+
+                  return (
+                    <motion.div
+                      key={lead.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-surface-light border border-gold/10 rounded-xl overflow-hidden"
+                    >
+                      <div
+                        className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-gold/5 transition-colors"
+                        onClick={() => setExpandedLead(isExpanded ? null : lead.id)}
+                      >
+                        <StatusIcon className={`w-5 h-5 shrink-0 ${status?.color.split(" ")[1]}`} />
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <span className="text-cream font-semibold">{lead.name}</span>
+                            <span className={`px-2 py-0.5 rounded-full text-xs border ${status?.color}`}>
+                              {status?.label}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4 mt-1 text-sm text-cream-muted">
+                            <span className="flex items-center gap-1">
+                              <Phone className="w-3 h-3" />
+                              {lead.phone}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {lead.service}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="text-cream-muted text-xs shrink-0">
+                          {new Date(lead.createdAt).toLocaleDateString("ar-OM")}
+                        </div>
+
+                        <ChevronDown
+                          className={`w-5 h-5 text-cream-muted transition-transform shrink-0 ${
+                            isExpanded ? "rotate-180" : ""
+                          }`}
+                        />
+                      </div>
+
+                      {isExpanded && (
+                        <div className="border-t border-gold/10 px-5 py-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                            {lead.eventDate && (
+                              <div>
+                                <span className="text-cream-muted text-xs">تاريخ المناسبة</span>
+                                <p className="text-cream">{lead.eventDate}</p>
+                              </div>
+                            )}
+                            {lead.location && (
+                              <div>
+                                <span className="text-cream-muted text-xs flex items-center gap-1">
+                                  <MapPin className="w-3 h-3" />
+                                  الموقع
+                                </span>
+                                <p className="text-cream">{lead.location}</p>
+                              </div>
+                            )}
+                            {lead.guests && (
+                              <div>
+                                <span className="text-cream-muted text-xs flex items-center gap-1">
+                                  <Users className="w-3 h-3" />
+                                  عدد الضيوف
+                                </span>
+                                <p className="text-cream">{lead.guests}</p>
+                              </div>
+                            )}
+                            {lead.budget && (
+                              <div>
+                                <span className="text-cream-muted text-xs">الميزانية</span>
+                                <p className="text-cream">{lead.budget}</p>
+                              </div>
+                            )}
+                            {"source" in lead && lead.source && (
+                              <div>
+                                <span className="text-cream-muted text-xs">مصدر الطلب</span>
+                                <p className="text-cream text-sm">
+                                  {lead.source === "home" ? "الصفحة الرئيسية" : lead.source === "contact" ? "صفحة التواصل" : String(lead.source)}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+
+                          {lead.notes && (
+                            <div className="mb-4">
+                              <span className="text-cream-muted text-xs">ملاحظات</span>
+                              <p className="text-cream text-sm">{lead.notes}</p>
+                            </div>
+                          )}
+
+                          <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-gold/10">
+                            <span className="text-cream-muted text-sm">تحديث الحالة:</span>
+                            {Object.entries(statusConfig).map(([key, config]) => (
+                              <button
+                                key={key}
+                                onClick={() =>
+                                  setPendingStatus({
+                                    leadId: lead.id,
+                                    leadName: lead.name,
+                                    status: key as keyof typeof statusConfig,
+                                  })
+                                }
+                                className={`px-3 py-1 rounded-full text-xs border transition-colors ${
+                                  lead.status === key
+                                    ? config.color
+                                    : "border-gold/20 text-cream-muted hover:border-gold/50"
+                                }`}
+                              >
+                                {config.label}
+                              </button>
+                            ))}
+
+                            <div className="mr-auto">
+                              <button
+                                onClick={() => {
+                                  if (confirm("هل أنت متأكد من حذف هذا الطلب؟")) {
+                                    deleteLead.mutate({ id: lead.id });
+                                  }
+                                }}
+                                className="text-red-400 hover:text-red-300 text-xs transition-colors"
+                              >
+                                حذف
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       )}
-
-                      <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-gold/10">
-                        <span className="text-cream-muted text-sm">تحديث الحالة:</span>
-                        {Object.entries(statusConfig).map(([key, config]) => (
-                          <button
-                            key={key}
-                            onClick={() =>
-                              setPendingStatus({
-                                leadId: lead.id,
-                                leadName: lead.name,
-                                status: key as keyof typeof statusConfig,
-                              })
-                            }
-                            className={`px-3 py-1 rounded-full text-xs border transition-colors ${
-                              lead.status === key
-                                ? config.color
-                                : "border-gold/20 text-cream-muted hover:border-gold/50"
-                            }`}
-                          >
-                            {config.label}
-                          </button>
-                        ))}
-
-                        <div className="mr-auto">
-                          <button
-                            onClick={() => {
-                              if (confirm("هل أنت متأكد من حذف هذا الطلب؟")) {
-                                deleteLead.mutate({ id: lead.id });
-                              }
-                            }}
-                            className="text-red-400 hover:text-red-300 text-xs transition-colors"
-                          >
-                            حذف
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
-          </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>

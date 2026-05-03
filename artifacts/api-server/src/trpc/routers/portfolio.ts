@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { createRouter, publicQuery, authedQuery } from "../middleware";
 import { portfolio, CATEGORY_VALUES } from "@workspace/db";
-import { eq, desc } from "drizzle-orm";
+import { eq, asc, desc } from "drizzle-orm";
 
 const categoryEnum = z.enum(CATEGORY_VALUES);
 
 export const portfolioRouter = createRouter({
   list: publicQuery.query(async ({ ctx }) => {
-    return ctx.db.select().from(portfolio).orderBy(desc(portfolio.createdAt));
+    return ctx.db.select().from(portfolio).orderBy(asc(portfolio.id));
   }),
 
   getByCategory: publicQuery

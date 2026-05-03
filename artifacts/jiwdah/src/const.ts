@@ -75,24 +75,6 @@ export const SERVICES: Array<{
   },
 ];
 
-export type PortfolioItem = {
-  id: number;
-  title: string;
-  category: string;
-  video?: string;
-  image?: string;
-};
-
-export const PORTFOLIO_ITEMS: PortfolioItem[] = [
-  { id: 1, title: "خدمات VIP فاخرة", category: "vip", video: "/videos/vip_service.mp4" },
-  { id: 2, title: "تنظيم أفراح ومناسبات", category: "wedding", video: "/videos/events.mp4" },
-  { id: 3, title: "فريق عمل محترف", category: "corporate", video: "/videos/team_work.mp4" },
-  { id: 4, title: "ضيافة فعاليات كبرى", category: "conference", video: "/videos/hero_video.mp4" },
-  { id: 5, title: "ضيافة القهوة العربية", category: "vip", image: "/images/portfolio_1.webp" },
-  { id: 6, title: "تنسيق طاولات الضيافة", category: "wedding", image: "/images/portfolio_2.webp" },
-  { id: 7, title: "طاقم الضيافة العماني", category: "corporate", image: "/images/team_1.webp" },
-  { id: 8, title: "خدمة الفعاليات الخارجية", category: "conference", image: "/images/team_2.webp" },
-];
 
 export const STATS = [
   { label: "مناسبة سعيدة", value: 500, suffix: "+" },
