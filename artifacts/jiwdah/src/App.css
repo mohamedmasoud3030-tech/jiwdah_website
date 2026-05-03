@@ -176,12 +176,12 @@
     backdrop-filter: blur(4px);
   }
 
-  /* Service drawer panel */
   .drawer-panel {
-    @apply fixed top-0 left-0 h-full z-50 overflow-y-auto;
+    @apply fixed top-0 right-0 h-full z-50 flex flex-col;
     width: min(480px, 92vw);
     background-color: #141414;
-    border-right: 1px solid rgba(200, 164, 92, 0.1);
+    border-left: 1px solid rgba(200, 164, 92, 0.1);
+    overflow: hidden;
   }
 
   /* Nav link */

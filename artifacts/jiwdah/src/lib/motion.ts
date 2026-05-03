@@ -22,7 +22,7 @@ export const slowReveal: Variants = {
 
 export const drawerSlide = {
   initial: { x: "100%" },
-  animate: { x: 0 },
+  animate: { x: "0%" },
   exit: { x: "100%" },
   transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
 };
