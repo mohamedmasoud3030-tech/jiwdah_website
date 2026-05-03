@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Award } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -7,6 +7,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { trpc } from "@/providers/trpc";
 import { CATEGORY_VALUES } from "@workspace/api-client-react";
 import { fadeSlideUp } from "@/lib/motion";
+import { INSTAGRAM_PORTFOLIO_ITEMS, type InstagramPortfolioItem } from "@/const";
 
 const CATEGORY_LABELS: Record<string, string> = {
   wedding: "أفراح",
@@ -26,24 +27,63 @@ function isVideo(url: string) {
   return /\.(mp4|webm|ogg)(\?|$)/i.test(url);
 }
 
-type PortfolioItem = {
+type DbPortfolioItem = {
   id: number;
   title: string;
   imageUrl: string;
   category: string;
   createdAt: Date;
+  type?: undefined;
 };
+
+type CombinedItem = DbPortfolioItem | (InstagramPortfolioItem & { id: string });
+
+function InstagramEmbed({ postId, className }: { postId: string; className?: string }) {
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.instgrm) {
+      window.instgrm.Embeds.process();
+    }
+  }, [postId]);
+
+  return (
+    <div className={className} style={{ minHeight: 480 }}>
+      <blockquote
+        className="instagram-media"
+        data-instgrm-captioned
+        data-instgrm-permalink={`https://www.instagram.com/p/${postId}/`}
+        data-instgrm-version="14"
+        style={{
+          background: "#161616",
+          border: "1px solid rgba(200,164,92,0.12)",
+          borderRadius: "4px",
+          margin: 0,
+          padding: 0,
+          width: "100%",
+          minWidth: "unset",
+          maxWidth: "100%",
+        }}
+      />
+    </div>
+  );
+}
 
 export default function Portfolio() {
   const [activeCategory, setActiveCategory] = useState("all");
-  const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
-  const { data: items = [], isLoading } = trpc.portfolio.list.useQuery();
+  const [selectedItem, setSelectedItem] = useState<DbPortfolioItem | null>(null);
+  const { data: dbItems = [], isLoading } = trpc.portfolio.list.useQuery();
 
-  const featuredItems = items.slice(0, 3);
-  const filteredItems =
+  const igItems: (InstagramPortfolioItem & { id: string })[] = INSTAGRAM_PORTFOLIO_ITEMS.map((item) => ({
+    ...item,
+    id: `ig-${item.instagramId}`,
+  }));
+
+  const allItems: CombinedItem[] = [...dbItems, ...igItems];
+
+  const featuredItems = dbItems.slice(0, 3);
+  const filteredItems: CombinedItem[] =
     activeCategory === "all"
-      ? items
-      : items.filter((item) => item.category === activeCategory);
+      ? allItems
+      : allItems.filter((item) => item.category === activeCategory);
 
   return (
     <div className="min-h-screen bg-surface">
@@ -153,31 +193,50 @@ export default function Portfolio() {
 
               <motion.div layout className="columns-2 md:columns-3 gap-3 space-y-3">
                 <AnimatePresence mode="popLayout">
-                  {filteredItems.map((item, index) => (
-                    <motion.div
-                      key={item.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                      className={`group relative rounded overflow-hidden break-inside-avoid cursor-pointer ${index % 3 === 0 ? "aspect-[3/4]" : "aspect-[4/3]"}`}
-                      onClick={() => setSelectedItem(item)}
-                    >
-                      {isVideo(item.imageUrl) ? (
-                        <video autoPlay loop muted playsInline className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                          <source src={item.imageUrl} type="video/mp4" />
-                        </video>
-                      ) : (
-                        <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-surface/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-                      <div className="absolute bottom-0 right-0 left-0 p-3 translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400">
-                        <h4 className="text-cream text-xs font-medium">{item.title}</h4>
-                        <p className="text-gold/60 text-xs">{categories.find((c) => c.key === item.category)?.label}</p>
-                      </div>
-                    </motion.div>
-                  ))}
+                  {filteredItems.map((item, index) => {
+                    if (item.type === "instagram") {
+                      return (
+                        <motion.div
+                          key={item.id}
+                          layout
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                          className="break-inside-avoid"
+                        >
+                          <InstagramEmbed postId={item.instagramId} />
+                        </motion.div>
+                      );
+                    }
+
+                    const dbItem = item as DbPortfolioItem;
+                    return (
+                      <motion.div
+                        key={dbItem.id}
+                        layout
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                        className={`group relative rounded overflow-hidden break-inside-avoid cursor-pointer ${index % 3 === 0 ? "aspect-[3/4]" : "aspect-[4/3]"}`}
+                        onClick={() => setSelectedItem(dbItem)}
+                      >
+                        {isVideo(dbItem.imageUrl) ? (
+                          <video autoPlay loop muted playsInline className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                            <source src={dbItem.imageUrl} type="video/mp4" />
+                          </video>
+                        ) : (
+                          <img src={dbItem.imageUrl} alt={dbItem.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-surface/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                        <div className="absolute bottom-0 right-0 left-0 p-3 translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400">
+                          <h4 className="text-cream text-xs font-medium">{dbItem.title}</h4>
+                          <p className="text-gold/60 text-xs">{categories.find((c) => c.key === dbItem.category)?.label}</p>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </AnimatePresence>
               </motion.div>
             </div>

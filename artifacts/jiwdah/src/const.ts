@@ -154,3 +154,51 @@ export const TESTIMONIALS = [
 ];
 
 export const LOGIN_PATH = "/login";
+
+export type InstagramPortfolioItem = {
+  instagramId: string;
+  category: string;
+  title: string;
+  type: "instagram";
+};
+
+export const INSTAGRAM_PORTFOLIO_ITEMS: InstagramPortfolioItem[] = [
+  { instagramId: "DXb2TfxjVBg", category: "wedding", title: "أفراح", type: "instagram" },
+  { instagramId: "DS103e_jI-w", category: "wedding", title: "أفراح", type: "instagram" },
+  { instagramId: "DSxRofqAdzT", category: "wedding", title: "أفراح", type: "instagram" },
+  { instagramId: "DSPZ5DrDKIp", category: "wedding", title: "أفراح", type: "instagram" },
+  { instagramId: "DGAUJTqMZs_", category: "wedding", title: "أفراح", type: "instagram" },
+  { instagramId: "C3O-a0nIV4b", category: "wedding", title: "أفراح", type: "instagram" },
+  { instagramId: "DHf8mVJMkEK", category: "wedding", title: "أفراح", type: "instagram" },
+  { instagramId: "DT7CaguDF5J", category: "conference", title: "مؤتمرات", type: "instagram" },
+  { instagramId: "DTIfRLuDLyO", category: "conference", title: "مؤتمرات", type: "instagram" },
+  { instagramId: "DSrUrcYjJjr", category: "conference", title: "مؤتمرات", type: "instagram" },
+  { instagramId: "DJleSjhsFot", category: "conference", title: "مؤتمرات", type: "instagram" },
+  { instagramId: "DIsoLdxMyhg", category: "conference", title: "مؤتمرات", type: "instagram" },
+  { instagramId: "DAP6RahMBRd", category: "vip", title: "ضيافة VIP", type: "instagram" },
+  { instagramId: "DUAa9diDdtZ", category: "vip", title: "ضيافة VIP", type: "instagram" },
+  { instagramId: "DJleSjhsFot", category: "vip", title: "ضيافة VIP", type: "instagram" },
+  { instagramId: "DBjXBw4s8ou", category: "vip", title: "ضيافة VIP", type: "instagram" },
+  { instagramId: "DA29EDXMAmm", category: "vip", title: "ضيافة VIP", type: "instagram" },
+  { instagramId: "DXb2TfxjVBg", category: "vip", title: "ضيافة VIP", type: "instagram" },
+  { instagramId: "DUz7ASsDZgr", category: "vip", title: "ضيافة VIP", type: "instagram" },
+  { instagramId: "C_Lcso5MzUI", category: "private", title: "فعاليات", type: "instagram" },
+  { instagramId: "DT7UjMBDdg5", category: "private", title: "فعاليات", type: "instagram" },
+  { instagramId: "DXEtd21DTB7", category: "private", title: "فعاليات", type: "instagram" },
+  { instagramId: "DW-qlSLChtC", category: "private", title: "فعاليات", type: "instagram" },
+  { instagramId: "DVvWNTvDX3R", category: "corporate", title: "شركات", type: "instagram" },
+  { instagramId: "DUVDW10jSsz", category: "corporate", title: "شركات", type: "instagram" },
+];
+
+export const ABOUT_INSTAGRAM_POST = "DUf0Fbhjcc9";
+
+export const TEAM_INSTAGRAM_POSTS = [
+  "DUVGJpuDerL",
+  "DLRfGvFMYrz",
+  "DTIe_tqDHwf",
+  "DMNZwS3s9Ep",
+  "DSPc3xAjD-w",
+  "DAJrVt6sVhp",
+  "DFfC3gMs_Sc",
+  "DBk8CzpsX82",
+];

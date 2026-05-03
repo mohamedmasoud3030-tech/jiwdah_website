@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Target, Heart, Shield, Award, Users, MapPin, Plus, Minus } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { Link } from "react-router";
-import { FAQS } from "@/const";
+import { FAQS, ABOUT_INSTAGRAM_POST, TEAM_INSTAGRAM_POSTS } from "@/const";
 import { fadeSlideUp, staggerChildren, slowReveal } from "@/lib/motion";
 
 const team = [
@@ -20,6 +20,35 @@ const values = [
   { icon: Shield, title: "الموثوقية", description: "نلتزم بوعودنا في كل مناسبة" },
   { icon: Target, title: "الابتكار", description: "حلول مبتكرة لتجارب فريدة لا تُنسى" },
 ];
+
+function InstagramEmbed({ postId, className }: { postId: string; className?: string }) {
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.instgrm) {
+      window.instgrm.Embeds.process();
+    }
+  }, [postId]);
+
+  return (
+    <div className={className}>
+      <blockquote
+        className="instagram-media"
+        data-instgrm-captioned
+        data-instgrm-permalink={`https://www.instagram.com/p/${postId}/`}
+        data-instgrm-version="14"
+        style={{
+          background: "#161616",
+          border: "1px solid rgba(200,164,92,0.12)",
+          borderRadius: "4px",
+          margin: 0,
+          padding: 0,
+          width: "100%",
+          minWidth: "unset",
+          maxWidth: "100%",
+        }}
+      />
+    </div>
+  );
+}
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -80,12 +109,12 @@ export default function About() {
       <main>
         <section className="py-24 px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
               <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
                 <h2 className="text-2xl md:text-3xl text-cream mb-6" style={{ fontFamily: "'Noto Serif Arabic', serif", fontWeight: 500 }}>
                   نحن نؤمن بأن الضيافة <span className="text-gold">فن</span>
                 </h2>
-                <div className="space-y-4 text-cream/50 text-sm leading-relaxed font-light">
+                <div className="space-y-4 text-cream/50 text-sm leading-relaxed font-light mb-10">
                   <p>
                     تأسست مشاريع جودة الإنطلاقة في نزوى بهدف تقديم خدمات ضيافة استثنائية تليق بأرقى المناسبات.
                     بدأنا رحلتنا بفريق صغير وطموح كبير، واليوم نفخر بكوننا من رواد خدمات الضيافة المتنقلة في سلطنة عمان.
@@ -94,6 +123,16 @@ export default function About() {
                     نمتلك فريقاً من المحترفين المدربين على أعلى معايير الضيافة العالمية، ونستخدم أفضل المواد
                     والمكونات لضمان تجربة لا تُنسى لكم ولضيوفكم.
                   </p>
+                </div>
+
+                <div
+                  className="rounded overflow-hidden border border-gold/15"
+                  style={{ background: "rgba(200,164,92,0.04)" }}
+                >
+                  <div className="px-4 pt-4 pb-1">
+                    <span className="text-gold/60 text-xs tracking-widest uppercase">من نحن</span>
+                  </div>
+                  <InstagramEmbed postId={ABOUT_INSTAGRAM_POST} />
                 </div>
               </motion.div>
 
@@ -154,12 +193,13 @@ export default function About() {
                 تعرّف على <span className="text-gradient-gold">فريقنا</span>
               </h2>
             </motion.div>
+
             <motion.div
               variants={staggerChildren}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-5"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-12"
             >
               {team.map((member) => (
                 <motion.div key={member.name} variants={fadeSlideUp} className="group relative overflow-hidden rounded border border-gold/6 hover:border-gold/20 transition-all duration-500">
@@ -171,6 +211,33 @@ export default function About() {
                     <h4 className="text-cream text-base font-medium mb-0.5" style={{ fontFamily: "'Noto Serif Arabic', serif" }}>{member.name}</h4>
                     <p className="text-gold/60 text-xs">{member.role}</p>
                   </div>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            <div className="divider-gold mb-12" />
+
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-8">
+              <h3 className="text-lg text-cream" style={{ fontFamily: "'Noto Serif Arabic', serif", fontWeight: 500 }}>
+                لحظاتنا على <span className="text-gold">إنستغرام</span>
+              </h3>
+            </motion.div>
+
+            <motion.div
+              variants={staggerChildren}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+            >
+              {TEAM_INSTAGRAM_POSTS.map((postId, index) => (
+                <motion.div
+                  key={postId}
+                  variants={fadeSlideUp}
+                  className="rounded overflow-hidden border border-gold/8 hover:border-gold/20 transition-all duration-500"
+                  style={{ transitionDelay: `${index * 40}ms` }}
+                >
+                  <InstagramEmbed postId={postId} />
                 </motion.div>
               ))}
             </motion.div>
