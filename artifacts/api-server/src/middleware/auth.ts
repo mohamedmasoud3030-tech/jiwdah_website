@@ -13,14 +13,21 @@ export type AuthContext = {
   user?: User;
 };
 
+function getSessionSecret(): Uint8Array {
+  const appSecret = process.env.APP_SECRET?.trim();
+  if (!appSecret) {
+    throw new Error("APP_SECRET environment variable is required for session authentication.");
+  }
+  return new TextEncoder().encode(appSecret);
+}
+
 export async function createAuthContext(req: Request): Promise<AuthContext> {
   try {
     const cookies = cookie.parse(req.headers.cookie || "");
     const token = cookies[SESSION_COOKIE];
     if (!token) return {};
 
-    const appSecret = process.env.APP_SECRET || "";
-    const secret = new TextEncoder().encode(appSecret);
+    const secret = getSessionSecret();
     const { payload } = await jose.jwtVerify(token, secret, {
       algorithms: ["HS256"],
     });
@@ -35,8 +42,7 @@ export async function createAuthContext(req: Request): Promise<AuthContext> {
 }
 
 export async function signSessionToken(payload: { unionId: string; clientId: string }): Promise<string> {
-  const appSecret = process.env.APP_SECRET || "";
-  const secret = new TextEncoder().encode(appSecret);
+  const secret = getSessionSecret();
   return new jose.SignJWT(payload as unknown as jose.JWTPayload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
