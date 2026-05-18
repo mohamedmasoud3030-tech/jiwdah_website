@@ -9,7 +9,7 @@ import router from "./routes";
 import { logger } from "./lib/logger";
 import { appRouter } from "./trpc/router";
 import { createTrpcContext } from "./trpc/context";
-import { createOAuthCallbackHandler } from "./auth/oauth";
+import { createOAuthCallbackHandler, createOAuthLoginHandler } from "./auth/oauth";
 
 const app: Express = express();
 
@@ -37,6 +37,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get("/api/oauth/login", createOAuthLoginHandler());
 app.get("/api/oauth/callback", createOAuthCallbackHandler());
 
 app.use(
