@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import cookie from "cookie";
+import { randomBytes, timingSafeEqual } from "crypto";
 import { db } from "@workspace/db";
 import { users } from "@workspace/db";
 import { eq } from "drizzle-orm";
@@ -7,20 +8,79 @@ import * as jose from "jose";
 import { SESSION_COOKIE, SESSION_MAX_AGE_SECONDS, signSessionToken, createAuthContext } from "../middleware/auth";
 import { logger } from "../lib/logger";
 
+const OAUTH_STATE_COOKIE = "kimi_oauth_state";
+const OAUTH_STATE_MAX_AGE_SECONDS = 10 * 60;
+
 function getEnv(key: string): string {
   return process.env[key] ?? "";
+}
+
+function getRequiredEnv(key: string): string {
+  const value = getEnv(key).trim();
+  if (!value) throw new Error(`${key} environment variable is required.`);
+  return value;
+}
+
+function getRequestOrigin(req: Request): string {
+  const forwardedProto = req.headers["x-forwarded-proto"];
+  const forwardedHost = req.headers["x-forwarded-host"];
+  const proto = Array.isArray(forwardedProto)
+    ? forwardedProto[0]
+    : forwardedProto?.split(",")[0]?.trim() || req.protocol;
+  const host = Array.isArray(forwardedHost)
+    ? forwardedHost[0]
+    : forwardedHost?.split(",")[0]?.trim() || req.headers.host;
+
+  if (!host) throw new Error("Unable to determine request host.");
+  return `${proto}://${host}`;
+}
+
+function getRedirectUri(req: Request): string {
+  return `${getRequestOrigin(req)}/api/oauth/callback`;
+}
+
+function isLocalhost(host: string): boolean {
+  return host.startsWith("localhost:") || host.startsWith("127.0.0.1:");
+}
+
+function getCookieOptions(req: Request, maxAge: number) {
+  const host = req.headers.host || "";
+  const localhost = isLocalhost(host);
+  return {
+    httpOnly: true,
+    path: "/",
+    sameSite: localhost ? "lax" as const : "none" as const,
+    secure: !localhost,
+    maxAge,
+  };
+}
+
+function clearOAuthStateCookie(req: Request, res: Response) {
+  res.appendHeader(
+    "set-cookie",
+    cookie.serialize(OAUTH_STATE_COOKIE, "", {
+      ...getCookieOptions(req, 0),
+      expires: new Date(0),
+    }),
+  );
+}
+
+function safeCompare(a: string, b: string): boolean {
+  const aBuffer = Buffer.from(a);
+  const bBuffer = Buffer.from(b);
+  return aBuffer.length === bBuffer.length && timingSafeEqual(aBuffer, bBuffer);
 }
 
 async function exchangeAuthCode(code: string, redirectUri: string) {
   const body = new URLSearchParams({
     grant_type: "authorization_code",
     code,
-    client_id: getEnv("APP_ID"),
+    client_id: getRequiredEnv("APP_ID"),
     redirect_uri: redirectUri,
-    client_secret: getEnv("APP_SECRET"),
+    client_secret: getRequiredEnv("APP_SECRET"),
   });
 
-  const resp = await fetch(`${getEnv("KIMI_AUTH_URL")}/api/oauth/token`, {
+  const resp = await fetch(`${getRequiredEnv("KIMI_AUTH_URL")}/api/oauth/token`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: body.toString(),
@@ -37,7 +97,7 @@ async function exchangeAuthCode(code: string, redirectUri: string) {
 const jwksCache = new Map<string, ReturnType<typeof jose.createRemoteJWKSet>>();
 
 function getJwks() {
-  const url = `${getEnv("KIMI_AUTH_URL")}/api/.well-known/jwks.json`;
+  const url = `${getRequiredEnv("KIMI_AUTH_URL")}/api/.well-known/jwks.json`;
   if (!jwksCache.has(url)) {
     jwksCache.set(url, jose.createRemoteJWKSet(new URL(url)));
   }
@@ -52,15 +112,39 @@ async function verifyProviderToken(accessToken: string): Promise<{ userId: strin
 }
 
 async function getUserProfile(accessToken: string) {
-  const resp = await fetch(`${getEnv("KIMI_OPEN_URL")}/v1/users/me/profile`, {
+  const resp = await fetch(`${getRequiredEnv("KIMI_OPEN_URL")}/v1/users/me/profile`, {
     headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },
   });
   if (!resp.ok) return null;
   return resp.json() as Promise<{ user_id: string; name: string; avatar_url: string }>;
 }
 
-function isLocalhost(host: string): boolean {
-  return host.startsWith("localhost:") || host.startsWith("127.0.0.1:");
+export function createOAuthLoginHandler() {
+  return async (req: Request, res: Response) => {
+    const existing = await createAuthContext(req);
+    if (existing.user) return res.redirect("/dashboard");
+
+    try {
+      const redirectUri = getRedirectUri(req);
+      const state = randomBytes(32).toString("base64url");
+      const url = new URL(`${getRequiredEnv("KIMI_AUTH_URL")}/api/oauth/authorize`);
+      url.searchParams.set("client_id", getRequiredEnv("APP_ID"));
+      url.searchParams.set("redirect_uri", redirectUri);
+      url.searchParams.set("response_type", "code");
+      url.searchParams.set("scope", "profile");
+      url.searchParams.set("state", state);
+
+      res.setHeader(
+        "set-cookie",
+        cookie.serialize(OAUTH_STATE_COOKIE, state, getCookieOptions(req, OAUTH_STATE_MAX_AGE_SECONDS)),
+      );
+
+      return res.redirect(url.toString());
+    } catch (err) {
+      logger.error({ err }, "OAuth login failed");
+      return res.status(500).json({ error: "OAuth login failed" });
+    }
+  };
 }
 
 export function createOAuthCallbackHandler() {
@@ -72,16 +156,26 @@ export function createOAuthCallbackHandler() {
     const { code, state, error } = req.query as Record<string, string>;
 
     if (error) {
+      clearOAuthStateCookie(req, res);
       if (error === "access_denied") return res.redirect("/login");
       return res.status(400).json({ error });
     }
 
     if (!code || !state) {
+      clearOAuthStateCookie(req, res);
       return res.status(400).json({ error: "code and state are required" });
     }
 
+    const cookies = cookie.parse(req.headers.cookie || "");
+    const expectedState = cookies[OAUTH_STATE_COOKIE];
+    clearOAuthStateCookie(req, res);
+
+    if (!expectedState || !safeCompare(expectedState, state)) {
+      return res.status(400).json({ error: "Invalid OAuth state" });
+    }
+
     try {
-      const redirectUri = Buffer.from(state, "base64").toString();
+      const redirectUri = getRedirectUri(req);
       const tokenResp = await exchangeAuthCode(code, redirectUri);
       const { userId } = await verifyProviderToken(tokenResp.access_token);
       const profile = await getUserProfile(tokenResp.access_token);
@@ -105,20 +199,11 @@ export function createOAuthCallbackHandler() {
         },
       });
 
-      const token = await signSessionToken({ unionId: userId, clientId: getEnv("APP_ID") });
+      const token = await signSessionToken({ unionId: userId, clientId: getRequiredEnv("APP_ID") });
 
-      const host = req.headers.host || "";
-      const localhost = isLocalhost(host);
-
-      res.setHeader(
+      res.appendHeader(
         "set-cookie",
-        cookie.serialize(SESSION_COOKIE, token, {
-          httpOnly: true,
-          path: "/",
-          sameSite: localhost ? "lax" : "none",
-          secure: !localhost,
-          maxAge: SESSION_MAX_AGE_SECONDS,
-        }),
+        cookie.serialize(SESSION_COOKIE, token, getCookieOptions(req, SESSION_MAX_AGE_SECONDS)),
       );
 
       return res.redirect("/dashboard");
