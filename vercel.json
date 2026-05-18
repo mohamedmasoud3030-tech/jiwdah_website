@@ -1,3 +1,10 @@
 {
-  "outputDirectory": "artifacts/jiwdah/dist/public"
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "artifacts/jiwdah/dist/public",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/[...path]"
+    }
+  ]
 }
