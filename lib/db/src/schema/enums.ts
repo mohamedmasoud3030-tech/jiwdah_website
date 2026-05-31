@@ -1,15 +1,13 @@
 export {
-  SERVICE_VALUES,
-  CATEGORY_VALUES,
-  LEAD_STATUS_VALUES,
+  INQUIRY_STATUS_VALUES,
+  PROJECT_STATUS_VALUES,
+  CONTENT_STATUS_VALUES,
   ROLE_VALUES,
-  INSTAGRAM_SECTION_VALUES,
 } from "@workspace/api-zod";
 
 export type {
-  ServiceValue,
-  CategoryValue,
-  LeadStatusValue,
+  InquiryStatusValue,
+  ProjectStatusValue,
+  ContentStatusValue,
   RoleValue,
-  InstagramSectionValue,
 } from "@workspace/api-zod";

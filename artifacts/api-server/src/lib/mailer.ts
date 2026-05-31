@@ -19,54 +19,54 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const SERVICE_LABELS: Record<string, string> = {
-  vip: "VIP",
-  wedding: "حفل زفاف",
-  conference: "مؤتمر",
-  private: "مناسبة خاصة",
-  corporate: "فعالية شركات",
-  coffee: "كوفي كارت",
-};
-
-export interface LeadData {
+export interface InquiryData {
   id: number;
   name: string;
-  phone: string;
-  service: string;
-  eventDate?: string | null;
-  location?: string | null;
-  budget?: string | null;
-  guests?: number | null;
-  notes?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  service?: string | null;
+  message: string;
   source?: string | null;
 }
 
-export async function sendNewLeadNotification(lead: LeadData): Promise<void> {
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function renderValue(value?: string | null): string {
+  return value && value.trim() ? escapeHtml(value.trim()) : "—";
+}
+
+function renderSubjectValue(value: string): string {
+  return value.replace(/[\r\n]+/g, " ").trim();
+}
+
+export async function sendNewInquiryNotification(inquiry: InquiryData): Promise<void> {
   if (!SMTP_USER || !SMTP_PASS) {
     console.warn("[mailer] SMTP credentials not configured — skipping notification");
     return;
   }
 
-  const serviceLabel = SERVICE_LABELS[lead.service] ?? lead.service;
-
   const rows = [
-    ["الاسم", lead.name],
-    ["الهاتف", lead.phone],
-    ["الخدمة", serviceLabel],
-    ["تاريخ الفعالية", lead.eventDate ?? "—"],
-    ["الموقع", lead.location ?? "—"],
-    ["الميزانية", lead.budget ?? "—"],
-    ["عدد الضيوف", lead.guests?.toString() ?? "—"],
-    ["ملاحظات", lead.notes ?? "—"],
-    ["المصدر", lead.source ?? "—"],
+    ["الاسم", renderValue(inquiry.name)],
+    ["البريد الإلكتروني", renderValue(inquiry.email)],
+    ["الهاتف", renderValue(inquiry.phone)],
+    ["الخدمة المطلوبة", renderValue(inquiry.service)],
+    ["الرسالة", renderValue(inquiry.message)],
+    ["المصدر", renderValue(inquiry.source)],
   ];
 
   const tableRows = rows
     .map(
       ([label, value]) => `
       <tr>
-        <td style="padding:8px 12px;background:#1a1a1a;color:#b89c5e;font-weight:bold;border:1px solid #2a2a2a;text-align:right;">${label}</td>
-        <td style="padding:8px 12px;background:#111;color:#e8dcc8;border:1px solid #2a2a2a;text-align:right;">${value}</td>
+        <td style="padding:8px 12px;background:#eef4ff;color:#164e9b;font-weight:bold;border:1px solid #d9e6fb;text-align:right;">${label}</td>
+        <td style="padding:8px 12px;background:#fff;color:#172033;border:1px solid #d9e6fb;text-align:right;white-space:pre-wrap;">${value}</td>
       </tr>`
     )
     .join("");
@@ -75,19 +75,19 @@ export async function sendNewLeadNotification(lead: LeadData): Promise<void> {
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:24px;background:#0a0a0a;font-family:Arial,sans-serif;">
-  <div style="max-width:560px;margin:0 auto;background:#111;border:1px solid #2a2a2a;border-radius:12px;overflow:hidden;">
-    <div style="background:linear-gradient(135deg,#b89c5e,#8a7240);padding:24px;text-align:center;">
-      <h1 style="margin:0;color:#fff;font-size:20px;">🔔 طلب حجز جديد</h1>
-      <p style="margin:8px 0 0;color:#fff9;font-size:14px;">مشاريع جودة الإنطلاقة — رقم #${lead.id}</p>
+<body style="margin:0;padding:24px;background:#f5f8fc;font-family:Arial,sans-serif;">
+  <div style="max-width:620px;margin:0 auto;background:#fff;border:1px solid #d9e6fb;border-radius:16px;overflow:hidden;">
+    <div style="background:linear-gradient(135deg,#2563eb,#0f4ca8);padding:24px;text-align:center;">
+      <h1 style="margin:0;color:#fff;font-size:20px;">استفسار جديد من المنصة</h1>
+      <p style="margin:8px 0 0;color:#ffffffcc;font-size:14px;">Mohamed Masoud Digital Platform — رقم #${inquiry.id}</p>
     </div>
     <div style="padding:24px;">
       <table style="width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;">
         ${tableRows}
       </table>
     </div>
-    <div style="padding:16px 24px;background:#0a0a0a;text-align:center;">
-      <p style="margin:0;color:#666;font-size:12px;">تم إرسال هذا الإشعار تلقائياً من نظام إدارة الحجوزات</p>
+    <div style="padding:16px 24px;background:#f8fbff;text-align:center;">
+      <p style="margin:0;color:#64748b;font-size:12px;">تم إرسال هذا الإشعار تلقائيًا من نموذج الاستفسارات.</p>
     </div>
   </div>
 </body>
@@ -95,13 +95,13 @@ export async function sendNewLeadNotification(lead: LeadData): Promise<void> {
 
   try {
     await transporter.sendMail({
-      from: `"مشاريع جودة الإنطلاقة" <${SMTP_USER}>`,
+      from: `"Mohamed Masoud Digital Platform" <${SMTP_USER}>`,
       to: NOTIFY_EMAIL,
-      subject: `🔔 طلب حجز جديد — ${lead.name} (${serviceLabel})`,
+      subject: `استفسار جديد — ${renderSubjectValue(inquiry.name)}`,
       html,
     });
-    console.log(`[mailer] Notification sent for lead #${lead.id} to ${NOTIFY_EMAIL}`);
-  } catch (err) {
-    console.error("[mailer] Failed to send notification:", err);
+    console.log(`[mailer] Notification sent for inquiry #${inquiry.id} to ${NOTIFY_EMAIL}`);
+  } catch (error) {
+    console.error("[mailer] Failed to send notification:", error);
   }
 }

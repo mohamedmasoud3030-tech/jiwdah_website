@@ -1,12 +1,17 @@
 import { pgTable, pgEnum, serial, varchar, text, timestamp, integer } from "drizzle-orm/pg-core";
-import { SERVICE_VALUES, CATEGORY_VALUES, LEAD_STATUS_VALUES, ROLE_VALUES, INSTAGRAM_SECTION_VALUES } from "./enums";
+import {
+  INQUIRY_STATUS_VALUES,
+  PROJECT_STATUS_VALUES,
+  CONTENT_STATUS_VALUES,
+  ROLE_VALUES,
+} from "./enums";
 
 export * from "./enums";
 
 export const roleEnum = pgEnum("role", ROLE_VALUES);
-export const leadStatusEnum = pgEnum("lead_status", LEAD_STATUS_VALUES);
-export const portfolioCategoryEnum = pgEnum("portfolio_category", CATEGORY_VALUES);
-export const serviceEnum = pgEnum("service", SERVICE_VALUES);
+export const inquiryStatusEnum = pgEnum("inquiry_status", INQUIRY_STATUS_VALUES);
+export const projectStatusEnum = pgEnum("project_status", PROJECT_STATUS_VALUES);
+export const contentStatusEnum = pgEnum("content_status", CONTENT_STATUS_VALUES);
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -23,46 +28,49 @@ export const users = pgTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-export const leads = pgTable("leads", {
+export const inquiries = pgTable("inquiries", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
-  phone: varchar("phone", { length: 50 }).notNull(),
-  service: serviceEnum("service").notNull(),
-  eventDate: varchar("event_date", { length: 50 }),
-  location: varchar("location", { length: 255 }),
-  budget: varchar("budget", { length: 100 }),
-  guests: integer("guests"),
-  notes: text("notes"),
-  source: varchar("source", { length: 50 }),
-  status: leadStatusEnum("status").default("new").notNull(),
+  email: varchar("email", { length: 320 }),
+  phone: varchar("phone", { length: 50 }),
+  service: varchar("service", { length: 255 }),
+  message: text("message").notNull(),
+  source: varchar("source", { length: 50 }).default("contact").notNull(),
+  status: inquiryStatusEnum("status").default("new").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export type Lead = typeof leads.$inferSelect;
-export type InsertLead = typeof leads.$inferInsert;
+export type Inquiry = typeof inquiries.$inferSelect;
+export type InsertInquiry = typeof inquiries.$inferInsert;
 
-export const portfolio = pgTable("portfolio", {
+export const projects = pgTable("projects", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
-  imageUrl: text("image_url").notNull(),
-  category: portfolioCategoryEnum("category").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-export type PortfolioItem = typeof portfolio.$inferSelect;
-export type InsertPortfolioItem = typeof portfolio.$inferInsert;
-
-export const instagramSectionEnum = pgEnum("instagram_section", INSTAGRAM_SECTION_VALUES);
-
-export const instagramPosts = pgTable("instagram_posts", {
-  id: serial("id").primaryKey(),
-  instagramId: varchar("instagram_id", { length: 255 }).notNull(),
-  section: instagramSectionEnum("section").notNull(),
-  title: varchar("title", { length: 255 }).default("").notNull(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  summary: text("summary"),
+  description: text("description"),
+  imageUrl: text("image_url"),
+  projectUrl: text("project_url"),
+  repositoryUrl: text("repository_url"),
+  status: projectStatusEnum("status").default("draft").notNull(),
   sortOrder: integer("sort_order").default(0).notNull(),
-  thumbnailUrl: text("thumbnail_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export type InstagramPost = typeof instagramPosts.$inferSelect;
-export type InsertInstagramPost = typeof instagramPosts.$inferInsert;
+export type Project = typeof projects.$inferSelect;
+export type InsertProject = typeof projects.$inferInsert;
+
+export const contentEntries = pgTable("content_entries", {
+  id: serial("id").primaryKey(),
+  key: varchar("key", { length: 255 }).notNull().unique(),
+  title: varchar("title", { length: 255 }).notNull(),
+  body: text("body").notNull(),
+  status: contentStatusEnum("status").default("draft").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type ContentEntry = typeof contentEntries.$inferSelect;
+export type InsertContentEntry = typeof contentEntries.$inferInsert;
