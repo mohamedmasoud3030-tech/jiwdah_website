@@ -1,15 +1,15 @@
 import { createRouter, publicQuery } from "./middleware";
 import { authRouter } from "./routers/auth";
-import { leadsRouter } from "./routers/leads";
-import { portfolioRouter } from "./routers/portfolio";
-import { instagramPostsRouter } from "./routers/instagramPosts";
+import { inquiriesRouter } from "./routers/inquiries";
+import { projectsRouter } from "./routers/projects";
+import { contentRouter } from "./routers/content";
 
 export const appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
   auth: authRouter,
-  leads: leadsRouter,
-  portfolio: portfolioRouter,
-  instagramPosts: instagramPostsRouter,
+  inquiries: inquiriesRouter,
+  projects: projectsRouter,
+  content: contentRouter,
 });
 
 export type AppRouter = typeof appRouter;
