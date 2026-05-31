@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "node ./build.mjs && esbuild src/vercel.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/vercel.mjs --sourcemap",
+    "build": "node ./build.mjs",
     "start": "node --enable-source-maps ./dist/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
