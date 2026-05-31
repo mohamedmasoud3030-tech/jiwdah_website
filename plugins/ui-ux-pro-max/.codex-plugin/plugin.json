@@ -1,0 +1,43 @@
+{
+  "name": "ui-ux-pro-max",
+  "version": "2.5.0",
+  "description": "AI-powered UI/UX design intelligence for web and mobile interfaces, based on nextlevelbuilder/ui-ux-pro-max-skill.",
+  "author": {
+    "name": "nextlevelbuilder",
+    "url": "https://github.com/nextlevelbuilder"
+  },
+  "homepage": "https://uupm.cc",
+  "repository": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+  "license": "MIT",
+  "keywords": [
+    "ui",
+    "ux",
+    "design",
+    "accessibility",
+    "typography",
+    "color-palette",
+    "components"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "UI/UX Pro Max",
+    "shortDescription": "Design intelligence for professional UI/UX work.",
+    "longDescription": "Use this plugin when planning, building, reviewing, or improving frontend interfaces. It packages the UI/UX Pro Max guidance for style selection, accessibility, responsive layout, typography, color systems, motion, forms, navigation, charts, and stack-specific UI implementation.",
+    "developerName": "nextlevelbuilder",
+    "category": "Design",
+    "capabilities": [
+      "Design Review",
+      "Frontend Implementation",
+      "Accessibility Guidance"
+    ],
+    "websiteURL": "https://uupm.cc",
+    "privacyPolicyURL": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+    "termsOfServiceURL": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/blob/main/LICENSE",
+    "defaultPrompt": [
+      "Design a polished landing page with strong accessibility and responsive behavior.",
+      "Review this UI for visual hierarchy, interaction states, and mobile usability.",
+      "Create a product-specific design system with typography, colors, spacing, and motion guidance."
+    ],
+    "brandColor": "#0F766E"
+  }
+}
