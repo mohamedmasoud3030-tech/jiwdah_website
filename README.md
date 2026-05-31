@@ -1,104 +1,109 @@
-# Jiwdah Website
+# Mohamed Masoud Digital Platform
 
-موقع جودة هو مشروع ويب عربي لشركة ضيافة وخدمات مناسبات في سلطنة عمان. المشروع يحتوي على واجهة تسويقية، نموذج استقبال حجوزات، ولوحة تحكم لإدارة العملاء المحتملين، البورتفوليو، ومنشورات إنستغرام.
+منصة شخصية ثنائية اللغة لعرض الخدمات والمشاريع الرقمية واستقبال الاستفسارات وإدارتها من لوحة تحكم.
 
-## هيكل المشروع
+## Project structure
 
 ```text
-.
-├── artifacts/
-│   ├── jiwdah/        # React + Vite frontend
-│   └── api-server/    # Express + tRPC API server
-├── lib/
-│   ├── db/            # Drizzle/PostgreSQL schema and client
-│   ├── api-zod/       # Shared validation/types
-│   └── api-client-react/
-├── scripts/
-├── package.json
-└── pnpm-workspace.yaml
+api/[...path].ts                 Vercel API entry
+artifacts/jiwdah/                React + Vite frontend
+artifacts/api-server/            Express + tRPC API
+lib/db/                          Drizzle schema and migrations
+lib/api-zod/                     Shared validation types
+vercel.json                      Vercel routing configuration
 ```
 
-## المتطلبات
+## Requirements
 
 - Node.js 24+
 - pnpm
-- PostgreSQL database
+- PostgreSQL
 
-> ملاحظة: المشروع يجبر استخدام `pnpm` عن طريق `preinstall`، لذلك لا تستخدم `npm install` أو `yarn`.
-
-## متغيرات البيئة المطلوبة
-
-انسخ `.env.example` إلى `.env` أو أضف هذه المتغيرات في بيئة النشر:
-
-```env
-DATABASE_URL=
-PORT=3000
-APP_ID=
-APP_SECRET=
-KIMI_AUTH_URL=
-KIMI_OPEN_URL=
-OWNER_UNION_ID=
-BASE_PATH=/
-```
-
-### شرح سريع
-
-- `DATABASE_URL`: رابط PostgreSQL المستخدم بواسطة Drizzle.
-- `PORT`: بورت تشغيل API server.
-- `APP_ID`: معرف تطبيق OAuth.
-- `APP_SECRET`: سر التطبيق المستخدم لتوقيع جلسات الدخول. يجب أن يكون قيمة قوية وغير فارغة.
-- `KIMI_AUTH_URL`: رابط مزود OAuth.
-- `KIMI_OPEN_URL`: رابط API الخاص بجلب بيانات المستخدم.
-- `OWNER_UNION_ID`: معرف المستخدم الذي يحصل على صلاحية admin.
-- `BASE_PATH`: مسار بناء الواجهة، الافتراضي `/`.
-
-## التثبيت
+Install dependencies:
 
 ```bash
 pnpm install
 ```
 
-## فحص المشروع
+## Local development
+
+Run the API server:
+
+```bash
+pnpm --filter @workspace/api-server dev
+```
+
+Run the frontend in another terminal:
+
+```bash
+pnpm --filter @workspace/jiwdah dev
+```
+
+## Verification
 
 ```bash
 pnpm run typecheck
 pnpm run build
 ```
 
-## تشغيل الواجهة أثناء التطوير
+## Database
+
+Apply migrations before using the contact form or dashboard CRUD screens:
 
 ```bash
-pnpm --filter @workspace/jiwdah dev
+pnpm --filter @workspace/db migrate
 ```
 
-## تشغيل السيرفر أثناء التطوير
+Migration `0004_platform_reset` keeps former hospitality tables under `legacy_hospitality_*` names and creates the new `inquiries`, `projects`, and `content_entries` tables.
 
-```bash
-pnpm --filter @workspace/api-server dev
-```
+## Environment variables
 
-## قاعدة البيانات
+Copy `.env.example` to `.env` for local development and configure the same variables in the deployment environment.
 
-مخطط قاعدة البيانات موجود في:
+Required runtime values:
 
 ```text
-lib/db/src/schema/index.ts
+DATABASE_URL
+PORT
+APP_ID
+APP_SECRET
+KIMI_AUTH_URL
+KIMI_OPEN_URL
+OWNER_UNION_ID
 ```
 
-أوامر Drizzle المتاحة:
+Optional email notification values:
 
-```bash
-pnpm --filter @workspace/db generate
-pnpm --filter @workspace/db migrate
-pnpm --filter @workspace/db push
+```text
+SMTP_HOST
+SMTP_PORT
+SMTP_USER
+SMTP_PASS
+NOTIFY_EMAIL
 ```
 
-## ملاحظات إنتاج مهمة
+Frontend contact values:
 
-قبل النشر النهائي، راجع النقاط التالية:
+```text
+BASE_PATH
+VITE_PRIMARY_PHONE_DISPLAY
+VITE_PRIMARY_PHONE_TEL
+VITE_PRIMARY_WHATSAPP
+VITE_SECONDARY_PHONE_DISPLAY
+VITE_SECONDARY_PHONE_TEL
+```
 
-1. تأكد من ضبط `APP_SECRET` بقيمة قوية.
-2. تأكد من ضبط `DATABASE_URL` في بيئة الإنتاج.
-3. لا تعتمد على تخزين الملفات المحلي `uploads/` في بيئات autoscale/serverless؛ الأفضل نقل الملفات إلى object storage.
-4. اضبط OAuth callback على نفس دومين الإنتاج.
-5. شغل `pnpm run typecheck` و `pnpm run build` قبل الدمج إلى `main`.
+## Vercel deployment
+
+- Frontend output: `artifacts/jiwdah/dist/public`
+- API requests under `/api/*` route to `api/[...path].ts`
+- API build output: `artifacts/api-server/dist/vercel.mjs`
+
+Before production approval:
+
+1. Configure deployment environment variables.
+2. Apply database migrations.
+3. Configure the OAuth callback for the production domain at `/api/oauth/callback`.
+4. Verify `/`, `/contact`, `/portfolio`, `/login`, `/dashboard`, and `/api/trpc/ping`.
+
+Local `uploads/` storage is not suitable for durable files in serverless deployments. Use object storage before adding production file uploads.
