@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router";
 import { Menu, X, LayoutDashboard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAV_LINKS } from "@/const";
+import { SITE_CONFIG } from "@/config/site";
 import { mobileMenuSlide } from "@/lib/motion";
 import { useAuth } from "@/hooks/useAuth";
 import { trpc } from "@/providers/trpc";
@@ -46,24 +47,24 @@ export default function Navbar() {
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between" style={{ height: "72px" }}>
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <img src="/images/jiwdah_logo.webp" alt="جودة الانطلاقة" className="w-10 h-10 rounded-full border border-gold/20 object-cover transition-all duration-500 group-hover:border-gold/40" />
+            <div className="w-10 h-10 rounded-full border border-gold/20 flex items-center justify-center text-gold text-xs font-semibold tracking-widest transition-all duration-500 group-hover:border-gold/40">
+              MM
+            </div>
             <div className="flex flex-col">
-              <span className="text-base text-cream font-medium leading-tight" style={{ fontFamily: "'Noto Serif Arabic', serif" }}>
-                مشاريع جودة الإنطلاقة
+              <span className="text-base text-cream font-medium leading-tight">
+                {SITE_CONFIG.brandName}
               </span>
-              <span className="text-[10px] text-cream/35 tracking-wider">خدمات الضيافة</span>
+              <span className="text-[10px] text-cream/35 tracking-wider">{SITE_CONFIG.brandSubtitle}</span>
             </div>
           </Link>
 
-          {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-6">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
-                className={`relative text-xs tracking-wider font-medium transition-colors duration-300 uppercase ${
+                className={`relative text-xs tracking-wider font-medium transition-colors duration-300 ${
                   isActive(link.href) ? "text-gold" : "text-cream/50 hover:text-cream/80"
                 }`}
               >
@@ -79,7 +80,7 @@ export default function Navbar() {
 
             <Link
               to={dashboardHref}
-              className={`relative flex items-center gap-1.5 text-xs tracking-wider font-medium transition-colors duration-300 uppercase ${
+              className={`relative flex items-center gap-1.5 text-xs tracking-wider font-medium transition-colors duration-300 ${
                 isActive("/dashboard") ? "text-gold" : "text-cream/50 hover:text-cream/80"
               }`}
             >
@@ -90,24 +91,17 @@ export default function Navbar() {
                   {newLeadsCount > 99 ? "99+" : newLeadsCount}
                 </span>
               )}
-              {isActive("/dashboard") && (
-                <motion.span
-                  layoutId="nav-underline"
-                  className="absolute -bottom-1 left-0 right-0 h-px bg-gold/50 rounded-full"
-                />
-              )}
             </Link>
           </div>
 
-          <div className="hidden md:block">
-            <Link to="/contact" className="btn-gold text-xs py-2 px-5">احجز الآن</Link>
+          <div className="hidden lg:block">
+            <Link to="/contact" className="btn-gold text-xs py-2 px-5">ابدأ مشروعك</Link>
           </div>
 
-          {/* Mobile toggle */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden text-cream/60 hover:text-gold transition-colors duration-300 p-1"
-            aria-label="Toggle menu"
+            className="lg:hidden text-cream/60 hover:text-gold transition-colors duration-300 p-1"
+            aria-label="فتح القائمة"
           >
             <AnimatePresence mode="wait" initial={false}>
               {isMobileMenuOpen ? (
@@ -124,7 +118,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu — Framer Motion slide */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -133,7 +126,7 @@ export default function Navbar() {
             animate={mobileMenuSlide.animate}
             exit={mobileMenuSlide.exit}
             transition={mobileMenuSlide.transition}
-            className="md:hidden border-t border-gold/8"
+            className="lg:hidden border-t border-gold/8"
             style={{ backgroundColor: "rgba(14,14,14,0.97)" }}
           >
             <div className="px-6 py-5 space-y-1">
@@ -163,7 +156,7 @@ export default function Navbar() {
                 )}
               </Link>
               <div className="pt-3">
-                <Link to="/contact" className="btn-gold text-xs py-2 px-5 block text-center">احجز الآن</Link>
+                <Link to="/contact" className="btn-gold text-xs py-2 px-5 block text-center">ابدأ مشروعك</Link>
               </div>
             </div>
           </motion.div>
