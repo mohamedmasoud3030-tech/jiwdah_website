@@ -5,7 +5,6 @@ import { SITE_CONFIG } from "@/config/site";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteCopy } from "@/hooks/useSiteCopy";
 import { usePreferences } from "@/providers/preferences";
-import { trpc } from "@/providers/trpc";
 
 const ROUTES = [
   ["home", "/"],
@@ -21,11 +20,7 @@ export default function Navbar() {
   const location = useLocation();
   const copy = useSiteCopy();
   const { theme, toggleTheme, toggleLocale } = usePreferences();
-  const { user, isAdmin } = useAuth();
-  const { data: newLeadsCount } = trpc.leads.countNew.useQuery(undefined, {
-    enabled: !!user && !!isAdmin,
-    refetchInterval: 30000,
-  });
+  const { user } = useAuth();
 
   useEffect(() => setIsOpen(false), [location.pathname]);
 
@@ -60,7 +55,6 @@ export default function Navbar() {
           </button>
           <Link to={user ? "/dashboard" : "/login"} className="icon-button dashboard-button" aria-label={copy.nav.dashboard}>
             <LayoutDashboard size={17} />
-            {!!newLeadsCount && newLeadsCount > 0 && <span className="notification-dot">{newLeadsCount > 9 ? "9+" : newLeadsCount}</span>}
           </Link>
           <Link to="/contact" className="btn-primary nav-cta">{copy.nav.start}</Link>
           <button type="button" className="icon-button mobile-toggle" onClick={() => setIsOpen((value) => !value)} aria-expanded={isOpen} aria-label="Menu">
