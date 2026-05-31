@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Services from "./pages/Services";
 import Portfolio from "./pages/Portfolio";
 import About from "./pages/About";
+import AiSolutions from "./pages/AiSolutions";
 import Contact from "./pages/Contact";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
@@ -16,8 +17,8 @@ function AnimatedRoutes() {
       <motion.div
         key={location.pathname}
         initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }}
-        exit={{ opacity: 0, y: -6, transition: { duration: 0.25 } }}
+        animate={{ opacity: 1, y: 0, transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }}
+        exit={{ opacity: 0, y: -6, transition: { duration: 0.18 } }}
         style={{ minHeight: "100vh" }}
       >
         <Routes location={location}>
@@ -25,6 +26,7 @@ function AnimatedRoutes() {
           <Route path="/services" element={<Services />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/about" element={<About />} />
+          <Route path="/ai-solutions" element={<AiSolutions />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />

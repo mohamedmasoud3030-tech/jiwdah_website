@@ -1,18 +1,18 @@
 import { MessageCircle } from "lucide-react";
-import { WHATSAPP_NUMBER } from "@/const";
+import { SITE_CONFIG } from "@/config/site";
 
 export default function WhatsAppButton() {
+  if (!SITE_CONFIG.primaryWhatsApp) return null;
+
   return (
     <a
-      href={`https://wa.me/${WHATSAPP_NUMBER}`}
+      href={`https://wa.me/${SITE_CONFIG.primaryWhatsApp}`}
       target="_blank"
       rel="noopener noreferrer"
       className="whatsapp-fab"
-      aria-label="تواصل عبر واتساب"
+      aria-label="WhatsApp"
     >
-      <span className="whatsapp-pulse" />
-      <span className="whatsapp-pulse whatsapp-pulse--delay" />
-      <MessageCircle className="w-5 h-5 relative z-10" style={{ color: "#c8a45c" }} />
+      <MessageCircle size={20} />
     </a>
   );
 }
