@@ -1,0 +1,620 @@
+# Instincts generated from https://github.com/mohamedmasoud3030-tech/jiwdah_website
+# Generated: 2026-05-31T14:08:51.833Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: jiwdah_website-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: feat, chore, refactor
+
+## Evidence
+
+- 42 commits analyzed
+- Detected conventional commit pattern
+- Examples: feat: add centralized personal platform site config, refactor: replace legacy navbar branding
+
+---
+id: jiwdah_website-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Commit Length
+
+## Action
+
+Keep commit messages concise (~44 characters)
+
+## Evidence
+
+- Average commit message length: 44 chars
+- Based on 42 commits
+
+---
+id: jiwdah_website-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Naming Files
+
+## Action
+
+Use PascalCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: PascalCase
+
+---
+id: jiwdah_website-import-alias
+trigger: "when importing modules"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Import Alias
+
+## Action
+
+Use path aliases (@/, ~/) instead of relative imports
+
+## Evidence
+
+- Import analysis shows alias pattern
+- Example: import { x } from '@/lib/x'
+
+---
+id: jiwdah_website-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Export Style
+
+## Action
+
+Prefer mixed exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: mixed
+
+---
+id: jiwdah_website-arch-type-based
+trigger: "when adding new code"
+confidence: 0.8
+domain: architecture
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Arch Type Based
+
+## Action
+
+Place code in the appropriate type folder (components/, services/, utils/, etc.)
+
+## Evidence
+
+- Type-based module organization detected
+- Folders: 
+
+---
+id: jiwdah_website-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: jiwdah_website-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~19x per month
+- Files: artifacts/jiwdah/src/config/*, artifacts/jiwdah/src/providers/*, artifacts/jiwdah/src/content/*
+
+---
+id: jiwdah_website-workflow-add-or-rebuild-page
+trigger: "when doing add or rebuild page"
+confidence: 0.8
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Workflow Add Or Rebuild Page
+
+## Action
+
+Follow the add-or-rebuild-page workflow:
+1. Create or modify a file in artifacts/jiwdah/src/pages/{PageName}.tsx
+2. Implement or update the page's content and logic
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~6x per month
+- Files: artifacts/jiwdah/src/pages/*.tsx
+
+---
+id: jiwdah_website-workflow-add-or-update-component
+trigger: "when doing add or update component"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Workflow Add Or Update Component
+
+## Action
+
+Follow the add-or-update-component workflow:
+1. Create or modify a file in artifacts/jiwdah/src/components/{ComponentName}.tsx
+2. Implement or update the component's logic and styles
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~7x per month
+- Files: artifacts/jiwdah/src/components/*.tsx
+
+---
+id: jiwdah_website-workflow-remove-legacy-or-unused-section
+trigger: "when doing remove legacy or unused section"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Workflow Remove Legacy Or Unused Section
+
+## Action
+
+Follow the remove-legacy-or-unused-section workflow:
+1. Delete file(s) in artifacts/jiwdah/src/sections/{SectionName}.tsx
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~8x per month
+- Files: artifacts/jiwdah/src/sections/*.tsx
+
+---
+id: jiwdah_website-workflow-add-or-update-content-module
+trigger: "when doing add or update content module"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Workflow Add Or Update Content Module
+
+## Action
+
+Follow the add-or-update-content-module workflow:
+1. Create or modify a file in artifacts/jiwdah/src/content/{ContentName}.ts
+2. Populate or update the content data
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: artifacts/jiwdah/src/content/*.ts
+
+---
+id: jiwdah_website-workflow-add-or-update-style-system
+trigger: "when doing add or update style system"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Workflow Add Or Update Style System
+
+## Action
+
+Follow the add-or-update-style-system workflow:
+1. Create or modify CSS files in artifacts/jiwdah/src/
+2. Route or load styles in artifacts/jiwdah/src/App.css or related files
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: artifacts/jiwdah/src/platform.css, artifacts/jiwdah/src/App.css, artifacts/jiwdah/src/accessibility.css
+
+---
+id: jiwdah_website-workflow-add-or-update-provider-or-hook
+trigger: "when doing add or update provider or hook"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Workflow Add Or Update Provider Or Hook
+
+## Action
+
+Follow the add-or-update-provider-or-hook workflow:
+1. Create or modify provider/hook in artifacts/jiwdah/src/providers/ or artifacts/jiwdah/src/hooks/
+2. Wire provider/hook in artifacts/jiwdah/src/main.tsx or related entry point
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: artifacts/jiwdah/src/providers/*.tsx, artifacts/jiwdah/src/hooks/*.ts, artifacts/jiwdah/src/main.tsx
+
+---
+id: jiwdah_website-instinct-file-naming
+trigger: "When creating a new file"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct File Naming
+
+## Action
+
+Name the file using PascalCase (e.g., MyComponent.tsx)
+
+## Evidence
+
+- Pattern in artifacts/jiwdah/src/components/Navbar.tsx
+- Naming conventions in analysis
+
+---
+id: jiwdah_website-instinct-function-naming
+trigger: "When defining a function"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Function Naming
+
+## Action
+
+Name the function using camelCase (e.g., getUserData)
+
+## Evidence
+
+- Naming conventions in analysis
+
+---
+id: jiwdah_website-instinct-class-naming
+trigger: "When defining a class"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase (e.g., UserProfile)
+
+## Evidence
+
+- Naming conventions in analysis
+
+---
+id: jiwdah_website-instinct-constant-naming
+trigger: "When declaring a constant"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE (e.g., DEFAULT_THEME)
+
+## Evidence
+
+- Naming conventions in analysis
+
+---
+id: jiwdah_website-instinct-import-style
+trigger: "When importing modules"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Import Style
+
+## Action
+
+Use alias import style (e.g., import X from '@/components/X')
+
+## Evidence
+
+- ImportStyle: alias in analysis
+
+---
+id: jiwdah_website-instinct-export-style
+trigger: "When exporting modules or functions"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Export Style
+
+## Action
+
+Use mixed export style (both default and named exports as appropriate)
+
+## Evidence
+
+- ExportStyle: mixed in analysis
+
+---
+id: jiwdah_website-instinct-test-location
+trigger: "When writing tests for a feature or component"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Test Location
+
+## Action
+
+Place test files in a separate test directory, not alongside source files
+
+## Evidence
+
+- testLocation: separate in architecture analysis
+
+---
+id: jiwdah_website-instinct-test-sequence
+trigger: "When adding a new feature or component"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Test Sequence
+
+## Action
+
+Add tests after implementing the feature/component, before updating documentation
+
+## Evidence
+
+- CommitSequence: Add feature implementation → Add tests for feature → Update documentation in feature-development workflow
+
+---
+id: jiwdah_website-instinct-commit-format
+trigger: "When making a git commit"
+confidence: 0.95
+domain: git
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Commit Format
+
+## Action
+
+Format the commit message using the conventional commit style: <type>: <short description>
+
+## Evidence
+
+- Commits use prefixes like feat, chore, refactor
+- Examples: 'feat: add centralized personal platform site config'
+
+---
+id: jiwdah_website-instinct-commit-type-prefixes
+trigger: "When writing a commit message"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Commit Type Prefixes
+
+## Action
+
+Use one of the following prefixes: feat, chore, refactor, docs
+
+## Evidence
+
+- Prefixes in commits: feat, chore, refactor, docs
+
+---
+id: jiwdah_website-instinct-add-or-rebuild-page
+trigger: "When someone wants to introduce a new page or significantly update an existing one"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Add Or Rebuild Page
+
+## Action
+
+Create or modify a file in artifacts/jiwdah/src/pages/{PageName}.tsx and implement or update the page's content and logic
+
+## Evidence
+
+- Workflow: add-or-rebuild-page
+- Files: artifacts/jiwdah/src/pages/*.tsx
+
+---
+id: jiwdah_website-instinct-add-or-update-component
+trigger: "When someone wants to introduce or update a UI component such as Navbar, Footer, or grids"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Add Or Update Component
+
+## Action
+
+Create or modify a file in artifacts/jiwdah/src/components/{ComponentName}.tsx and implement or update the component's logic and styles
+
+## Evidence
+
+- Workflow: add-or-update-component
+- Files: artifacts/jiwdah/src/components/*.tsx
+
+---
+id: jiwdah_website-instinct-remove-legacy-section
+trigger: "When someone wants to clean up the codebase by removing old or unused sections"
+confidence: 0.98
+domain: workflow
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Remove Legacy Section
+
+## Action
+
+Delete file(s) in artifacts/jiwdah/src/sections/{SectionName}.tsx
+
+## Evidence
+
+- Workflow: remove-legacy-or-unused-section
+- Files: artifacts/jiwdah/src/sections/*.tsx
+
+---
+id: jiwdah_website-instinct-add-or-update-content-module
+trigger: "When someone wants to introduce or update structured content for the platform"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Add Or Update Content Module
+
+## Action
+
+Create or modify a file in artifacts/jiwdah/src/content/{ContentName}.ts and populate or update the content data
+
+## Evidence
+
+- Workflow: add-or-update-content-module
+- Files: artifacts/jiwdah/src/content/*.ts
+
+---
+id: jiwdah_website-instinct-add-or-update-style-system
+trigger: "When someone wants to introduce or update global styles or design system tokens"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Add Or Update Style System
+
+## Action
+
+Create or modify CSS files in artifacts/jiwdah/src/ and route or load styles in artifacts/jiwdah/src/App.css or related files
+
+## Evidence
+
+- Workflow: add-or-update-style-system
+- Files: artifacts/jiwdah/src/platform.css, artifacts/jiwdah/src/App.css, artifacts/jiwdah/src/accessibility.css
+
+---
+id: jiwdah_website-instinct-add-or-update-provider-or-hook
+trigger: "When someone wants to add or update global state management or utility hooks"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/jiwdah_website
+---
+
+# Jiwdah_website Instinct Add Or Update Provider Or Hook
+
+## Action
+
+Create or modify provider/hook in artifacts/jiwdah/src/providers/ or artifacts/jiwdah/src/hooks/ and wire provider/hook in artifacts/jiwdah/src/main.tsx or related entry point
+
+## Evidence
+
+- Workflow: add-or-update-provider-or-hook
+- Files: artifacts/jiwdah/src/providers/*.tsx, artifacts/jiwdah/src/hooks/*.ts, artifacts/jiwdah/src/main.tsx
+
