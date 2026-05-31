@@ -42,6 +42,10 @@ function renderValue(value?: string | null): string {
   return value && value.trim() ? escapeHtml(value.trim()) : "—";
 }
 
+function renderSubjectValue(value: string): string {
+  return value.replace(/[\r\n]+/g, " ").trim();
+}
+
 export async function sendNewInquiryNotification(inquiry: InquiryData): Promise<void> {
   if (!SMTP_USER || !SMTP_PASS) {
     console.warn("[mailer] SMTP credentials not configured — skipping notification");
@@ -93,7 +97,7 @@ export async function sendNewInquiryNotification(inquiry: InquiryData): Promise<
     await transporter.sendMail({
       from: `"Mohamed Masoud Digital Platform" <${SMTP_USER}>`,
       to: NOTIFY_EMAIL,
-      subject: `استفسار جديد — ${renderValue(inquiry.name)}`,
+      subject: `استفسار جديد — ${renderSubjectValue(inquiry.name)}`,
       html,
     });
     console.log(`[mailer] Notification sent for inquiry #${inquiry.id} to ${NOTIFY_EMAIL}`);
