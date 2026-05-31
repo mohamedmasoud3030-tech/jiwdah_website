@@ -1,0 +1,25 @@
+.skip-link {
+  position: fixed;
+  inset: 12px auto auto 12px;
+  z-index: 100;
+  transform: translateY(-160%);
+  border: 1px solid var(--platform-border);
+  border-radius: 10px;
+  background: var(--platform-card-strong);
+  color: var(--platform-text);
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: var(--platform-shadow);
+  transition: transform 160ms ease;
+}
+
+[dir="rtl"] .skip-link {
+  inset: 12px 12px auto auto;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 3px solid var(--platform-accent-soft);
+  outline-offset: 2px;
+}
