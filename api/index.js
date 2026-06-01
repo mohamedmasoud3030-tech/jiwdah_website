@@ -1,4 +1,4 @@
-// Vercel routes API requests through this stable bridge after the workspace build.
+// Vercel routes all API requests through this stable bridge after the workspace build.
 import app from "../artifacts/api-server/dist/vercel.mjs";
 
 export default function handler(req, res) {
