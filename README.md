@@ -97,7 +97,7 @@ VITE_SECONDARY_PHONE_TEL
 
 - Frontend output: `artifacts/jiwdah/dist/public`
 - API requests under `/api/*` route to `api/[...path].ts`
-- API build output: `artifacts/api-server/dist/vercel.mjs`
+- The Vercel Function imports the Express app directly from `artifacts/api-server/src/app.ts`
 
 Before production approval:
 

@@ -1,10 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm run build",
   "outputDirectory": "artifacts/jiwdah/dist/public",
   "rewrites": [
     {
+      "source": "/api",
+      "destination": "/api/index?__path="
+    },
+    {
       "source": "/api/:path*",
-      "destination": "/api/[...path]"
+      "destination": "/api/index?__path=:path*"
     }
   ]
 }
