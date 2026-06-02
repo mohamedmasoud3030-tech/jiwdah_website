@@ -1,42 +1,23 @@
-import { Routes, Route, useLocation } from "react-router";
-import { AnimatePresence, motion } from "framer-motion";
-import Home from "./pages/Home";
-import Services from "./pages/Services";
-import Portfolio from "./pages/Portfolio";
-import About from "./pages/About";
-import AiSolutions from "./pages/AiSolutions";
-import Contact from "./pages/Contact";
+import "./lena.css";
+import { Route, Routes } from "react-router";
+import LenaPlatform from "./pages/LenaPlatform";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
-import NotFound from "./pages/NotFound";
-
-function AnimatedRoutes() {
-  const location = useLocation();
-  return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={location.pathname}
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0, transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }}
-        exit={{ opacity: 0, y: -6, transition: { duration: 0.18 } }}
-        style={{ minHeight: "100vh" }}
-      >
-        <Routes location={location}>
-          <Route path="/" element={<Home />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/ai-solutions" element={<AiSolutions />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </motion.div>
-    </AnimatePresence>
-  );
-}
 
 export default function App() {
-  return <AnimatedRoutes />;
+  return (
+    <Routes>
+      <Route path="/" element={<LenaPlatform />} />
+      <Route path="/services" element={<LenaPlatform />} />
+      <Route path="/services/:serviceId" element={<LenaPlatform />} />
+      <Route path="/portfolio" element={<LenaPlatform />} />
+      <Route path="/work/:projectId" element={<LenaPlatform />} />
+      <Route path="/about" element={<LenaPlatform />} />
+      <Route path="/ai-solutions" element={<LenaPlatform />} />
+      <Route path="/contact" element={<LenaPlatform />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="*" element={<LenaPlatform />} />
+    </Routes>
+  );
 }

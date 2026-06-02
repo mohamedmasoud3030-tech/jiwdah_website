@@ -14,9 +14,8 @@ type PreferencesContextValue = {
 };
 
 const PreferencesContext = createContext<PreferencesContextValue | null>(null);
-
-const THEME_STORAGE_KEY = "mohamed-masoud-platform.theme";
-const LOCALE_STORAGE_KEY = "mohamed-masoud-platform.locale";
+const THEME_STORAGE_KEY = "lena-digital-house.theme";
+const LOCALE_STORAGE_KEY = "lena-digital-house.locale";
 
 function getInitialTheme(): AppTheme {
   if (typeof window === "undefined") return "dark";
@@ -27,8 +26,7 @@ function getInitialTheme(): AppTheme {
 
 function getInitialLocale(): AppLocale {
   if (typeof window === "undefined") return "ar";
-  const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
-  return stored === "en" ? "en" : "ar";
+  return window.localStorage.getItem(LOCALE_STORAGE_KEY) === "en" ? "en" : "ar";
 }
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {
@@ -51,18 +49,15 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
   }, [direction, locale]);
 
-  const value = useMemo<PreferencesContextValue>(
-    () => ({
-      theme,
-      locale,
-      direction,
-      setTheme,
-      setLocale,
-      toggleTheme: () => setTheme((current) => (current === "dark" ? "light" : "dark")),
-      toggleLocale: () => setLocale((current) => (current === "ar" ? "en" : "ar")),
-    }),
-    [direction, locale, theme],
-  );
+  const value = useMemo<PreferencesContextValue>(() => ({
+    theme,
+    locale,
+    direction,
+    setTheme,
+    setLocale,
+    toggleTheme: () => setTheme((current) => (current === "dark" ? "light" : "dark")),
+    toggleLocale: () => setLocale((current) => (current === "ar" ? "en" : "ar")),
+  }), [direction, locale, theme]);
 
   return <PreferencesContext.Provider value={value}>{children}</PreferencesContext.Provider>;
 }
