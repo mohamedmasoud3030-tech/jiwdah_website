@@ -3,20 +3,16 @@ import nodemailer from "nodemailer";
 const SMTP_HOST = process.env.SMTP_HOST?.includes("@")
   ? "smtp.gmail.com"
   : (process.env.SMTP_HOST ?? "smtp.gmail.com");
-
 const SMTP_PORT = parseInt(process.env.SMTP_PORT ?? "465", 10);
 const SMTP_USER = process.env.SMTP_USER ?? "";
 const SMTP_PASS = process.env.SMTP_PASS ?? "";
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL ?? SMTP_USER;
+const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL ?? "Mohamedms.oud@outlook.com";
 
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST,
   port: SMTP_PORT,
   secure: SMTP_PORT === 465,
-  auth: {
-    user: SMTP_USER,
-    pass: SMTP_PASS,
-  },
+  auth: { user: SMTP_USER, pass: SMTP_PASS },
 });
 
 export interface InquiryData {
@@ -61,33 +57,25 @@ export async function sendNewInquiryNotification(inquiry: InquiryData): Promise<
     ["المصدر", renderValue(inquiry.source)],
   ];
 
-  const tableRows = rows
-    .map(
-      ([label, value]) => `
+  const tableRows = rows.map(([label, value]) => `
       <tr>
-        <td style="padding:8px 12px;background:#eef4ff;color:#164e9b;font-weight:bold;border:1px solid #d9e6fb;text-align:right;">${label}</td>
-        <td style="padding:8px 12px;background:#fff;color:#172033;border:1px solid #d9e6fb;text-align:right;white-space:pre-wrap;">${value}</td>
-      </tr>`
-    )
-    .join("");
+        <td style="padding:8px 12px;background:#101936;color:#9fc3ff;font-weight:bold;border:1px solid #24305c;text-align:right;">${label}</td>
+        <td style="padding:8px 12px;background:#071022;color:#eef4ff;border:1px solid #24305c;text-align:right;white-space:pre-wrap;">${value}</td>
+      </tr>`).join("");
 
   const html = `
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:24px;background:#f5f8fc;font-family:Arial,sans-serif;">
-  <div style="max-width:620px;margin:0 auto;background:#fff;border:1px solid #d9e6fb;border-radius:16px;overflow:hidden;">
-    <div style="background:linear-gradient(135deg,#2563eb,#0f4ca8);padding:24px;text-align:center;">
-      <h1 style="margin:0;color:#fff;font-size:20px;">استفسار جديد من المنصة</h1>
-      <p style="margin:8px 0 0;color:#ffffffcc;font-size:14px;">Mohamed Masoud Digital Platform — رقم #${inquiry.id}</p>
+<body style="margin:0;padding:24px;background:#050814;font-family:Arial,sans-serif;">
+  <div style="max-width:620px;margin:0 auto;background:#071022;border:1px solid #24305c;border-radius:18px;overflow:hidden;">
+    <div style="background:linear-gradient(135deg,#245dff,#6b4dff 55%,#dc5bff);padding:26px;text-align:center;">
+      <h1 style="margin:0;color:#fff;font-size:22px;">استفسار جديد من LENA</h1>
+      <p style="margin:8px 0 0;color:#ffffffcc;font-size:14px;">LENA Digital House — رقم #${inquiry.id}</p>
     </div>
-    <div style="padding:24px;">
-      <table style="width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;">
-        ${tableRows}
-      </table>
-    </div>
-    <div style="padding:16px 24px;background:#f8fbff;text-align:center;">
-      <p style="margin:0;color:#64748b;font-size:12px;">تم إرسال هذا الإشعار تلقائيًا من نموذج الاستفسارات.</p>
+    <div style="padding:24px;"><table style="width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;">${tableRows}</table></div>
+    <div style="padding:16px 24px;background:#0a1630;text-align:center;">
+      <p style="margin:0;color:#9fb0d6;font-size:12px;">تم إرسال هذا الإشعار تلقائيًا من نموذج استفسارات LENA Digital House.</p>
     </div>
   </div>
 </body>
@@ -95,9 +83,10 @@ export async function sendNewInquiryNotification(inquiry: InquiryData): Promise<
 
   try {
     await transporter.sendMail({
-      from: `"Mohamed Masoud Digital Platform" <${SMTP_USER}>`,
+      from: `"LENA Digital House" <${SMTP_USER}>`,
       to: NOTIFY_EMAIL,
-      subject: `استفسار جديد — ${renderSubjectValue(inquiry.name)}`,
+      replyTo: inquiry.email || undefined,
+      subject: `استفسار جديد إلى LENA — ${renderSubjectValue(inquiry.name)}`,
       html,
     });
     console.log(`[mailer] Notification sent for inquiry #${inquiry.id} to ${NOTIFY_EMAIL}`);
