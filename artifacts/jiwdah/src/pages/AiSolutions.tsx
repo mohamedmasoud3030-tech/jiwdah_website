@@ -1,35 +1,6 @@
-import { Bot, Workflow } from "lucide-react";
-import AppShell from "@/components/AppShell";
+import LenaCta from "@/components/LenaCta";
+import { STUDIO_PROJECTS } from "@/content/projects";
+import ProjectCard from "@/features/projects/ProjectCard";
+import PublicShell from "@/layouts/PublicShell";
 import { useSiteCopy } from "@/hooks/useSiteCopy";
-
-export default function AiSolutions() {
-  const copy = useSiteCopy();
-
-  return (
-    <AppShell>
-      <section className="site-section">
-        <div className="site-container hero-grid">
-          <article className="bento-card hero-card bento-wide">
-            <p className="section-kicker">{copy.ai.eyebrow}</p>
-            <h1 className="section-title-small">{copy.ai.title}</h1>
-            <p className="section-lead">{copy.ai.intro}</p>
-          </article>
-
-          <aside className="bento-card hero-side">
-            <span className="service-icon"><Bot size={20} /></span>
-            <p className="service-description">{copy.ai.empty}</p>
-          </aside>
-        </div>
-      </section>
-
-      <section className="site-section" style={{ paddingTop: 0 }}>
-        <div className="site-container bento-grid">
-          <article className="bento-card bento-full">
-            <span className="service-icon"><Workflow size={20} /></span>
-            <p className="service-description">{copy.ai.empty}</p>
-          </article>
-        </div>
-      </section>
-    </AppShell>
-  );
-}
+export default function AiSolutions() { const copy = useSiteCopy(); const projects = STUDIO_PROJECTS.filter((project) => project.services.includes("ai-automation")); return <PublicShell><section className="lena-page lena-container"><p className="lena-kicker">{copy.ai.eyebrow}</p><h1 className="lena-page-title">{copy.ai.title}</h1><p className="lena-lead">{copy.ai.intro}</p></section><section className="lena-section"><div className="lena-container"><p className="lena-kicker">LENA SYSTEMS</p><h2 className="lena-section-title">{copy.ai.empty}</h2><div className="lena-bento lena-project-grid">{projects.map((project, index) => <ProjectCard key={project.id} project={project} featured={index === 0} />)}</div></div></section><LenaCta /></PublicShell>; }

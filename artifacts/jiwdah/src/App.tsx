@@ -1,23 +1,16 @@
 import "./lena.css";
-import { Route, Routes } from "react-router";
-import LenaPlatform from "./pages/LenaPlatform";
-import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
-
-export default function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<LenaPlatform />} />
-      <Route path="/services" element={<LenaPlatform />} />
-      <Route path="/services/:serviceId" element={<LenaPlatform />} />
-      <Route path="/portfolio" element={<LenaPlatform />} />
-      <Route path="/work/:projectId" element={<LenaPlatform />} />
-      <Route path="/about" element={<LenaPlatform />} />
-      <Route path="/ai-solutions" element={<LenaPlatform />} />
-      <Route path="/contact" element={<LenaPlatform />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="*" element={<LenaPlatform />} />
-    </Routes>
-  );
-}
+import { lazy, Suspense } from "react";
+import { Navigate, Route, Routes } from "react-router";
+import RouteFallback from "./app/RouteFallback";
+import ScrollToTop from "./app/ScrollToTop";
+const Home = lazy(() => import("./pages/Home"));
+const Services = lazy(() => import("./pages/Services"));
+const ServiceDetails = lazy(() => import("./pages/ServiceDetails"));
+const Portfolio = lazy(() => import("./pages/Portfolio"));
+const ProjectDetails = lazy(() => import("./pages/ProjectDetails"));
+const About = lazy(() => import("./pages/About"));
+const AiSolutions = lazy(() => import("./pages/AiSolutions"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Login = lazy(() => import("./pages/Login"));
+export default function App() { return <><ScrollToTop /><Suspense fallback={<RouteFallback />}><Routes><Route path="/" element={<Home />} /><Route path="/services" element={<Services />} /><Route path="/services/:serviceId" element={<ServiceDetails />} /><Route path="/portfolio" element={<Portfolio />} /><Route path="/work/:projectId" element={<ProjectDetails />} /><Route path="/about" element={<About />} /><Route path="/ai-solutions" element={<AiSolutions />} /><Route path="/contact" element={<Contact />} /><Route path="/dashboard" element={<Dashboard />} /><Route path="/login" element={<Login />} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Suspense></>; }

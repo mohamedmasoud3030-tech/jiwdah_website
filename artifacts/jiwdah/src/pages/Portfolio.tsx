@@ -1,93 +1,9 @@
-import { ArrowUpRight, BriefcaseBusiness, FolderKanban, Github } from "lucide-react";
-import AppShell from "@/components/AppShell";
+import { ArrowUpRight } from "lucide-react";
+import LenaCta from "@/components/LenaCta";
+import { STUDIO_PROJECTS } from "@/content/projects";
+import ProjectCard from "@/features/projects/ProjectCard";
+import PublicShell from "@/layouts/PublicShell";
 import { useSiteCopy } from "@/hooks/useSiteCopy";
 import { usePreferences } from "@/providers/preferences";
 import { trpc } from "@/providers/trpc";
-
-const PORTFOLIO_COPY = {
-  ar: {
-    loading: "جارٍ تحميل المشاريع...",
-    failed: "تعذر تحميل المشاريع حاليًا.",
-    viewProject: "عرض المشروع",
-    viewRepository: "عرض المستودع",
-  },
-  en: {
-    loading: "Loading projects...",
-    failed: "Projects could not be loaded right now.",
-    viewProject: "View project",
-    viewRepository: "View repository",
-  },
-} as const;
-
-export default function Portfolio() {
-  const copy = useSiteCopy();
-  const { locale } = usePreferences();
-  const text = PORTFOLIO_COPY[locale];
-  const projectsQuery = trpc.projects.listPublished.useQuery();
-
-  return (
-    <AppShell>
-      <section className="site-section">
-        <div className="site-container">
-          <p className="section-kicker">{copy.portfolio.eyebrow}</p>
-          <h1 className="section-title-small">{copy.portfolio.title}</h1>
-          <p className="section-lead">{copy.portfolio.intro}</p>
-        </div>
-      </section>
-
-      <section className="site-section" style={{ paddingTop: 0 }}>
-        <div className="site-container bento-grid">
-          <article className="bento-card bento-wide">
-            <span className="service-icon"><BriefcaseBusiness size={20} /></span>
-            <h2 className="service-title">{copy.portfolio.title}</h2>
-            <p className="service-description">{copy.portfolio.intro}</p>
-          </article>
-
-          <article className="bento-card">
-            <span className="service-icon"><FolderKanban size={20} /></span>
-            <p className="service-description">
-              {projectsQuery.data?.length ? `${projectsQuery.data.length}` : copy.portfolio.empty}
-            </p>
-          </article>
-
-          {projectsQuery.isLoading ? (
-            <div className="empty-state bento-full" aria-live="polite">{text.loading}</div>
-          ) : projectsQuery.error ? (
-            <div className="empty-state bento-full" role="alert">{text.failed}</div>
-          ) : projectsQuery.data?.length ? (
-            projectsQuery.data.map((project) => (
-              <article key={project.id} className="bento-card">
-                {project.imageUrl && (
-                  <img
-                    src={project.imageUrl}
-                    alt=""
-                    loading="lazy"
-                    style={{ width: "100%", aspectRatio: "16 / 10", borderRadius: 12, objectFit: "cover" }}
-                  />
-                )}
-                <h2 className="service-title">{project.title}</h2>
-                <p className="service-description">{project.summary || project.description || project.slug}</p>
-                {(project.projectUrl || project.repositoryUrl) && (
-                  <div className="actions-row">
-                    {project.projectUrl && (
-                      <a className="btn-primary" href={project.projectUrl} target="_blank" rel="noopener noreferrer">
-                        {text.viewProject}<ArrowUpRight size={16} />
-                      </a>
-                    )}
-                    {project.repositoryUrl && (
-                      <a className="btn-secondary" href={project.repositoryUrl} target="_blank" rel="noopener noreferrer">
-                        <Github size={16} />{text.viewRepository}
-                      </a>
-                    )}
-                  </div>
-                )}
-              </article>
-            ))
-          ) : (
-            <div className="empty-state bento-full" aria-live="polite">{copy.portfolio.empty}</div>
-          )}
-        </div>
-      </section>
-    </AppShell>
-  );
-}
+export default function Portfolio() { const copy = useSiteCopy(); const { locale } = usePreferences(); const published = trpc.projects.listPublished.useQuery(); return <PublicShell><section className="lena-page lena-container"><p className="lena-kicker">{copy.portfolio.eyebrow}</p><h1 className="lena-page-title">{copy.portfolio.title}</h1><p className="lena-lead">{copy.portfolio.intro}</p></section>{published.data?.length ? <section className="lena-section"><div className="lena-container"><p className="lena-kicker">{locale === "ar" ? "مشاريع منشورة" : "Published work"}</p><h2 className="lena-section-title">{locale === "ar" ? "أعمال متاحة للاستكشاف" : "Available projects"}</h2><div className="lena-bento">{published.data.map((project) => <article className="lena-glass lena-service-card" key={project.id}><h3>{project.title}</h3><p>{project.summary || project.description || project.slug}</p>{project.projectUrl && <a className="lena-more" href={project.projectUrl} target="_blank" rel="noreferrer">{locale === "ar" ? "عرض المشروع" : "View project"}<ArrowUpRight size={15} /></a>}</article>)}</div></div></section> : null}<section className="lena-section"><div className="lena-container"><p className="lena-kicker">LENA ORIGINALS</p><h2 className="lena-section-title">{locale === "ar" ? "أنظمة إبداعية جاهزة للاستكشاف" : "Creative systems ready to explore"}</h2><div className="lena-bento lena-project-grid">{STUDIO_PROJECTS.map((project, index) => <ProjectCard key={project.id} project={project} featured={index === 0} />)}</div></div></section><LenaCta /></PublicShell>; }
