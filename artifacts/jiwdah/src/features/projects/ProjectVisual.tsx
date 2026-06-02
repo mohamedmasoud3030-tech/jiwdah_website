@@ -1,0 +1,2 @@
+import type { StudioProject } from "@/content/projects";
+export default function ProjectVisual({ project, dense = false }: { project: StudioProject; dense?: boolean }) { return <div className={`lena-project-visual ${project.tone}${dense ? " dense" : ""}`} aria-hidden="true"><div className="lena-visual-window"><i /><i /><i /></div><div className="lena-visual-stack"><span /><span /><span /></div><div className="lena-visual-orb" /></div>; }

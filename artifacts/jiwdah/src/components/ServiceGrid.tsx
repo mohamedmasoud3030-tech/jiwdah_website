@@ -1,35 +1,6 @@
-import { Code2, FileText, Layers3, Megaphone, PanelsTopLeft, PenTool, type LucideIcon } from "lucide-react";
-import { PLATFORM_SERVICES } from "@/content/services";
+import { ArrowUpRight, Bot, Brush, Layers3, Palette, PanelsTopLeft, PenTool, Rocket, Sparkles, type LucideIcon } from "lucide-react";
+import { Link } from "react-router";
+import { LENA_SERVICES } from "@/content/services";
 import { usePreferences } from "@/providers/preferences";
-
-const ICONS: Record<string, LucideIcon> = {
-  Code2,
-  PanelsTopLeft,
-  PenTool,
-  Megaphone,
-  FileText,
-  Layers3,
-};
-
-export default function ServiceGrid({ limit }: { limit?: number }) {
-  const { locale } = usePreferences();
-  const services = typeof limit === "number" ? PLATFORM_SERVICES.slice(0, limit) : PLATFORM_SERVICES;
-
-  return (
-    <div className="bento-grid">
-      {services.map((service, index) => {
-        const Icon = ICONS[service.icon] ?? Layers3;
-        return (
-          <article key={service.id} className={`bento-card ${index === 0 || index === 3 ? "bento-wide" : ""}`}>
-            <span className="service-icon"><Icon size={20} /></span>
-            <h3 className="service-title">{service.title[locale]}</h3>
-            <p className="service-description">{service.description[locale]}</p>
-            <ul className="feature-list">
-              {service.features[locale].map((feature) => <li key={feature}>{feature}</li>)}
-            </ul>
-          </article>
-        );
-      })}
-    </div>
-  );
-}
+const ICONS: Record<string, LucideIcon> = { Bot, Brush, Layers3, Palette, PanelsTopLeft, PenTool, Rocket, Sparkles };
+export default function ServiceGrid({ limit, showcase = false }: { limit?: number; showcase?: boolean }) { const { locale } = usePreferences(); const items = typeof limit === "number" ? LENA_SERVICES.slice(0, limit) : LENA_SERVICES; return <div className={`lena-bento${showcase ? " lena-showcase-grid" : ""}`}>{items.map((service, index) => { const Icon = ICONS[service.icon] ?? Layers3; return <article className={`lena-glass lena-service-card ${service.tone}`} key={service.id}><i className="lena-card-glow" /><div className="lena-card-top"><span className="lena-service-icon"><Icon size={20} /></span><small>{String(index + 1).padStart(2, "0")}</small></div><h3>{service.title[locale]}</h3><p>{service.description[locale]}</p><div className="lena-tags">{service.tags.map((tag) => <span key={tag}>{tag}</span>)}</div><Link className="lena-more" to={`/services/${service.id}`}>{locale === "ar" ? "استكشف المسار" : "Explore track"}<ArrowUpRight size={15} /></Link></article>; })}</div>; }
