@@ -1,0 +1,377 @@
+# Instincts generated from https://github.com/mohamedmasoud3030-tech/Mohamed-platform-
+# Generated: 2026-06-02T05:38:12.921Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: Mohamed-platform--commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: feat, chore, fix
+
+## Evidence
+
+- 10 commits analyzed
+- Detected conventional commit pattern
+- Examples: feat: brand platform as LENA Digital House, chore: stage LENA cinematic stylesheet
+
+---
+id: Mohamed-platform--commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Commit Length
+
+## Action
+
+Keep commit messages concise (~41 characters)
+
+## Evidence
+
+- Average commit message length: 41 chars
+- Based on 10 commits
+
+---
+id: Mohamed-platform--naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: Mohamed-platform--import-alias
+trigger: "when importing modules"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Import Alias
+
+## Action
+
+Use path aliases (@/, ~/) instead of relative imports
+
+## Evidence
+
+- Import analysis shows alias pattern
+- Example: import { x } from '@/lib/x'
+
+---
+id: Mohamed-platform--export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: Mohamed-platform--arch-type-based
+trigger: "when adding new code"
+confidence: 0.8
+domain: architecture
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Arch Type Based
+
+## Action
+
+Place code in the appropriate type folder (components/, services/, utils/, etc.)
+
+## Evidence
+
+- Type-based module organization detected
+- Folders: 
+
+---
+id: Mohamed-platform--test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: Mohamed-platform--workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~15x per month
+- Files: artifacts/jiwdah/src/pages/*, artifacts/jiwdah/src/config/*, artifacts/jiwdah/src/*
+
+---
+id: Mohamed-platform--workflow-add-or-update-lena-platform-feature
+trigger: "when doing add or update lena platform feature"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Workflow Add Or Update Lena Platform Feature
+
+## Action
+
+Follow the add-or-update-lena-platform-feature workflow:
+1. Create or update LenaPlatform.tsx page component
+2. Update site configuration (site.ts) for branding
+3. Add or modify routing entry (LenaRoot.tsx or App.tsx) to include LENA experience
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: artifacts/jiwdah/src/pages/LenaPlatform.tsx, artifacts/jiwdah/src/config/site.ts, artifacts/jiwdah/src/LenaRoot.tsx
+
+---
+id: Mohamed-platform--workflow-lena-migration-or-build-fix
+trigger: "when doing lena migration or build fix"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Workflow Lena Migration Or Build Fix
+
+## Action
+
+Follow the lena-migration-or-build-fix workflow:
+1. Update environment and documentation files (.env.example, README.md)
+2. Update or restore LENA-related components and configuration
+3. Update or add LENA stylesheet (lena.css or platform.css)
+4. Update index.html or other entry points
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: .env.example, README.md, artifacts/jiwdah/index.html
+
+---
+id: mohamed-platform--naming-conventions
+trigger: "When naming files, functions, classes, or constants in TypeScript code"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Naming Conventions
+
+## Action
+
+Use camelCase for files and functions, PascalCase for classes, and SCREAMING_SNAKE_CASE for constants
+
+## Evidence
+
+- Pattern in namingConventions: files (camelCase), functions (camelCase), classes (PascalCase), constants (SCREAMING_SNAKE_CASE)
+- Seen in artifacts/jiwdah/src/pages/LenaPlatform.tsx
+
+---
+id: mohamed-platform--import-export-style
+trigger: "When importing or exporting modules in TypeScript"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Import Export Style
+
+## Action
+
+Use alias import style and named exports
+
+## Evidence
+
+- Pattern in codeStyle: importStyle (alias), exportStyle (named)
+
+---
+id: mohamed-platform--error-handling
+trigger: "When handling errors in code"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Error Handling
+
+## Action
+
+Use try-catch blocks for error handling; do not use custom error classes or global handlers
+
+## Evidence
+
+- Pattern in errorHandling: style (try-catch), customErrorClasses (false), globalHandler (false)
+
+---
+id: mohamed-platform--git-commit-format
+trigger: "When writing a commit message"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Git Commit Format
+
+## Action
+
+Use conventional commit prefixes (feat, chore, fix) and keep messages concise (~41 characters)
+
+## Evidence
+
+- Pattern in commits: prefixes (feat, chore, fix), averageLength (41)
+- Seen in commit: 'feat: brand platform as LENA Digital House'
+
+---
+id: mohamed-platform--test-location
+trigger: "When adding or updating tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Test Location
+
+## Action
+
+Place tests in a separate location from source code
+
+## Evidence
+
+- Pattern in architecture: testLocation (separate)
+
+---
+id: mohamed-platform--add-or-update-lena-platform-feature
+trigger: "When introducing or enhancing LENA platform features or branding"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Add Or Update Lena Platform Feature
+
+## Action
+
+Create or update LenaPlatform.tsx, update site.ts for branding, and modify LenaRoot.tsx or App.tsx for routing
+
+## Evidence
+
+- Workflow: add-or-update-lena-platform-feature
+- Seen in commits: 'feat: brand platform as LENA Digital House', 'feat: add LENA public routing entry'
+
+---
+id: mohamed-platform--lena-migration-or-build-fix
+trigger: "When finalizing migration or fixing build issues related to LENA"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Lena Migration Or Build Fix
+
+## Action
+
+Update .env.example, README.md, LENA components/config, LENA stylesheet, and index.html
+
+## Evidence
+
+- Workflow: lena-migration-or-build-fix
+- Seen in commit: 'fix: complete LENA migration and restore build compatibility'
+
+---
+id: mohamed-platform--feature-development-sequence
+trigger: "When developing a new feature"
+confidence: 0.8
+domain: workflow
+source: repo-analysis
+source_repo: mohamedmasoud3030-tech/Mohamed-platform-
+---
+
+# Mohamed Platform  Feature Development Sequence
+
+## Action
+
+Implement feature, add corresponding tests, and update documentation in sequence
+
+## Evidence
+
+- Workflow: feature-development
+- Commit sequence: Add feature implementation → Add tests for feature → Update documentation
+
