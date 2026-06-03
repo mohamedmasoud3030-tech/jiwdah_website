@@ -1,6 +1,5 @@
 -- LENA V2 clean PostgreSQL baseline.
--- Safe for a new database: additive, idempotent, and aligned with the current Drizzle schema.
--- Historical pre-LENA migrations remain in this directory for audit only and are excluded from the active journal.
+-- Safe for new databases and upgrades from the former platform reset.
 
 DO $$ BEGIN
   CREATE TYPE public.role AS ENUM ('user', 'admin');
@@ -64,6 +63,11 @@ CREATE TABLE IF NOT EXISTS public.projects (
   created_at timestamp DEFAULT now() NOT NULL,
   updated_at timestamp DEFAULT now() NOT NULL
 );
+
+ALTER TABLE public.projects
+  ADD COLUMN IF NOT EXISTS content_blocks jsonb DEFAULT '{}'::jsonb NOT NULL,
+  ADD COLUMN IF NOT EXISTS gallery jsonb DEFAULT '[]'::jsonb NOT NULL,
+  ADD COLUMN IF NOT EXISTS related_services jsonb DEFAULT '[]'::jsonb NOT NULL;
 
 CREATE TABLE IF NOT EXISTS public.content_entries (
   id serial PRIMARY KEY,
