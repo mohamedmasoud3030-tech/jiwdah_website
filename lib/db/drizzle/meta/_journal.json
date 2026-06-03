@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1746230001000,
-      "tag": "0000_phase0_hardening",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1746230002000,
-      "tag": "0001_add_leads_source",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1746277800000,
-      "tag": "0002_add_instagram_posts",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1746277801000,
-      "tag": "0003_add_instagram_thumbnail",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1780240800000,
-      "tag": "0004_platform_reset",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1780416000000,
-      "tag": "0005_project_content_model",
+      "when": 1780514400000,
+      "tag": "0006_lena_v2_baseline",
       "breakpoints": true
     }
   ]
