@@ -1,9 +1,32 @@
 import { z } from "zod";
-import { asc, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 import { projects, PROJECT_STATUS_VALUES } from "@workspace/db";
 import { createRouter, publicQuery, adminQuery } from "../middleware";
 
 const projectStatusEnum = z.enum(PROJECT_STATUS_VALUES);
+const localizedText = z.object({
+  ar: z.string().trim().max(10000),
+  en: z.string().trim().max(10000),
+});
+const localizedList = z.object({
+  ar: z.array(z.string().trim().min(1).max(255)).max(24),
+  en: z.array(z.string().trim().min(1).max(255)).max(24),
+});
+const contentBlocks = z.object({
+  overview: localizedText.optional(),
+  challenge: localizedText.optional(),
+  direction: localizedText.optional(),
+  solution: localizedText.optional(),
+  features: localizedList.optional(),
+  journey: localizedList.optional(),
+}).default({});
+const galleryItem = z.object({
+  url: z.string().trim().url(),
+  label: localizedText.optional(),
+  caption: localizedText.optional(),
+  kind: z.enum(["brand", "platform", "campaign", "commerce", "launch", "automation", "dashboard", "story"]).optional(),
+  layout: z.enum(["wide", "standard", "tall"]).optional(),
+});
 
 const projectInput = z.object({
   title: z.string().trim().min(1).max(255),
@@ -13,6 +36,9 @@ const projectInput = z.object({
   imageUrl: z.string().trim().url().optional(),
   projectUrl: z.string().trim().url().optional(),
   repositoryUrl: z.string().trim().url().optional(),
+  contentBlocks,
+  gallery: z.array(galleryItem).max(24).default([]),
+  relatedServices: z.array(z.string().trim().min(1).max(255)).max(24).default([]),
   status: projectStatusEnum.default("draft"),
   sortOrder: z.number().int().min(0).default(0),
 });
@@ -25,6 +51,17 @@ export const projectsRouter = createRouter({
       .where(eq(projects.status, "published"))
       .orderBy(asc(projects.sortOrder), desc(projects.createdAt));
   }),
+
+  getPublishedBySlug: publicQuery
+    .input(z.object({ slug: z.string().trim().min(1).max(255) }))
+    .query(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .select()
+        .from(projects)
+        .where(and(eq(projects.slug, input.slug), eq(projects.status, "published")))
+        .limit(1);
+      return result[0] ?? null;
+    }),
 
   list: adminQuery.query(async ({ ctx }) => {
     return ctx.db
@@ -41,11 +78,7 @@ export const projectsRouter = createRouter({
     }),
 
   update: adminQuery
-    .input(
-      projectInput.partial().extend({
-        id: z.number().int().positive(),
-      })
-    )
+    .input(projectInput.partial().extend({ id: z.number().int().positive() }))
     .mutation(async ({ ctx, input }) => {
       const { id, ...fields } = input;
       const result = await ctx.db

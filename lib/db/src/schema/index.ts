@@ -1,4 +1,4 @@
-import { pgTable, pgEnum, serial, varchar, text, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, pgEnum, serial, varchar, text, timestamp, integer, jsonb } from "drizzle-orm/pg-core";
 import {
   INQUIRY_STATUS_VALUES,
   PROJECT_STATUS_VALUES,
@@ -7,6 +7,26 @@ import {
 } from "./enums";
 
 export * from "./enums";
+
+export type ProjectLocalizedText = { ar: string; en: string };
+export type ProjectLocalizedList = { ar: string[]; en: string[] };
+export type ProjectVisualKind = "brand" | "platform" | "campaign" | "commerce" | "launch" | "automation" | "dashboard" | "story";
+export type ProjectAssetLayout = "wide" | "standard" | "tall";
+export type ProjectContentBlocks = {
+  overview?: ProjectLocalizedText;
+  challenge?: ProjectLocalizedText;
+  direction?: ProjectLocalizedText;
+  solution?: ProjectLocalizedText;
+  features?: ProjectLocalizedList;
+  journey?: ProjectLocalizedList;
+};
+export type ProjectGalleryItem = {
+  url: string;
+  label?: ProjectLocalizedText;
+  caption?: ProjectLocalizedText;
+  kind?: ProjectVisualKind;
+  layout?: ProjectAssetLayout;
+};
 
 export const roleEnum = pgEnum("role", ROLE_VALUES);
 export const inquiryStatusEnum = pgEnum("inquiry_status", INQUIRY_STATUS_VALUES);
@@ -53,6 +73,9 @@ export const projects = pgTable("projects", {
   imageUrl: text("image_url"),
   projectUrl: text("project_url"),
   repositoryUrl: text("repository_url"),
+  contentBlocks: jsonb("content_blocks").$type<ProjectContentBlocks>().default({}).notNull(),
+  gallery: jsonb("gallery").$type<ProjectGalleryItem[]>().default([]).notNull(),
+  relatedServices: jsonb("related_services").$type<string[]>().default([]).notNull(),
   status: projectStatusEnum("status").default("draft").notNull(),
   sortOrder: integer("sort_order").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

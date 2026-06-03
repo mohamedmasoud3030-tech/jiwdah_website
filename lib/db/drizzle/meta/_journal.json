@@ -36,6 +36,13 @@
       "when": 1780240800000,
       "tag": "0004_platform_reset",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1780416000000,
+      "tag": "0005_project_content_model",
+      "breakpoints": true
     }
   ]
 }
