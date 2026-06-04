@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { count, desc, eq } from "drizzle-orm";
 import { inquiries, INQUIRY_STATUS_VALUES } from "@workspace/db";
@@ -5,6 +6,13 @@ import { createRouter, publicQuery, adminQuery } from "../middleware";
 import { sendNewInquiryNotification } from "../../lib/mailer";
 
 const inquiryStatusEnum = z.enum(INQUIRY_STATUS_VALUES);
+const INQUIRY_MINIMUM_COMPLETION_MS = 1500;
+
+function rejectAutomatedInquiry(website: string | undefined, submittedAt: number) {
+  if (website || Date.now() - submittedAt < INQUIRY_MINIMUM_COMPLETION_MS) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid inquiry." });
+  }
+}
 
 export const inquiriesRouter = createRouter({
   list: adminQuery.query(async ({ ctx }) => {
@@ -27,13 +35,25 @@ export const inquiriesRouter = createRouter({
         phone: z.string().trim().max(50).optional(),
         service: z.string().trim().max(255).optional(),
         message: z.string().trim().min(1).max(5000),
-        source: z.string().trim().max(50).default("contact"),
+        source: z.literal("contact").default("contact"),
+        website: z.string().trim().max(255).optional(),
+        submittedAt: z.number().int().positive(),
       })
     )
     .mutation(async ({ ctx, input }) => {
+      rejectAutomatedInquiry(input.website, input.submittedAt);
+
       const result = await ctx.db
         .insert(inquiries)
-        .values({ ...input, status: "new" })
+        .values({
+          name: input.name,
+          email: input.email,
+          phone: input.phone,
+          service: input.service,
+          message: input.message,
+          source: input.source,
+          status: "new",
+        })
         .returning();
 
       const inquiry = result[0];
