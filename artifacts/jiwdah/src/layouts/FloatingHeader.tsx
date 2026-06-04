@@ -13,7 +13,14 @@ export default function FloatingHeader() {
 
   useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
-    const update = () => setScrolled(window.scrollY > 20);
+    let isScrolled = window.scrollY > 20;
+    setScrolled(isScrolled);
+    const update = () => {
+      const nextScrolled = window.scrollY > 20;
+      if (nextScrolled === isScrolled) return;
+      isScrolled = nextScrolled;
+      setScrolled(nextScrolled);
+    };
     update();
     window.addEventListener("scroll", update, { passive: true });
     return () => window.removeEventListener("scroll", update);
