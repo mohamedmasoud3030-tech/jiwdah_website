@@ -3,8 +3,6 @@ import cors from "cors";
 import pinoHttp from "pino-http";
 import cookieParser from "cookie-parser";
 import * as trpcExpress from "@trpc/server/adapters/express";
-import path from "path";
-import fs from "fs";
 import router from "./routes";
 import { logger } from "./lib/logger";
 import { appRouter } from "./trpc/router";
@@ -12,6 +10,11 @@ import { createTrpcContext } from "./trpc/context";
 import { createOAuthCallbackHandler, createOAuthLoginHandler } from "./auth/oauth";
 
 const app: Express = express();
+
+// Vercel forwards the public client address through one trusted proxy hop.
+// Self-hosted deployments with a different topology should override this value.
+const configuredProxyHops = Number.parseInt(process.env.TRUST_PROXY_HOPS || "1", 10);
+app.set("trust proxy", Number.isSafeInteger(configuredProxyHops) && configuredProxyHops >= 0 ? configuredProxyHops : 1);
 
 app.use(
   pinoHttp({
@@ -49,9 +52,5 @@ app.use(
 );
 
 app.use("/api", router);
-
-const UPLOADS_DIR = path.join(process.cwd(), "uploads");
-if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-app.use("/api/uploads", express.static(UPLOADS_DIR));
 
 export default app;

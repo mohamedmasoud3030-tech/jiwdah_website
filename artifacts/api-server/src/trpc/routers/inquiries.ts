@@ -1,16 +1,70 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { count, desc, eq } from "drizzle-orm";
-import { inquiries, INQUIRY_STATUS_VALUES } from "@workspace/db";
+import { createHmac } from "crypto";
+import { count, desc, eq, lt, sql } from "drizzle-orm";
+import { inquiries, inquiryRateLimits, INQUIRY_STATUS_VALUES } from "@workspace/db";
 import { createRouter, publicQuery, adminQuery } from "../middleware";
 import { sendNewInquiryNotification } from "../../lib/mailer";
+import type { TrpcContext } from "../context";
 
 const inquiryStatusEnum = z.enum(INQUIRY_STATUS_VALUES);
 const INQUIRY_MINIMUM_COMPLETION_MS = 1500;
+const INQUIRY_RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+const INQUIRY_RATE_LIMIT_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
+const INQUIRY_RATE_LIMIT_MAX_ATTEMPTS = 5;
+
+function isProductionRuntime() {
+  return process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+}
 
 function rejectAutomatedInquiry(website: string | undefined, submittedAt: number) {
   if (website || Date.now() - submittedAt < INQUIRY_MINIMUM_COMPLETION_MS) {
     throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid inquiry." });
+  }
+}
+
+function getRateLimitSecret() {
+  const secret = process.env.INQUIRY_RATE_LIMIT_SECRET;
+  if (secret) return secret;
+  if (isProductionRuntime()) {
+    throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Inquiry rate limiting is not configured." });
+  }
+  return process.env.APP_SECRET || "local-development-only";
+}
+
+function normalizeClientIp(ctx: TrpcContext) {
+  const address = (ctx.req.ip || ctx.req.socket.remoteAddress || "unknown").trim().toLowerCase();
+  return address.startsWith("::ffff:") ? address.slice(7) : address;
+}
+
+function hashNetworkIdentifier(ctx: TrpcContext) {
+  return createHmac("sha256", getRateLimitSecret()).update(normalizeClientIp(ctx)).digest("hex");
+}
+
+async function enforceInquiryRateLimit(ctx: TrpcContext) {
+  const now = new Date();
+  const windowStart = new Date(now.getTime() - INQUIRY_RATE_LIMIT_WINDOW_MS);
+  const retentionCutoff = new Date(now.getTime() - INQUIRY_RATE_LIMIT_RETENTION_MS);
+  const identifierHash = hashNetworkIdentifier(ctx);
+
+  await ctx.db.delete(inquiryRateLimits).where(lt(inquiryRateLimits.updatedAt, retentionCutoff));
+
+  const result = await ctx.db
+    .insert(inquiryRateLimits)
+    .values({ identifierHash, source: "contact", attempts: 1, windowStart: now, updatedAt: now })
+    .onConflictDoUpdate({
+      target: inquiryRateLimits.identifierHash,
+      set: {
+        attempts: sql<number>`case when ${inquiryRateLimits.windowStart} < ${windowStart} then 1 else ${inquiryRateLimits.attempts} + 1 end`,
+        windowStart: sql<Date>`case when ${inquiryRateLimits.windowStart} < ${windowStart} then ${now} else ${inquiryRateLimits.windowStart} end`,
+        updatedAt: now,
+      },
+    })
+    .returning({ attempts: inquiryRateLimits.attempts, windowStart: inquiryRateLimits.windowStart });
+
+  const current = result[0];
+  if (current && current.windowStart > windowStart && current.attempts > INQUIRY_RATE_LIMIT_MAX_ATTEMPTS) {
+    throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Too many inquiry submissions. Please try again later." });
   }
 }
 
@@ -42,6 +96,7 @@ export const inquiriesRouter = createRouter({
     )
     .mutation(async ({ ctx, input }) => {
       rejectAutomatedInquiry(input.website, input.submittedAt);
+      await enforceInquiryRateLimit(ctx);
 
       const result = await ctx.db
         .insert(inquiries)
